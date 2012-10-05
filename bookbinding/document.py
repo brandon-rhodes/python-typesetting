@@ -140,6 +140,7 @@ def wrap_paragraph_knuth(canvas, line, pp):
 
     olist = ObjectList()
 
+    space_width = canvas.stringWidth(u' ')
     hyphen_width = canvas.stringWidth(u'-')
 
     for word in pp.text.split():
@@ -149,9 +150,9 @@ def wrap_paragraph_knuth(canvas, line, pp):
             if w is None:
                 w = STRING_WIDTHS[piece] = canvas.stringWidth(piece)
             olist.append(Box(w, piece))
-            olist.append(Penalty(hyphen_width, 0.))
-        olist.pop()
-        olist.append(Glue(FONT_SIZE, 4., 4.))
+            #olist.append(Penalty(hyphen_width, 0.))
+        #olist.pop()
+        olist.append(Glue(space_width, space_width * .5, space_width * .2))
     olist.pop()
     olist.add_closing_penalty()
 
