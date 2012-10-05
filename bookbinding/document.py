@@ -78,22 +78,19 @@ class Document(object):
 
 class Line(object):
 
-    def __init__(self, chase, previous=None, dy=0):
+    def __init__(self, chase, previous=None, y=None):
+        if y is None:
+            y = chase.h - LINE_HEIGHT
         self.chase = chase
+        self.y = y
         self.previous = previous
-        if previous is None:
-            self.y = chase.h - LINE_HEIGHT - dy
-        else:
-            self.y = previous.y - dy
 
     def next(self):
         if self.y > LINE_HEIGHT:
-            return Line(self.chase, self, LINE_HEIGHT)
+            return Line(self.chase, previous=self, y=self.y - LINE_HEIGHT)
         else:
-            chase = self.chase.next()
-            line = Line(chase, self)
-            line.y = chase.h - LINE_HEIGHT
-            return line
+            next_chase = self.chase.next()
+            return Line(next_chase, previous=self)
 
     def ay(self):
         return self.chase.y + self.y
