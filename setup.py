@@ -1,14 +1,14 @@
 from distutils.core import setup
 
-setup(name = 'canonlib',
+setup(name = 'bookbinding',
       version = '0.1-dev',
       #description = description,
       #long_description = long_description,
       license = 'MIT',
       author = 'Brandon Rhodes',
       author_email = 'brandon@rhodesmill.org',
-      url = 'https://github.com/brandon-rhodes/python-canonlib',
+      url = 'https://github.com/brandon-rhodes/python-bookbinding',
       classifiers = [
         ],
-      packages = ['canonlib'],
+      packages = ['bookbinding'],
       )
