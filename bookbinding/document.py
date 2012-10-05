@@ -150,8 +150,8 @@ def wrap_paragraph_knuth(canvas, line, pp):
             if w is None:
                 w = STRING_WIDTHS[piece] = canvas.stringWidth(piece)
             olist.append(Box(w, piece))
-            #olist.append(Penalty(hyphen_width, 0.))
-        #olist.pop()
+            olist.append(Penalty(hyphen_width, 0.))
+        olist.pop()
         olist.append(Glue(space_width, space_width * .5, space_width * .2))
     olist.pop()
     olist.add_closing_penalty()
@@ -172,6 +172,10 @@ def wrap_paragraph_knuth(canvas, line, pp):
                 keepers.append(box)
             elif box.is_box():
                 keepers.append(box)
+        bbox = olist[breakpoint]
+        if bbox.is_penalty() and bbox.width == hyphen_width:
+            b = Box(hyphen_width, u'-')
+            keepers.append(b)
         line.things = keepers
         print keepers
         line = line.next()
