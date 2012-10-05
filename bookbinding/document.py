@@ -1,4 +1,8 @@
 from reportlab.pdfgen.canvas import Canvas
+from .hyphenate import hyphenate_word
+from texlib.wrap import ObjectList, Box, Glue, Penalty
+
+import re
 
 inch = 72.
 
@@ -67,7 +71,8 @@ class Document(object):
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
                 for s in [item.text]:
-                    line = wrap_paragraph(canvas, line, item)
+                    #line = wrap_paragraph(canvas, line, item)
+                    line = wrap_paragraph_knuth(canvas, line, item)
 
         lines = []
         while line:
@@ -94,8 +99,15 @@ class Document(object):
                 ww = canvas.stringWidth(s)
                 canvas.drawString(c.x + line.chase.w / 2. - ww / 2.,
                                   line.ay(), s)
-            else:
-                canvas.drawString(c.x, line.ay(), u' '.join(line.words))
+            elif hasattr(line, 'things'):
+                ww = 0.
+                ay = line.ay()
+                for thing in line.things:
+                    if isinstance(thing, Box):
+                        canvas.drawString(c.x + ww, ay, thing.character)
+                        ww += canvas.stringWidth(thing.character)
+                    elif isinstance(thing, Glue):
+                        ww += thing.glue_width
 
         canvas.save()
 
@@ -119,6 +131,51 @@ def wrap_paragraph(canvas, line, pp):
         line.indent = indent
         words = words[i:]
         indent, width = 0, line.w
+    return line
+
+wordre = re.compile('(\w+)')
+STRING_WIDTHS = {}
+
+def wrap_paragraph_knuth(canvas, line, pp):
+
+    olist = ObjectList()
+
+    hyphen_width = canvas.stringWidth(u'-')
+
+    for word in pp.text.split():
+        pieces = hyphenate_word(word)
+        for piece in pieces:
+            w = STRING_WIDTHS.get(piece)
+            if w is None:
+                w = STRING_WIDTHS[piece] = canvas.stringWidth(piece)
+            olist.append(Box(w, piece))
+            olist.append(Penalty(hyphen_width, 0.))
+        olist.pop()
+        olist.append(Glue(FONT_SIZE, 4., 4.))
+    olist.pop()
+    olist.add_closing_penalty()
+
+    line_lengths = [line.w]
+    breaks = olist.compute_breakpoints(line_lengths)
+    print breaks, len(olist)
+    start = 0
+    n = 0
+    for breakpoint in breaks[1:]:
+        keepers = []
+        r = olist.compute_adjustment_ratio(start, breakpoint, n, line_lengths)
+        n += 1
+        for i in range(start, breakpoint):
+            box = olist[i]
+            if box.is_glue():
+                box.glue_width = box.compute_width(r)
+                keepers.append(box)
+            elif box.is_box():
+                keepers.append(box)
+        line.things = keepers
+        print keepers
+        line = line.next()
+        start = breakpoint + 1
+
     return line
 
 class Line(object):
