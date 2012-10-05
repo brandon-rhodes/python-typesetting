@@ -35,25 +35,35 @@ class Document(object):
 
     def format(self, story):
 
-        pages = []
-        chases = []
-
         p = Page(self, 0)
-        pages.append(p)
         c = Chase(OUTER_MARGIN, BOTTOM_MARGIN,
                   PAGE_WIDTH - OUTER_MARGIN - INNER_MARGIN,
                   PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN)
-        chases.append(c)
         p.cj += 1
 
         p.canvas.setFont('Roman', FONT_SIZE)
 
-        y = c.h - LINE_HEIGHT
+        line = Line(p, c)
         for item in story:
             if not item.__class__.__name__.endswith('Paragraph'):
                 continue
-            lines = [item.text]
-            for line in lines:
-                p.canvas.drawString(c.x, y, line)
-                y -= LINE_HEIGHT
+            for s in [item.text]:
+                p.canvas.drawString(c.x, line.ay(), s)
+                line = line.next()
         p.canvas.save()
+
+class Line(object):
+
+    def __init__(self, page, chase, previous=None, dy=0):
+        self.page = page
+        self.chase = chase
+        if previous is None:
+            self.y = chase.h - LINE_HEIGHT - dy
+        else:
+            self.y = previous.y - dy
+
+    def next(self):
+        return Line(self.page, self.chase, self, LINE_HEIGHT)
+
+    def ay(self):
+        return self.chase.y + self.y
