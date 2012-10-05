@@ -46,7 +46,7 @@ class Document(object):
                   PAGE_WIDTH - OUTER_MARGIN - INNER_MARGIN,
                   PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN)
 
-        line = Line(p, c)
+        line = Line(c)
         for item in story:
             if not item.__class__.__name__.endswith('Paragraph'):
                 continue
@@ -69,17 +69,16 @@ class Document(object):
 
         page = None
         for line in lines:
-            if line.page is not page:
+            if line.chase.page is not page:
                 canvas.showPage()
-                page = line.page
+                page = line.chase.page
             canvas.drawString(c.x, line.ay(), line.text)
 
         canvas.save()
 
 class Line(object):
 
-    def __init__(self, page, chase, previous=None, dy=0):
-        self.page = page
+    def __init__(self, chase, previous=None, dy=0):
         self.chase = chase
         self.previous = previous
         if previous is None:
@@ -89,10 +88,10 @@ class Line(object):
 
     def next(self):
         if self.y > LINE_HEIGHT:
-            return Line(self.page, self.chase, self, LINE_HEIGHT)
+            return Line(self.chase, self, LINE_HEIGHT)
         else:
             chase = self.chase.next()
-            line = Line(chase.page, chase, self)
+            line = Line(chase, self)
             line.y = chase.h - LINE_HEIGHT
             return line
 
