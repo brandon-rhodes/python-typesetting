@@ -54,15 +54,17 @@ class Document(object):
         line.text = u'foo'
         for item in story:
             if item.__class__.__name__ == 'Spacer':
-                if line.at_bottom():
+                if not line.at_bottom():
                     line = line.next()
-                    line.words = [u'*']
-                    line.align = 'center'
-                line = line.next()
-                if line.at_bottom():
-                    line = line.down(1)
-                    line.words = [u'*']
-                    line.align = 'center'
+                # if line.at_bottom():
+                #     line = line.next()
+                #     line.words = [u'*']
+                #     line.align = 'center'
+                # line = line.next()
+                # if line.at_bottom():
+                #     line = line.down(1)
+                #     line.words = [u'*']
+                #     line.align = 'center'
             elif isinstance(item, Paragraph):
                 for s in [item.text]:
                     line = wrap_paragraph(canvas, line, item)
