@@ -47,13 +47,12 @@ class Document(object):
                   PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN)
 
         line = Line(c)
+        line.text = 'foo'
         for item in story:
             if not item.__class__.__name__.endswith('Paragraph'):
                 continue
             for s in [item.text]:
-                line.text = s
-                line = line.next()
-                line.text = 'THE END'
+                line = wrap_paragraph(line, item.text)
 
         lines = []
         while line:
@@ -71,10 +70,23 @@ class Document(object):
         for line in lines:
             if line.chase.page is not page:
                 canvas.showPage()
+                canvas.setFont('Roman', FONT_SIZE)
                 page = line.chase.page
             canvas.drawString(c.x, line.ay(), line.text)
 
         canvas.save()
+
+def wrap_paragraph(line, text):
+    words = text.split()
+    while words:
+        i = 1
+        while i < len(words) and len(' '.join(words[:i])) < 60:
+            i += 1
+        i = (i - 1) or 1
+        line = line.next()
+        line.text = ' '.join(words[:i])
+        words = words[i:]
+    return line
 
 class Line(object):
 
