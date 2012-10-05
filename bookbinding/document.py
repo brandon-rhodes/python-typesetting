@@ -46,13 +46,17 @@ class Document(object):
                   PAGE_WIDTH - OUTER_MARGIN - INNER_MARGIN,
                   PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN)
 
+        canvas = Canvas(
+            'book.pdf', pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
+        canvas.setFont('Roman', FONT_SIZE)
+
         line = Line(c)
-        line.text = 'foo'
+        line.text = u'foo'
         for item in story:
             if not item.__class__.__name__.endswith('Paragraph'):
                 continue
             for s in [item.text]:
-                line = wrap_paragraph(line, item.text)
+                line = wrap_paragraph(canvas, line, item.text)
 
         lines = []
         while line:
@@ -60,11 +64,6 @@ class Document(object):
             line = line.previous
 
         lines.reverse()
-
-        canvas = Canvas(
-            'book.pdf', pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
-
-        canvas.setFont('Roman', FONT_SIZE)
 
         page = None
         for line in lines:
@@ -76,15 +75,17 @@ class Document(object):
 
         canvas.save()
 
-def wrap_paragraph(line, text):
+def wrap_paragraph(canvas, line, text):
     words = text.split()
     while words:
-        i = 1
-        while i < len(words) and len(' '.join(words[:i])) < 60:
+        i = 2
+        el = u' '.join(words[:i])
+        while i < len(words) and canvas.stringWidth(el) < line.w:
+            el += u' ' + words[i]
             i += 1
-        i = (i - 1) or 1
+        i -= 1
         line = line.next()
-        line.text = ' '.join(words[:i])
+        line.text = u' '.join(words[:i])
         words = words[i:]
     return line
 
@@ -94,6 +95,7 @@ class Line(object):
         if y is None:
             y = chase.h - LINE_HEIGHT
         self.chase = chase
+        self.w = chase.w
         self.y = y
         self.previous = previous
 
@@ -106,3 +108,9 @@ class Line(object):
 
     def ay(self):
         return self.chase.y + self.y
+
+class Paragraph(object):
+
+    def __init__(self, text, style):
+        self.text = text
+        self.style = style
