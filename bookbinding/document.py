@@ -80,10 +80,13 @@ def wrap_paragraph(canvas, line, text):
     while words:
         i = 2
         el = u' '.join(words[:i])
-        while i < len(words) and canvas.stringWidth(el) < line.w:
+        while canvas.stringWidth(el) < line.w:
+            if i >= len(words):
+                break
             el += u' ' + words[i]
             i += 1
-        i -= 1
+        else:
+            i -= 1
         line = line.next()
         line.text = u' '.join(words[:i])
         words = words[i:]
