@@ -71,7 +71,15 @@ class Document(object):
                 canvas.showPage()
                 canvas.setFont('Roman', FONT_SIZE)
                 page = line.chase.page
-            canvas.drawString(c.x, line.ay(), line.text)
+            if line.justify:
+                ww = canvas.stringWidth(u''.join(line.words))
+                space = (line.w - ww) / (len(line.words) - 1)
+                x = 0
+                for word in line.words:
+                    canvas.drawString(c.x + x, line.ay(), word)
+                    x += space + canvas.stringWidth(word)
+            else:
+                canvas.drawString(c.x, line.ay(), u' '.join(line.words))
 
         canvas.save()
 
@@ -88,7 +96,8 @@ def wrap_paragraph(canvas, line, text):
         else:
             i -= 1
         line = line.next()
-        line.text = u' '.join(words[:i])
+        line.words = words[:i]
+        line.justify = i < len(words)
         words = words[i:]
     return line
 
@@ -101,6 +110,8 @@ class Line(object):
         self.w = chase.w
         self.y = y
         self.previous = previous
+        self.justify = None
+        self.words = ()
 
     def next(self):
         if self.y > LINE_HEIGHT:
