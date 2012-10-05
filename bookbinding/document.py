@@ -18,15 +18,13 @@ class Setter(object):
 
 class Page(object):
 
-    def __init__(self, document, ci):
+    def __init__(self, document, folio=0, previous=None):
         self.document = document
-        self.ci = self.cj = ci
-        self.previous = None
+        self.folio = folio
+        self.previous = previous
 
     def next(self):
-        p = Page(self.document, self.ci)
-        p.previous = self
-        return p
+        return Page(self.document, self.folio + 1, self)
 
 class Chase(object):
     def __init__(self, page, x, y, w, h):
@@ -47,7 +45,6 @@ class Document(object):
         c = Chase(p, OUTER_MARGIN, BOTTOM_MARGIN,
                   PAGE_WIDTH - OUTER_MARGIN - INNER_MARGIN,
                   PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN)
-        p.cj += 1
 
         line = Line(p, c)
         for item in story:
