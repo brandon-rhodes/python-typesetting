@@ -53,10 +53,11 @@ class Document(object):
         line = Line(c)
         line.text = u'foo'
         for item in story:
-            if not item.__class__.__name__.endswith('Paragraph'):
-                continue
-            for s in [item.text]:
-                line = wrap_paragraph(canvas, line, item.text)
+            if item.__class__.__name__ == 'Spacer':
+                line = line.next()
+            elif isinstance(item, Paragraph):
+                for s in [item.text]:
+                    line = wrap_paragraph(canvas, line, item)
 
         lines = []
         while line:
@@ -73,22 +74,24 @@ class Document(object):
                 page = line.chase.page
             if line.justify:
                 ww = canvas.stringWidth(u''.join(line.words))
-                space = (line.w - ww) / (len(line.words) - 1)
+                space = (line.w - line.indent - ww) / (len(line.words) - 1)
                 x = 0
                 for word in line.words:
-                    canvas.drawString(c.x + x, line.ay(), word)
+                    canvas.drawString(c.x + x + line.indent, line.ay(), word)
                     x += space + canvas.stringWidth(word)
             else:
                 canvas.drawString(c.x, line.ay(), u' '.join(line.words))
 
         canvas.save()
 
-def wrap_paragraph(canvas, line, text):
-    words = text.split()
+def wrap_paragraph(canvas, line, pp):
+    words = pp.text.split()
+    indent = FONT_SIZE if pp.style.startswith('indented') else 0
+    width = line.w - indent
     while words:
         i = 2
         el = u' '.join(words[:i])
-        while canvas.stringWidth(el) < line.w:
+        while canvas.stringWidth(el) < width:
             if i >= len(words):
                 break
             el += u' ' + words[i]
@@ -98,7 +101,9 @@ def wrap_paragraph(canvas, line, text):
         line = line.next()
         line.words = words[:i]
         line.justify = i < len(words)
+        line.indent = indent
         words = words[i:]
+        indent, width = 0, line.w
     return line
 
 class Line(object):
