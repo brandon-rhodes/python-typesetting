@@ -2,6 +2,9 @@ from reportlab.pdfgen import canvas
 
 inch = 72.
 
+FONT_SIZE = 10.
+LINE_HEIGHT = FONT_SIZE + 2.
+
 PAGE_WIDTH = 6. * 72.
 PAGE_HEIGHT = 9. * 72.
 
@@ -43,10 +46,14 @@ class Document(object):
         chases.append(c)
         p.cj += 1
 
+        p.canvas.setFont('Roman', FONT_SIZE)
+
+        y = c.h - LINE_HEIGHT
         for item in story:
             if not item.__class__.__name__.endswith('Paragraph'):
                 continue
             lines = [item.text]
             for line in lines:
-                p.canvas.drawString(c.x, c.y, line)
+                p.canvas.drawString(c.x, y, line)
+                y -= LINE_HEIGHT
         p.canvas.save()
