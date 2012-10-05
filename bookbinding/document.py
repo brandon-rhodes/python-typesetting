@@ -54,7 +54,15 @@ class Document(object):
         line.text = u'foo'
         for item in story:
             if item.__class__.__name__ == 'Spacer':
+                if line.at_bottom():
+                    line = line.next()
+                    line.words = [u'*']
+                    line.align = 'center'
                 line = line.next()
+                if line.at_bottom():
+                    line = line.down(1)
+                    line.words = [u'*']
+                    line.align = 'center'
             elif isinstance(item, Paragraph):
                 for s in [item.text]:
                     line = wrap_paragraph(canvas, line, item)
@@ -79,6 +87,11 @@ class Document(object):
                 for word in line.words:
                     canvas.drawString(c.x + x + line.indent, line.ay(), word)
                     x += space + canvas.stringWidth(word)
+            elif line.align == 'center':
+                s = u' '.join(line.words)
+                ww = canvas.stringWidth(s)
+                canvas.drawString(c.x + line.chase.w / 2. - ww / 2.,
+                                  line.ay(), s)
             else:
                 canvas.drawString(c.x, line.ay(), u' '.join(line.words))
 
@@ -117,13 +130,20 @@ class Line(object):
         self.previous = previous
         self.justify = None
         self.words = ()
+        self.align = None
 
     def next(self):
-        if self.y > LINE_HEIGHT:
-            return Line(self.chase, previous=self, y=self.y - LINE_HEIGHT)
+        if not self.at_bottom():
+            return self.down(1)
         else:
             next_chase = self.chase.next()
             return Line(next_chase, previous=self)
+
+    def down(self, n):
+        return Line(self.chase, previous=self, y=self.y - n * LINE_HEIGHT)
+
+    def at_bottom(self):
+        return self.y <= LINE_HEIGHT
 
     def ay(self):
         return self.chase.y + self.y
