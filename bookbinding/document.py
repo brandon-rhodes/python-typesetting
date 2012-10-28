@@ -56,6 +56,8 @@ class Document(object):
         for page in pages:
           canvas.showPage()
           canvas.setFont('Roman', FONT_SIZE)
+          for graphic in page.graphics:
+              graphic(page, canvas)
           for chase in page.chases:
            for line in chase.lines:
             if line.align == 'center':
@@ -64,7 +66,7 @@ class Document(object):
                 canvas.drawString(line.chase.x + line.chase.width / 2. - ww / 2.,
                                   line.ay(), s)
             for graphic in line.graphics:
-                graphic.draw(canvas)
+                graphic(line, canvas)
 
         canvas.save()
 

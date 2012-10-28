@@ -66,7 +66,7 @@ def wrap_paragraph(canvas, line, pp, indent):
             b = Box(hyphen_width, u'-')
             keepers.append(b)
         line = line.next()
-        graphic = KnuthLine(line)
+        graphic = KnuthLine()
         graphic.things = keepers
         line.graphics.append(graphic)
         start = breakpoint + 1
@@ -76,12 +76,8 @@ def wrap_paragraph(canvas, line, pp, indent):
 class KnuthLine(object):
     """A graphic that knows how to draw a justified line of text."""
 
-    def __init__(self, line):
-        self.line = line
-
-    def draw(self, canvas):
+    def __call__(self, line, canvas):
         ww = 0.
-        line = self.line
         ay = line.ay()
         for thing in self.things:
             if isinstance(thing, Box):

@@ -11,6 +11,7 @@ class Page(object):
         self.is_recto = (folio % 2 == 0)
         self.is_verso = (folio % 2 == 1)
         self.previous = previous
+        self.graphics = []
 
     def next(self):
         return Page(self.document, self.width, self.height, self.folio + 1, self)
