@@ -49,7 +49,6 @@ class Document(object):
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
                 for s in [item.text]:
-                    #line = wrap_paragraph(canvas, line, item)
                     line = wrap_paragraph_knuth(canvas, line, item)
 
         pages = line.unroll_document()
@@ -59,16 +58,7 @@ class Document(object):
           canvas.setFont('Roman', FONT_SIZE)
           for chase in page.chases:
            for line in chase.lines:
-            if line.justify:
-                asdf
-                ww = canvas.stringWidth(u''.join(line.words))
-                space = (line.w - line.indent - ww) / (len(line.words) - 1)
-                x = 0
-                for word in line.words:
-                    canvas.drawString(line.chase.x + x + line.indent, line.ay(),
-                                      word)
-                    x += space + canvas.stringWidth(word)
-            elif line.align == 'center':
+            if line.align == 'center':
                 s = u' '.join(line.words)
                 ww = canvas.stringWidth(s)
                 canvas.drawString(line.chase.x + line.chase.width / 2. - ww / 2.,
@@ -77,28 +67,6 @@ class Document(object):
                 graphic.draw(canvas)
 
         canvas.save()
-
-def wrap_paragraph(canvas, line, pp):
-    words = pp.text.split()
-    indent = FONT_SIZE if pp.style.startswith('indented') else 0
-    width = line.w - indent
-    while words:
-        i = 2
-        el = u' '.join(words[:i])
-        while canvas.stringWidth(el) < width:
-            if i >= len(words):
-                break
-            el += u' ' + words[i]
-            i += 1
-        else:
-            i -= 1
-        line = line.next()
-        line.words = words[:i]
-        line.justify = i < len(words)
-        line.indent = indent
-        words = words[i:]
-        indent, width = 0, line.w
-    return line
 
 wordre = re.compile('(\w+)')
 STRING_WIDTHS = {}
