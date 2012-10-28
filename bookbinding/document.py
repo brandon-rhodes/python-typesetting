@@ -9,24 +9,21 @@ FONT_SIZE = 10.
 PAGE_WIDTH = 6. * 72.
 PAGE_HEIGHT = 9. * 72.
 
-INNER_MARGIN = 54.
-OUTER_MARGIN = inch
-BOTTOM_MARGIN = inch + 6.
-TOP_MARGIN = inch - 6.
-
 class Setter(object):
     pass
 
 class Document(object):
 
-    def format(self, story):
+    def format(self, story, top_margin, bottom_margin,
+               inner_margin, outer_margin):
 
         p = Page(self, PAGE_WIDTH, PAGE_HEIGHT)
-        c = Chase(p, TOP_MARGIN, BOTTOM_MARGIN, INNER_MARGIN, OUTER_MARGIN)
+        c = Chase(p, top_margin, bottom_margin, inner_margin, outer_margin)
 
         canvas = Canvas(
             'book.pdf', pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
         canvas.setFont('Roman', FONT_SIZE)
+        self.canvas = canvas
 
         line = Line(c)
         line.text = u'foo'
@@ -51,8 +48,11 @@ class Document(object):
                         indent = 0.0
                     line = wrap_paragraph(canvas, line, item, indent)
 
-        pages = line.unroll_document()
+        self.pages = line.unroll_document()
+        return self.pages
 
+    def render(self, pages):
+        canvas = self.canvas
         for page in pages:
           canvas.showPage()
           canvas.setFont('Roman', FONT_SIZE)
