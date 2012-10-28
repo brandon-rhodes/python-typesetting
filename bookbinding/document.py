@@ -51,19 +51,13 @@ class Document(object):
                     #line = wrap_paragraph(canvas, line, item)
                     line = wrap_paragraph_knuth(canvas, line, item)
 
-        lines = []
-        while line:
-            lines.append(line)
-            line = line.previous
+        pages = line.unroll_document()
 
-        lines.reverse()
-
-        page = None
-        for line in lines:
-            if line.chase.page is not page:
-                canvas.showPage()
-                canvas.setFont('Roman', FONT_SIZE)
-                page = line.chase.page
+        for page in pages:
+          canvas.showPage()
+          canvas.setFont('Roman', FONT_SIZE)
+          for chase in page.chases:
+           for line in chase.lines:
             if line.justify:
                 ww = canvas.stringWidth(u''.join(line.words))
                 space = (line.w - line.indent - ww) / (len(line.words) - 1)

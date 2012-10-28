@@ -61,3 +61,26 @@ class Line(object):
 
     def ay(self):
         return self.chase.bottom_margin + self.y
+
+    def unroll_document(self):
+        lines = unroll(self)
+        pages = unroll(self.chase.page)
+        for page in pages:
+            page.chases = []
+        for line in lines:
+            chase = line.chase
+            if chase not in chase.page.chases:
+                chase.page.chases.append(chase)
+            if not hasattr(chase, 'lines'):
+                chase.lines = []
+            line.chase.lines.append(line)
+        lines.reverse()
+        pages.reverse()
+        return pages
+
+def unroll(item):
+    items = []
+    while item:
+        items.append(item)
+        item = item.previous
+    return items
