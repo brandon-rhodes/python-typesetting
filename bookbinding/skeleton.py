@@ -8,8 +8,8 @@ class Page(object):
         self.width = width
         self.height = height
         self.folio = folio
-        self.is_recto = (folio % 2 == 0)
-        self.is_verso = (folio % 2 == 1)
+        self.is_recto = (folio % 2 == 1)
+        self.is_verso = (folio % 2 == 0)
         self.previous = previous
         self.graphics = []
 
@@ -47,6 +47,13 @@ class Line(object):
         self.words = ()
         self.align = None
         self.graphics = []
+
+    def need(self, height):
+        """Return `self` if at least `height` remains, else return a new line."""
+        if height <= self.y:
+            return self
+        next_chase = self.chase.next()
+        return Line(next_chase, previous=self)
 
     def next(self):
         if not self.at_bottom():

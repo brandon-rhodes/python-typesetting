@@ -5,6 +5,7 @@ from .skeleton import Page, Chase, Line
 inch = 72.
 
 FONT_SIZE = 10.
+LINE_HEIGHT = FONT_SIZE + 2.
 
 PAGE_WIDTH = 6. * 72.
 PAGE_HEIGHT = 9. * 72.
@@ -27,7 +28,7 @@ class Document(object):
 
         line = Line(c)
         for item in story:
-            if item.__class__.__name__ == 'Spacer':
+            if isinstance(item, Spacer):
                 if not line.at_bottom():
                     line = line.next()
                 # if line.at_bottom():
@@ -46,6 +47,10 @@ class Document(object):
                     indent = 0.0
                 end_line = wrap_paragraph(canvas, line, item, indent)
                 line = end_line.next()
+            else:
+                line = line.need(item.height)
+                line.graphics.append(item.draw)
+                line = line.down(item.height)
 
         # Prevent a blank last page.
         while not line.graphics:
@@ -57,7 +62,6 @@ class Document(object):
     def render(self, pages):
         canvas = self.canvas
         for page in pages:
-          canvas.showPage()
           canvas.setFont('Roman', FONT_SIZE)
           for graphic in page.graphics:
               graphic(page, canvas)
@@ -70,6 +74,7 @@ class Document(object):
                                   line.ay(), s)
             for graphic in line.graphics:
                 graphic(line, canvas)
+          canvas.showPage()
 
         canvas.save()
 
