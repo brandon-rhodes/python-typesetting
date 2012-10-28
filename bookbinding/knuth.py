@@ -65,13 +65,13 @@ def wrap_paragraph(canvas, line, pp, indent):
         if bbox.is_penalty() and bbox.width == hyphen_width:
             b = Box(hyphen_width, u'-')
             keepers.append(b)
-        line = line.next()
         graphic = KnuthLine()
         graphic.things = keepers
         line.graphics.append(graphic)
+        line = line.next()
         start = breakpoint + 1
 
-    return line
+    return line.previous
 
 class KnuthLine(object):
     """A graphic that knows how to draw a justified line of text."""

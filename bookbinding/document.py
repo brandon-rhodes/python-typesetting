@@ -26,7 +26,6 @@ class Document(object):
         self.canvas = canvas
 
         line = Line(c)
-        line.text = u'foo'
         for item in story:
             if item.__class__.__name__ == 'Spacer':
                 if not line.at_bottom():
@@ -46,7 +45,8 @@ class Document(object):
                         indent = FONT_SIZE
                     else:
                         indent = 0.0
-                    line = wrap_paragraph(canvas, line, item, indent)
+                    last_line = wrap_paragraph(canvas, line, item, indent)
+                    line = last_line.next()
 
         self.pages = line.unroll_document()
         return self.pages
