@@ -45,6 +45,7 @@ class Line(object):
         self.justify = None
         self.words = ()
         self.align = None
+        self.graphics = []
 
     def next(self):
         if not self.at_bottom():

@@ -1,5 +1,6 @@
 from reportlab.pdfgen.canvas import Canvas
 from .hyphenate import hyphenate_word
+from .knuth import KnuthLine
 from .skeleton import Page, Chase, Line
 from texlib.wrap import ObjectList, Box, Glue, Penalty
 
@@ -59,6 +60,7 @@ class Document(object):
           for chase in page.chases:
            for line in chase.lines:
             if line.justify:
+                asdf
                 ww = canvas.stringWidth(u''.join(line.words))
                 space = (line.w - line.indent - ww) / (len(line.words) - 1)
                 x = 0
@@ -71,15 +73,8 @@ class Document(object):
                 ww = canvas.stringWidth(s)
                 canvas.drawString(line.chase.x + line.chase.width / 2. - ww / 2.,
                                   line.ay(), s)
-            elif hasattr(line, 'things'):
-                ww = 0.
-                ay = line.ay()
-                for thing in line.things:
-                    if isinstance(thing, Box):
-                        canvas.drawString(line.chase.x + ww, ay, thing.character)
-                        ww += canvas.stringWidth(thing.character)
-                    elif isinstance(thing, Glue):
-                        ww += thing.glue_width
+            for graphic in line.graphics:
+                graphic.draw(canvas)
 
         canvas.save()
 
@@ -169,7 +164,9 @@ def wrap_paragraph_knuth(canvas, line, pp):
             b = Box(hyphen_width, u'-')
             keepers.append(b)
         line = line.next()
-        line.things = keepers
+        graphic = KnuthLine(line)
+        graphic.things = keepers
+        line.graphics.append(graphic)
         start = breakpoint + 1
 
     return line
