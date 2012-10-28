@@ -1,2 +1,2 @@
 
-from .document import Document, Chase, Paragraph
+from .document import Document, Chase, Paragraph, Spacer

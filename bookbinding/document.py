@@ -236,3 +236,8 @@ class Paragraph(object):
     def __init__(self, text, style):
         self.text = text
         self.style = style
+
+class Spacer(object):
+
+    def __init__(self, *args):
+        self.args = args
