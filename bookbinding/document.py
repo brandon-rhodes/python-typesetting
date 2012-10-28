@@ -22,31 +22,40 @@ class Setter(object):
 
 class Page(object):
 
-    def __init__(self, document, folio=0, previous=None):
+    def __init__(self, document, width, height, folio=1, previous=None):
         self.document = document
+        self.width = width
+        self.height = height
         self.folio = folio
+        self.is_recto = (folio % 2 == 0)
+        self.is_verso = (folio % 2 == 1)
         self.previous = previous
 
     def next(self):
-        return Page(self.document, self.folio + 1, self)
+        return Page(self.document, self.width, self.height, self.folio + 1, self)
 
 class Chase(object):
-    def __init__(self, page, x, y, w, h):
+    def __init__(self, page, inner, y, w, h):
         self.page = page
-        self.x = x
+        if page.is_recto:
+            self.x = inner
+        else:
+            self.x = page.width - inner - w
+        print page.folio, self.x
+        self.inner = inner
         self.y = y
         self.w = w
         self.h = h
 
     def next(self):
-        return Chase(self.page.next(), self.x, self.y, self.w, self.h)
+        return Chase(self.page.next(), self.inner, self.y, self.w, self.h)
 
 class Document(object):
 
     def format(self, story):
 
-        p = Page(self, 0)
-        c = Chase(p, OUTER_MARGIN, BOTTOM_MARGIN,
+        p = Page(self, PAGE_WIDTH, PAGE_HEIGHT)
+        c = Chase(p, INNER_MARGIN, BOTTOM_MARGIN,
                   PAGE_WIDTH - OUTER_MARGIN - INNER_MARGIN,
                   PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN)
 
@@ -92,19 +101,20 @@ class Document(object):
                 space = (line.w - line.indent - ww) / (len(line.words) - 1)
                 x = 0
                 for word in line.words:
-                    canvas.drawString(c.x + x + line.indent, line.ay(), word)
+                    canvas.drawString(line.chase.x + x + line.indent, line.ay(),
+                                      word)
                     x += space + canvas.stringWidth(word)
             elif line.align == 'center':
                 s = u' '.join(line.words)
                 ww = canvas.stringWidth(s)
-                canvas.drawString(c.x + line.chase.w / 2. - ww / 2.,
+                canvas.drawString(line.chase.x + line.chase.w / 2. - ww / 2.,
                                   line.ay(), s)
             elif hasattr(line, 'things'):
                 ww = 0.
                 ay = line.ay()
                 for thing in line.things:
                     if isinstance(thing, Box):
-                        canvas.drawString(c.x + ww, ay, thing.character)
+                        canvas.drawString(line.chase.x + ww, ay, thing.character)
                         ww += canvas.stringWidth(thing.character)
                     elif isinstance(thing, Glue):
                         ww += thing.glue_width
