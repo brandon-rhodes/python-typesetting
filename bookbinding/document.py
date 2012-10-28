@@ -35,29 +35,29 @@ class Page(object):
         return Page(self.document, self.width, self.height, self.folio + 1, self)
 
 class Chase(object):
-    def __init__(self, page, inner, y, w, h):
+    def __init__(self, page, top_margin, bottom_margin,
+                 inner_margin, outer_margin):
         self.page = page
-        if page.is_recto:
-            self.x = inner
-        else:
-            self.x = page.width - inner - w
-        print page.folio, self.x
-        self.inner = inner
-        self.y = y
-        self.w = w
-        self.h = h
+        self.top_margin = top_margin
+        self.bottom_margin = bottom_margin
+        self.inner_margin = inner_margin
+        self.outer_margin = outer_margin
+
+        self.height = page.height - top_margin - bottom_margin
+        self.width = page.width - inner_margin - outer_margin
+
+        self.x = inner_margin if page.is_recto else outer_margin
 
     def next(self):
-        return Chase(self.page.next(), self.inner, self.y, self.w, self.h)
+        return Chase(self.page.next(), self.top_margin, self.bottom_margin,
+                     self.inner_margin, self.outer_margin)
 
 class Document(object):
 
     def format(self, story):
 
         p = Page(self, PAGE_WIDTH, PAGE_HEIGHT)
-        c = Chase(p, INNER_MARGIN, BOTTOM_MARGIN,
-                  PAGE_WIDTH - OUTER_MARGIN - INNER_MARGIN,
-                  PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN)
+        c = Chase(p, TOP_MARGIN, BOTTOM_MARGIN, INNER_MARGIN, OUTER_MARGIN)
 
         canvas = Canvas(
             'book.pdf', pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
@@ -107,7 +107,7 @@ class Document(object):
             elif line.align == 'center':
                 s = u' '.join(line.words)
                 ww = canvas.stringWidth(s)
-                canvas.drawString(line.chase.x + line.chase.w / 2. - ww / 2.,
+                canvas.drawString(line.chase.x + line.chase.width / 2. - ww / 2.,
                                   line.ay(), s)
             elif hasattr(line, 'things'):
                 ww = 0.
@@ -216,9 +216,9 @@ class Line(object):
 
     def __init__(self, chase, previous=None, y=None):
         if y is None:
-            y = chase.h - LINE_HEIGHT
+            y = chase.height - LINE_HEIGHT
         self.chase = chase
-        self.w = chase.w
+        self.w = chase.width
         self.y = y
         self.previous = previous
         self.justify = None
@@ -239,7 +239,7 @@ class Line(object):
         return self.y <= LINE_HEIGHT
 
     def ay(self):
-        return self.chase.y + self.y
+        return self.chase.bottom_margin + self.y
 
 class Paragraph(object):
 
