@@ -139,6 +139,10 @@ STRING_WIDTHS = {}
 def wrap_paragraph_knuth(canvas, line, pp):
 
     olist = ObjectList()
+    # olist.debug = True
+
+    if pp.style == 'indented-paragraph':
+        olist.append(Glue(FONT_SIZE, 0, 0))
 
     space_width = canvas.stringWidth(u' ')
     hyphen_width = canvas.stringWidth(u'-')
@@ -150,20 +154,36 @@ def wrap_paragraph_knuth(canvas, line, pp):
             if w is None:
                 w = STRING_WIDTHS[piece] = canvas.stringWidth(piece)
             olist.append(Box(w, piece))
-            olist.append(Penalty(hyphen_width, 0.))
+            olist.append(Penalty(hyphen_width, 100))
         olist.pop()
-        olist.append(Glue(space_width, space_width * .5, space_width * .2))
+        olist.append(Glue(space_width, space_width * .5, space_width * .25))
     olist.pop()
     olist.add_closing_penalty()
 
+    # for item in olist:
+    #     print item
+
     line_lengths = [line.w]
-    breaks = olist.compute_breakpoints(line_lengths)
-    print breaks, len(olist)
+    for tolerance in 1, 2, 3, 4:
+        try:
+            breaks = olist.compute_breakpoints(
+                line_lengths, tolerance=tolerance)
+        except RuntimeError:
+            pass
+        else:
+            break
+
     start = 0
     n = 0
+    # if 'Confederate' in pp.text:
+    #     print breaks, len(olist)
+    # if breaks[-1] != len(olist) - 1:
+    #     breaks.append(len(olist) - 1)
     for breakpoint in breaks[1:]:
         keepers = []
-        r = olist.compute_adjustment_ratio(start, breakpoint, n, line_lengths)
+        r = olist.compute_adjustment_ratio(start, breakpoint, 0, (line.w,))
+        # if 'Confederate' in pp.text:
+        #     print breakpoint, r
         n += 1
         for i in range(start, breakpoint):
             box = olist[i]
@@ -176,9 +196,8 @@ def wrap_paragraph_knuth(canvas, line, pp):
         if bbox.is_penalty() and bbox.width == hyphen_width:
             b = Box(hyphen_width, u'-')
             keepers.append(b)
-        line.things = keepers
-        print keepers
         line = line.next()
+        line.things = keepers
         start = breakpoint + 1
 
     return line
