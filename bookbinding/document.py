@@ -40,13 +40,12 @@ class Document(object):
                 #     line.words = [u'*']
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
-                for s in [item.text]:
-                    if item.style == 'indented-paragraph':
-                        indent = FONT_SIZE
-                    else:
-                        indent = 0.0
-                    end_line = wrap_paragraph(canvas, line, item, indent)
-                    line = end_line.next()
+                if item.style == 'indented-paragraph':
+                    indent = FONT_SIZE
+                else:
+                    indent = 0.0
+                end_line = wrap_paragraph(canvas, line, item, indent)
+                line = end_line.next()
 
         # Prevent a blank last page.
         while not line.graphics:
