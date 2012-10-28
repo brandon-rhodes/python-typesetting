@@ -45,8 +45,12 @@ class Document(object):
                         indent = FONT_SIZE
                     else:
                         indent = 0.0
-                    last_line = wrap_paragraph(canvas, line, item, indent)
-                    line = last_line.next()
+                    end_line = wrap_paragraph(canvas, line, item, indent)
+                    line = end_line.next()
+
+        # Prevent a blank last page.
+        while not line.graphics:
+            line = line.previous
 
         self.pages = line.unroll_document()
         return self.pages
