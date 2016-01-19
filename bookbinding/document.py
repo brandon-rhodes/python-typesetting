@@ -4,6 +4,7 @@ from .skeleton import Page, Chase, Line
 
 inch = 72.
 
+FONT_FACE = 'Times-Roman'
 FONT_SIZE = 10.
 LINE_HEIGHT = FONT_SIZE + 2.
 
@@ -15,6 +16,9 @@ class Setter(object):
 
 class Document(object):
 
+    def __init__(self, font_face=FONT_FACE):
+        self.font_face = font_face
+
     def format(self, story, top_margin, bottom_margin,
                inner_margin, outer_margin):
 
@@ -23,7 +27,7 @@ class Document(object):
 
         canvas = Canvas(
             'book.pdf', pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
-        canvas.setFont('Roman', FONT_SIZE)
+        canvas.setFont(self.font_face, FONT_SIZE)
         self.canvas = canvas
 
         line = Line(c)
@@ -62,19 +66,22 @@ class Document(object):
     def render(self, pages):
         canvas = self.canvas
         for page in pages:
-          canvas.setFont('Roman', FONT_SIZE)
-          for graphic in page.graphics:
-              graphic(page, canvas)
-          for chase in page.chases:
-           for line in chase.lines:
-            if line.align == 'center':
-                s = u' '.join(line.words)
-                ww = canvas.stringWidth(s)
-                canvas.drawString(line.chase.x + line.chase.width / 2. - ww / 2.,
-                                  line.ay(), s)
-            for graphic in line.graphics:
-                graphic(line, canvas)
-          canvas.showPage()
+            canvas.setFont(self.font_face, FONT_SIZE)
+            for graphic in page.graphics:
+                graphic(page, canvas)
+            for chase in page.chases:
+                for line in chase.lines:
+                    if line.align == 'center':
+                        s = u' '.join(line.words)
+                        ww = canvas.stringWidth(s)
+                        canvas.drawString(
+                            line.chase.x + line.chase.width / 2. - ww / 2.,
+                            line.ay(),
+                            s,
+                        )
+                    for graphic in line.graphics:
+                        graphic(line, canvas)
+            canvas.showPage()
 
         canvas.save()
 
