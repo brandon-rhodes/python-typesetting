@@ -2,7 +2,7 @@
 
 from __future__ import print_function
 
-from texlib.wrap import ObjectList, Box, Glue, Penalty
+from .texlib.wrap import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
 STRING_WIDTHS = {}
@@ -27,8 +27,7 @@ def wrap_paragraph(canvas, line, pp, indent):
                 if piece == 'sit':
                     print('sit1', canvas.stringWidth(piece))
             olist.append(Box(w, piece))
-            #olist.append(Penalty(hyphen_width, 100))
-            olist.append(Penalty(0.0, 100))
+            olist.append(Penalty(hyphen_width, 100))
         olist.pop()
         olist.append(Glue(space_width, space_width * .5, space_width * .25))
     olist.pop()
@@ -62,8 +61,26 @@ def wrap_paragraph(canvas, line, pp, indent):
         # while end > start and 'Glue' in type(olist[end-1]).__name__:
         #     end -= 1
 
-        print(olist[start:breakpoint])
-        print(olist[breakpoint])
+        # print(olist[start:breakpoint])
+        # print(olist[breakpoint])
+
+        # if breakpoint < len(olist) and olist[breakpoint].is_penalty():
+        #     olist[breakpoint] = Box(hyphen_width, u'-')
+        #     breakpoint += 1
+
+        # if olist[breakpoint].is_penalty():
+        #     asdf
+
+            #keepers.append(b)
+
+        # for i in range(start, breakpoint):
+        #     if olist[i].is_penalty():
+        #         olist[i].width = 0.0
+
+        next_start = breakpoint + 1
+        # if olist[breakpoint].is_penalty():
+        #     olist[breakpoint] = Box(hyphen_width, '-')
+        #     breakpoint += 1
 
         r = olist.compute_adjustment_ratio(start, breakpoint, 0, (line.w,))
 
@@ -112,8 +129,8 @@ def wrap_paragraph(canvas, line, pp, indent):
         #print('LAST1:', graphic.things[-1])
         line.graphics.append(graphic)
         line = line.next()
-        start = breakpoint + 1
-        #start = breakpoint
+        #start = breakpoint + 1
+        start = next_start
 
     return line.previous
 
