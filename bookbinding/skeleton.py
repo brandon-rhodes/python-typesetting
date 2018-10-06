@@ -74,6 +74,10 @@ class Line(object):
     def unroll_document(self):
         lines = unroll(self)
         pages = unroll(self.chase.page)
+
+        lines.reverse()
+        pages.reverse()
+
         for page in pages:
             page.chases = []
         for line in lines:
@@ -83,8 +87,6 @@ class Line(object):
             if not hasattr(chase, 'lines'):
                 chase.lines = []
             line.chase.lines.append(line)
-        lines.reverse()
-        pages.reverse()
         return pages
 
 def unroll(item):
