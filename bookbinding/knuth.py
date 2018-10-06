@@ -27,7 +27,7 @@ def wrap_paragraph(canvas, line, pp, indent):
             olist.append(Box(w, piece))
             olist.append(Penalty(hyphen_width, 100))
         olist.pop()
-        olist.append(Glue(space_width, space_width * .5, space_width * .25))
+        olist.append(Glue(space_width, space_width * .5, space_width * .3333))
     olist.pop()
     olist.add_closing_penalty()
 
@@ -47,23 +47,21 @@ def wrap_paragraph(canvas, line, pp, indent):
     for breakpoint in breaks[1:]:
         r = olist.compute_adjustment_ratio(start, breakpoint, 0, (line.w,))
 
-        keepers = []
+        xlist = []
+        x = 0
         for i in range(start, breakpoint):
             box = olist[i]
             if box.is_glue():
-                box.final_width = box.compute_width(r)
-                keepers.append(box)
+                x += box.compute_width(r)
             elif box.is_box():
-                keepers.append(box)
+                xlist.append((x, box.character))
+                x += box.width
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width == hyphen_width:
-            b = Box(hyphen_width, u'-')
-            keepers.append(b)
-        graphic = KnuthLine()
-        graphic.things = keepers
+            xlist.append((x, u'-'))
 
-        line.graphics.append(graphic)
+        line.graphics.append(KnuthLine(xlist))
         line = line.next()
         start = breakpoint + 1
 
@@ -72,14 +70,10 @@ def wrap_paragraph(canvas, line, pp, indent):
 class KnuthLine(object):
     """A graphic that knows how to draw a justified line of text."""
 
+    def __init__(self, xlist):
+        self.xlist = xlist
+
     def __call__(self, line, canvas):
-        ww = 0.
         ay = line.ay()
-        for thing in self.things:
-            if isinstance(thing, Box):
-                canvas.drawString(line.chase.x + ww, ay, thing.character)
-                wi = canvas.stringWidth(thing.character)
-                ww += canvas.stringWidth(thing.character)
-            elif isinstance(thing, Glue):
-                wi = thing.final_width
-                ww += thing.final_width
+        for x, text in self.xlist:
+            canvas.drawString(line.chase.x + x, ay, text)
