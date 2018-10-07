@@ -330,7 +330,7 @@ class ObjectList(list):
 
         for i in range(m):
             B = self[i]
-            print(B, getattr(B, 'character', None))
+            #print(B, getattr(B, 'character', None))
             # Determine if this box is a feasible breakpoint and
             # perform the main loop if it is.
             if not self.is_feasible_breakpoint(i):

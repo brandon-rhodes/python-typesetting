@@ -2,10 +2,12 @@
 
 from __future__ import print_function
 
+import re
 from .texlib.wrap import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
 STRING_WIDTHS = {}
+NONWORD = re.compile(r'(\W+)')
 
 def wrap_paragraph(canvas, line, pp, indent):
 
@@ -18,15 +20,28 @@ def wrap_paragraph(canvas, line, pp, indent):
     space_width = canvas.stringWidth(u' ')
     hyphen_width = canvas.stringWidth(u'-')
 
-    for word in pp.text.split():
-        pieces = hyphenate_word(word)
-        for piece in pieces:
-            w = STRING_WIDTHS.get(piece)
-            if w is None:
-                w = STRING_WIDTHS[piece] = canvas.stringWidth(piece)
-            olist.append(Box(w, piece))
-            olist.append(Penalty(hyphen_width, 100))
-        olist.pop()
+    for string in pp.text.split():
+        i = iter(NONWORD.split(string))
+        for word in i:
+            if word:
+                pieces = hyphenate_word(word)
+                for piece in pieces:
+                    w = STRING_WIDTHS.get(piece)
+                    if w is None:
+                        w = STRING_WIDTHS[piece] = canvas.stringWidth(piece)
+                    olist.append(Box(w, piece))
+                    olist.append(Penalty(hyphen_width, 100))
+                olist.pop()
+            punctuation = next(i, None)
+            if punctuation is not None:
+                w = STRING_WIDTHS.get(punctuation)
+                if w is None:
+                    w = STRING_WIDTHS[punctuation] = canvas.stringWidth(punctuation)
+                olist.append(Box(w, punctuation))
+                if punctuation == u'-':
+                    olist.append(Glue(0, 0, 0))
+        # for i in enumerate(words):
+        #     if i % 2
         olist.append(Glue(space_width, space_width * .5, space_width * .3333))
     olist.pop()
     olist.add_closing_penalty()
