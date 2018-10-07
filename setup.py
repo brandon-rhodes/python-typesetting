@@ -11,5 +11,5 @@ setup(name = 'bookbinding',
       classifiers = [
         ],
       packages = ['bookbinding'],
-      install_requires = ['reportlab', 'texlib'],
+      install_requires = ['reportlab'],
       )
