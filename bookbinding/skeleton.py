@@ -14,7 +14,8 @@ class Page(object):
         self.graphics = []
 
     def next(self):
-        return Page(self.document, self.width, self.height, self.folio + 1, self)
+        return Page(self.document, self.width, self.height,
+                    self.folio + 1, self)
 
 class Chase(object):
     def __init__(self, page, top_margin, bottom_margin,
@@ -49,7 +50,7 @@ class Line(object):
         self.graphics = []
 
     def need(self, height):
-        """Return `self` if at least `height` remains, else return a new line."""
+        """Return `self` if at least `height` remains, else a new line."""
         if height <= self.y:
             return self
         next_chase = self.chase.next()
