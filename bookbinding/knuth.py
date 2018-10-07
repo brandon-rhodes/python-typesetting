@@ -6,10 +6,9 @@ import re
 from .texlib.wrap import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
-STRING_WIDTHS = {}
 NONWORD = re.compile(r'(\W+)')
 
-def wrap_paragraph(canvas, line, pp, indent):
+def wrap_paragraph(width_of, line, pp, indent):
 
     olist = ObjectList()
     # olist.debug = True
@@ -17,8 +16,8 @@ def wrap_paragraph(canvas, line, pp, indent):
     if indent:
         olist.append(Glue(indent, 0, 0))
 
-    space_width = canvas.stringWidth(u' ')
-    hyphen_width = canvas.stringWidth(u'-')
+    space_width = width_of(u' ')
+    hyphen_width = width_of(u'-')
 
     for string in pp.text.split():
         i = iter(NONWORD.split(string))
@@ -26,18 +25,12 @@ def wrap_paragraph(canvas, line, pp, indent):
             if word:
                 pieces = hyphenate_word(word)
                 for piece in pieces:
-                    w = STRING_WIDTHS.get(piece)
-                    if w is None:
-                        w = STRING_WIDTHS[piece] = canvas.stringWidth(piece)
-                    olist.append(Box(w, piece))
+                    olist.append(Box(width_of(piece), piece))
                     olist.append(Penalty(hyphen_width, 100))
                 olist.pop()
             punctuation = next(i, None)
             if punctuation is not None:
-                w = STRING_WIDTHS.get(punctuation)
-                if w is None:
-                    w = STRING_WIDTHS[punctuation] = canvas.stringWidth(punctuation)
-                olist.append(Box(w, punctuation))
+                olist.append(Box(width_of(punctuation), punctuation))
                 if punctuation == u'-':
                     olist.append(Glue(0, 0, 0))
         # for i in enumerate(words):

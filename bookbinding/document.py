@@ -1,3 +1,4 @@
+from collections import defaultdict
 from reportlab.pdfgen.canvas import Canvas
 from .knuth import wrap_paragraph
 from .skeleton import Page, Chase, Line
@@ -14,6 +15,13 @@ PAGE_HEIGHT = 9. * 72.
 class Setter(object):
     pass
 
+class Cache(dict):
+    def __init__(self, function):
+        self.function = function
+    def __missing__(self, key):
+        asdf
+        return self.function(key)
+
 class Document(object):
 
     def __init__(self, font_face=FONT_FACE):
@@ -29,6 +37,14 @@ class Document(object):
             'book.pdf', pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
         canvas.setFont(self.font_face, FONT_SIZE)
         self.canvas = canvas
+
+        _widths = {}
+        def width_of(string):
+            w = _widths.get(string)
+            if not w:
+                w = canvas.stringWidth(string)
+                _widths[string] = w
+            return w
 
         line = Line(c)
         for item in story:
@@ -49,7 +65,7 @@ class Document(object):
                     indent = FONT_SIZE
                 else:
                     indent = 0.0
-                end_line = wrap_paragraph(canvas, line, item, indent)
+                end_line = wrap_paragraph(width_of, line, item, indent)
                 line = end_line.next()
             else:
                 line = line.need(item.height)
