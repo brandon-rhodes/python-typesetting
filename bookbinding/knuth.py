@@ -18,6 +18,7 @@ def wrap_paragraph(width_of, line, pp, indent):
 
     space_width = width_of(u' ')
     hyphen_width = width_of(u'-')
+    space = Glue(space_width, space_width * .5, space_width * .3333)
 
     for string in pp.text.split():
         i = iter(NONWORD.split(string))
@@ -33,21 +34,19 @@ def wrap_paragraph(width_of, line, pp, indent):
                 olist.append(Box(width_of(punctuation), punctuation))
                 if punctuation == u'-':
                     olist.append(Glue(0, 0, 0))
-        # for i in enumerate(words):
-        #     if i % 2
-        olist.append(Glue(space_width, space_width * .5, space_width * .3333))
+        olist.append(space)
     olist.pop()
     olist.add_closing_penalty()
 
     line_lengths = [line.w]
     for tolerance in 1, 2, 3, 4:
-        # try:
+        try:
             breaks = olist.compute_breakpoints(
                 line_lengths, tolerance=tolerance)
-        # except RuntimeError:
-        #     pass
-        # else:
-        #     break
+        except RuntimeError:
+            pass
+        else:
+            break
 
     assert breaks[0] == 0
     start = 0
@@ -81,7 +80,7 @@ class KnuthLine(object):
     def __init__(self, xlist):
         self.xlist = xlist
 
-    def __call__(self, line, canvas):
+    def draw(self, line, canvas):
         ay = line.ay()
         for x, text in self.xlist:
             canvas.drawString(line.chase.x + x, ay, text)

@@ -15,13 +15,6 @@ PAGE_HEIGHT = 9. * 72.
 class Setter(object):
     pass
 
-class Cache(dict):
-    def __init__(self, function):
-        self.function = function
-    def __missing__(self, key):
-        asdf
-        return self.function(key)
-
 class Document(object):
 
     def __init__(self, font_face=FONT_FACE):
@@ -96,7 +89,7 @@ class Document(object):
                             s,
                         )
                     for graphic in line.graphics:
-                        graphic(line, canvas)
+                        graphic.draw(line, canvas)
             canvas.showPage()
 
         canvas.save()
