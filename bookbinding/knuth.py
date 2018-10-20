@@ -8,7 +8,9 @@ from .hyphenate import hyphenate_word
 
 NONWORD = re.compile(r'(\W+)')
 
-def wrap_paragraph(width_of, line_lengths, line, pp, indent):
+def wrap_paragraph(width_of, line_lengths, line, pp, indent,
+                   line_height, # TODO: remove this one
+):
 
     olist = ObjectList()
     # olist.debug = True
@@ -16,7 +18,9 @@ def wrap_paragraph(width_of, line_lengths, line, pp, indent):
     if indent:
         olist.append(Glue(indent, 0, 0))
 
-    space_width = width_of(u' ')
+    #space_width = width_of(u' ')
+    space_width = width_of(u'm m') - width_of(u'mm')
+    #space_width *= 0.9
     hyphen_width = width_of(u'-')
     space = Glue(space_width, space_width * .5, space_width * .3333)
 
@@ -56,6 +60,8 @@ def wrap_paragraph(width_of, line_lengths, line, pp, indent):
         r = olist.compute_adjustment_ratio(start, breakpoint, 0,
                                            (line_lengths[0],))
 
+        r = 1.0
+
         xlist = []
         x = 0
         for i in range(start, breakpoint):
@@ -71,7 +77,7 @@ def wrap_paragraph(width_of, line_lengths, line, pp, indent):
             xlist.append((x, u'-'))
 
         line.graphics.append(KnuthLine(xlist))
-        line = line.next()
+        line = line.next(line_height)
         start = breakpoint + 1
 
     return line.previous
@@ -86,6 +92,4 @@ class KnuthLine(object):
         ay = line.ay()
         pt = 1200 / 72.0
         for x, text in self.xlist:
-            print(repr(text), x)
             paint.drawText(line.chase.x * pt + x, ay * pt, text)
-        print('---')

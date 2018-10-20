@@ -8,10 +8,6 @@ from .skeleton import Page, Chase, Line
 #inch = 72
 mm = 25.4 / 72
 
-FONT_FACE = 'Times-Roman'
-FONT_SIZE = 10.
-LINE_HEIGHT = FONT_SIZE + 2.
-
 class Setter(object):
     pass
 
@@ -25,7 +21,7 @@ class Document(object):
         f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
         names = QFontDatabase.applicationFontFamilies(f)
         name = names[0]
-        font = QFontDatabase().font(name, u'regular', 10)
+        font = QFontDatabase().font(name, u'regular', 11)
         self.writer = QPdfWriter('book.pdf')
         from PySide2.QtCore import QSizeF
         self.writer.setPageSizeMM(QSizeF(page_width * mm, page_height * mm))
@@ -48,11 +44,13 @@ class Document(object):
                 _widths[string] = w
             return w
 
+        line_height = self.font_metrics.lineSpacing() * 72.0 / 1200
+
         line = Line(c)
         for item in story:
             if isinstance(item, Spacer):
-                if not line.at_bottom():
-                    line = line.next()
+                if not line.at_bottom(line_height):
+                    line = line.next(line_height)
                 # if line.at_bottom():
                 #     line = line.next()
                 #     line.words = [u'*']
@@ -64,15 +62,15 @@ class Document(object):
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
                 if item.style == 'indented-paragraph':
-                    indent = FONT_SIZE * 1200 / 72
+                    indent = 10 * 1200 / 72
                 else:
                     indent = 0.0
                 line_lengths = [c.width * 1200 / 72]
                 end_line = wrap_paragraph(width_of, line_lengths,
-                                          line, item, indent)
+                                          line, item, indent, line_height)
                 if end_line is None:
                     break
-                line = end_line.next()
+                line = end_line.next(line_height)
             else:
                 line = line.need(item.height)
                 line.graphics.append(item.draw)
@@ -89,7 +87,9 @@ class Document(object):
         paint = self.painter
         #paint.setFont(self.font)
 
-        for page in pages[:1]:
+        for i, page in enumerate(pages[:3]):
+            if i:
+                self.writer.newPage()
             for graphic in page.graphics:
                 graphic(page, paint)
             for chase in page.chases:
@@ -98,8 +98,6 @@ class Document(object):
                         graphic.draw(line, paint)
 
         paint.end()
-
-        # w.newPage()?
 
 class Paragraph(object):
 

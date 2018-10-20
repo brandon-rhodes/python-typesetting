@@ -1,5 +1,3 @@
-FONT_SIZE = 10.
-LINE_HEIGHT = FONT_SIZE + 2.
 
 class Page(object):
 
@@ -39,7 +37,7 @@ class Line(object):
 
     def __init__(self, chase, previous=None, y=None):
         if y is None:
-            y = LINE_HEIGHT #chase.height - LINE_HEIGHT
+            y = 0  # TODO: start "ascent()" from top?
         self.chase = chase
         self.w = chase.width
         self.y = y
@@ -57,18 +55,18 @@ class Line(object):
         next_chase = self.chase.next()
         return Line(next_chase, previous=self)
 
-    def next(self):
-        if not self.at_bottom():
-            return self.down(1)
+    def next(self, line_height):
+        if not self.at_bottom(line_height):
+            return self.down(line_height)
         else:
             next_chase = self.chase.next()
             return Line(next_chase, previous=self)
 
-    def down(self, n):
-        return Line(self.chase, previous=self, y=self.y + n * LINE_HEIGHT)
+    def down(self, line_height):
+        return Line(self.chase, previous=self, y=self.y + line_height)
 
-    def at_bottom(self):
-        return self.y > self.chase.height - LINE_HEIGHT
+    def at_bottom(self, line_height):
+        return self.y > self.chase.height - line_height
 
     def ay(self):
         return self.chase.bottom_margin + self.y
