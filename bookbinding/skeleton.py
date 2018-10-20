@@ -1,5 +1,5 @@
 FONT_SIZE = 10.
-LINE_HEIGHT = (FONT_SIZE + 2.) * 1200 / 72
+LINE_HEIGHT = FONT_SIZE + 2.
 
 class Page(object):
 

@@ -5,27 +5,30 @@ from PySide2.QtGui import QPainter
 from .knuth import wrap_paragraph
 from .skeleton import Page, Chase, Line
 
-inch = 72.
+#inch = 72
+mm = 25.4 / 72
 
 FONT_FACE = 'Times-Roman'
 FONT_SIZE = 10.
 LINE_HEIGHT = FONT_SIZE + 2.
-
-PAGE_WIDTH = 6. * 1200
-PAGE_HEIGHT = 9. * 1200
 
 class Setter(object):
     pass
 
 class Document(object):
 
-    def __init__(self):
+    def __init__(self, page_width, page_height):
+        self.page_width = page_width
+        self.page_height = page_height
+
         QApplication()
         f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
         names = QFontDatabase.applicationFontFamilies(f)
         name = names[0]
         font = QFontDatabase().font(name, u'regular', 10)
         self.writer = QPdfWriter('book.pdf')
+        from PySide2.QtCore import QSizeF
+        self.writer.setPageSizeMM(QSizeF(page_width * mm, page_height * mm))
         self.painter = QPainter(self.writer)
         self.painter.setFont(font)
         self.font = font
@@ -34,7 +37,7 @@ class Document(object):
     def format(self, story, top_margin, bottom_margin,
                inner_margin, outer_margin):
 
-        p = Page(self, PAGE_WIDTH, PAGE_HEIGHT)
+        p = Page(self, self.page_width, self.page_height)
         c = Chase(p, top_margin, bottom_margin, inner_margin, outer_margin)
 
         _widths = {}
@@ -64,7 +67,7 @@ class Document(object):
                     indent = FONT_SIZE * 1200 / 72
                 else:
                     indent = 0.0
-                line_lengths = [c.width]
+                line_lengths = [c.width * 1200 / 72]
                 end_line = wrap_paragraph(width_of, line_lengths,
                                           line, item, indent)
                 if end_line is None:

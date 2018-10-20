@@ -53,7 +53,8 @@ def wrap_paragraph(width_of, line_lengths, line, pp, indent):
     start = 0
 
     for breakpoint in breaks[1:]:
-        r = olist.compute_adjustment_ratio(start, breakpoint, 0, (line.w,))
+        r = olist.compute_adjustment_ratio(start, breakpoint, 0,
+                                           (line_lengths[0],))
 
         xlist = []
         x = 0
@@ -83,5 +84,8 @@ class KnuthLine(object):
 
     def draw(self, line, paint):
         ay = line.ay()
+        pt = 1200 / 72.0
         for x, text in self.xlist:
-            paint.drawText(line.chase.x + x, ay, text)
+            print(repr(text), x)
+            paint.drawText(line.chase.x * pt + x, ay * pt, text)
+        print('---')
