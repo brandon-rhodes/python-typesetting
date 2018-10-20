@@ -8,7 +8,7 @@ from .hyphenate import hyphenate_word
 
 NONWORD = re.compile(r'(\W+)')
 
-def wrap_paragraph(width_of, line, pp, indent):
+def wrap_paragraph(width_of, line_lengths, line, pp, indent):
 
     olist = ObjectList()
     # olist.debug = True
@@ -38,7 +38,6 @@ def wrap_paragraph(width_of, line, pp, indent):
     olist.pop()
     olist.add_closing_penalty()
 
-    line_lengths = [line.w]
     for tolerance in 1, 2, 3, 4:
         try:
             breaks = olist.compute_breakpoints(
@@ -47,6 +46,8 @@ def wrap_paragraph(width_of, line, pp, indent):
             pass
         else:
             break
+    else:
+        breaks = [0, len(olist) - 1]  # TODO
 
     assert breaks[0] == 0
     start = 0
@@ -80,7 +81,7 @@ class KnuthLine(object):
     def __init__(self, xlist):
         self.xlist = xlist
 
-    def draw(self, line, canvas):
+    def draw(self, line, paint):
         ay = line.ay()
         for x, text in self.xlist:
-            canvas.drawString(line.chase.x + x, ay, text)
+            paint.drawText(line.chase.x + x, ay, text)

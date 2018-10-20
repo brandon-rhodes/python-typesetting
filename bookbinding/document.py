@@ -1,5 +1,7 @@
-from collections import defaultdict
-from reportlab.pdfgen.canvas import Canvas
+from PySide2.QtGui import QPdfWriter, QFontDatabase
+from PySide2.QtWidgets import QApplication
+from PySide2.QtGui import QPainter
+
 from .knuth import wrap_paragraph
 from .skeleton import Page, Chase, Line
 
@@ -9,16 +11,25 @@ FONT_FACE = 'Times-Roman'
 FONT_SIZE = 10.
 LINE_HEIGHT = FONT_SIZE + 2.
 
-PAGE_WIDTH = 6. * 72.
-PAGE_HEIGHT = 9. * 72.
+PAGE_WIDTH = 6. * 1200
+PAGE_HEIGHT = 9. * 1200
 
 class Setter(object):
     pass
 
 class Document(object):
 
-    def __init__(self, font_face=FONT_FACE):
-        self.font_face = font_face
+    def __init__(self):
+        QApplication()
+        f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
+        names = QFontDatabase.applicationFontFamilies(f)
+        name = names[0]
+        font = QFontDatabase().font(name, u'regular', 10)
+        self.writer = QPdfWriter('book.pdf')
+        self.painter = QPainter(self.writer)
+        self.painter.setFont(font)
+        self.font = font
+        self.font_metrics = self.painter.fontMetrics()
 
     def format(self, story, top_margin, bottom_margin,
                inner_margin, outer_margin):
@@ -26,16 +37,11 @@ class Document(object):
         p = Page(self, PAGE_WIDTH, PAGE_HEIGHT)
         c = Chase(p, top_margin, bottom_margin, inner_margin, outer_margin)
 
-        canvas = Canvas(
-            'book.pdf', pagesize=(PAGE_WIDTH, PAGE_HEIGHT))
-        canvas.setFont(self.font_face, FONT_SIZE)
-        self.canvas = canvas
-
         _widths = {}
         def width_of(string):
             w = _widths.get(string)
             if not w:
-                w = canvas.stringWidth(string)
+                w = self.font_metrics.width(string)
                 _widths[string] = w
             return w
 
@@ -55,10 +61,14 @@ class Document(object):
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
                 if item.style == 'indented-paragraph':
-                    indent = FONT_SIZE
+                    indent = FONT_SIZE * 1200 / 72
                 else:
                     indent = 0.0
-                end_line = wrap_paragraph(width_of, line, item, indent)
+                line_lengths = [c.width]
+                end_line = wrap_paragraph(width_of, line_lengths,
+                                          line, item, indent)
+                if end_line is None:
+                    break
                 line = end_line.next()
             else:
                 line = line.need(item.height)
@@ -66,33 +76,27 @@ class Document(object):
                 line = line.down(item.height)
 
         # Prevent a blank last page.
-        while not line.graphics:
+        while line.previous and not line.graphics:
             line = line.previous
 
         self.pages = line.unroll_document()
         return self.pages
 
     def render(self, pages):
-        canvas = self.canvas
-        for page in pages:
-            canvas.setFont(self.font_face, FONT_SIZE)
+        paint = self.painter
+        #paint.setFont(self.font)
+
+        for page in pages[:1]:
             for graphic in page.graphics:
-                graphic(page, canvas)
+                graphic(page, paint)
             for chase in page.chases:
                 for line in chase.lines:
-                    if line.align == 'center':
-                        s = u' '.join(line.words)
-                        ww = canvas.stringWidth(s)
-                        canvas.drawString(
-                            line.chase.x + line.chase.width / 2. - ww / 2.,
-                            line.ay(),
-                            s,
-                        )
                     for graphic in line.graphics:
-                        graphic.draw(line, canvas)
-            canvas.showPage()
+                        graphic.draw(line, paint)
 
-        canvas.save()
+        paint.end()
+
+        # w.newPage()?
 
 class Paragraph(object):
 

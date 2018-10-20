@@ -1,5 +1,5 @@
 FONT_SIZE = 10.
-LINE_HEIGHT = FONT_SIZE + 2.
+LINE_HEIGHT = (FONT_SIZE + 2.) * 1200 / 72
 
 class Page(object):
 
@@ -39,7 +39,7 @@ class Line(object):
 
     def __init__(self, chase, previous=None, y=None):
         if y is None:
-            y = chase.height - LINE_HEIGHT
+            y = LINE_HEIGHT #chase.height - LINE_HEIGHT
         self.chase = chase
         self.w = chase.width
         self.y = y
@@ -51,7 +51,8 @@ class Line(object):
 
     def need(self, height):
         """Return `self` if at least `height` remains, else a new line."""
-        if height <= self.y:
+        asdf
+        if height <= chase.height - self.y: #self.y:
             return self
         next_chase = self.chase.next()
         return Line(next_chase, previous=self)
@@ -64,10 +65,10 @@ class Line(object):
             return Line(next_chase, previous=self)
 
     def down(self, n):
-        return Line(self.chase, previous=self, y=self.y - n * LINE_HEIGHT)
+        return Line(self.chase, previous=self, y=self.y + n * LINE_HEIGHT)
 
     def at_bottom(self):
-        return self.y <= LINE_HEIGHT
+        return self.y > self.chase.height - LINE_HEIGHT
 
     def ay(self):
         return self.chase.bottom_margin + self.y
