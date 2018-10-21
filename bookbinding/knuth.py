@@ -7,6 +7,7 @@ from .texlib.wrap import ObjectList, Box, Glue, Penalty
 from .hyphenate import hyphenate_word
 
 NONWORD = re.compile(r'(\W+)')
+SPACE = re.compile(r'[ \n]+')
 
 def wrap_paragraph(width_of, line_lengths, line, pp, indent,
                    line_height, # TODO: remove this one
@@ -24,7 +25,7 @@ def wrap_paragraph(width_of, line_lengths, line, pp, indent,
     hyphen_width = width_of(u'-')
     space = Glue(space_width, space_width * .5, space_width * .3333)
 
-    for string in pp.text.split():
+    for string in SPACE.split(pp.text):
         i = iter(NONWORD.split(string))
         for word in i:
             if word:
