@@ -1,6 +1,6 @@
-from PySide2.QtGui import QPdfWriter, QFontDatabase
+from PySide2.QtCore import QSizeF
+from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase
 from PySide2.QtWidgets import QApplication
-from PySide2.QtGui import QPainter
 
 from .knuth import wrap_paragraph
 from .skeleton import Page, Chase, Line
@@ -17,13 +17,12 @@ class Document(object):
         self.page_width = page_width
         self.page_height = page_height
 
-        QApplication()
+        QApplication(['my-q-application'])
         f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
         names = QFontDatabase.applicationFontFamilies(f)
         name = names[0]
         font = QFontDatabase().font(name, u'regular', 11)
         self.writer = QPdfWriter('book.pdf')
-        from PySide2.QtCore import QSizeF
         self.writer.setPageSizeMM(QSizeF(page_width * mm, page_height * mm))
         self.painter = QPainter(self.writer)
         self.painter.setFont(font)

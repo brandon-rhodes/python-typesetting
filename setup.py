@@ -12,5 +12,5 @@ setup(
     classifiers = [
     ],
     packages = ['bookbinding'],
-    install_requires = ['PyQt5'],
+    install_requires = ['PySide2'],
 )

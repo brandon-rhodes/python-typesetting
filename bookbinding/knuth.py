@@ -28,6 +28,17 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
     # TODO: should do non-breaking spaces with glue as well
     space = Glue(space_width, space_width * .5, space_width * .3333)
 
+    def text_boxes(text):
+        for string in BREAKING_SPACE.split(text):
+            i = iter(NONWORD.split(string))
+            word = next(i)
+            yield from word_boxes(word)
+            for punctuation in i:
+                yield from word_boxes(punctuation)
+                word = next(i)
+                yield from word_boxes(word)
+            yield space
+
     def word_boxes(word):
         if not word:
             return
@@ -45,15 +56,7 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
         if punctuation == u'-':
             yield ZERO_WIDTH_BREAK
 
-    for string in BREAKING_SPACE.split(text):
-        i = iter(NONWORD.split(string))
-        word = next(i)
-        olist.extend(word_boxes(word))
-        for punctuation in i:
-            olist.extend(word_boxes(punctuation))
-            word = next(i)
-            olist.extend(word_boxes(word))
-        olist.append(space)
+    olist.extend(text_boxes(text))
     olist.pop()
     olist.add_closing_penalty()
 

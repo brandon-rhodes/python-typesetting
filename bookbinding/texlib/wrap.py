@@ -37,7 +37,6 @@ Reference:
 """
 
 import sys, string
-import UserList
 
 __version__ = "1.01"
 
@@ -178,7 +177,7 @@ class ObjectList(list):
         length = self.measure_width(pos1, pos2)
         if self[pos2].is_penalty(): length += self[pos2].width
         if self.debug:
-            print '\tline length=', length
+            print('\tline length=', length)
 
         # Get the length of the current line; if the line_lengths list
         # is too short, the last value is always used for subsequent
@@ -326,7 +325,7 @@ class ObjectList(list):
         active_nodes = [A]
 
         if self.debug:
-            print 'Looping over %i box objects' % m
+            print('Looping over %i box objects' % m)
 
         for i in range(m):
             B = self[i]
@@ -336,8 +335,8 @@ class ObjectList(list):
             if not self.is_feasible_breakpoint(i):
                 continue
             if self.debug:
-                print 'Feasible breakpoint at %i:' % i
-                print '\tCurrent active node list:', active_nodes
+                print('Feasible breakpoint at %i:' % i)
+                print('\tCurrent active node list:', active_nodes)
 
             if self.debug:
                 # Print the list of active nodes, sorting them
@@ -346,7 +345,8 @@ class ObjectList(list):
                     return cmp( (n1.line, n1.position, n1.fitness_class),
                                  (n2.line, n2.position, n2.fitness_class) )
                 active_nodes.sort(cmp_f)
-                for A in active_nodes: print A.position, A.line, A.fitness_class
+                for A in active_nodes:
+                    print(A.position, A.line, A.fitness_class)
                 print ; print
 
             # Loop over the list of active nodes, and compute the fitness
@@ -355,8 +355,8 @@ class ObjectList(list):
             for A in active_nodes[:]:
                 r = self.compute_adjustment_ratio(A.position, i, A.line, line_lengths)
                 if self.debug:
-                    print '\tr=', r
-                    print '\tline=', A.line
+                    print('\tr=', r)
+                    print('\tline=', A.line)
 
                 # #print(r)
                 # if r<-1 or B.is_forced_break():
@@ -385,11 +385,11 @@ class ObjectList(list):
 
                 # Compute demerits and fitness class
                 if p[i] >= 0:
-                    demerits = (1 + 100 * abs(r)**3L + p[i]) ** 3L
+                    demerits = (1 + 100 * abs(r)**3 + p[i]) ** 3
                 elif self.is_forced_break(i):
-                    demerits = (1 + 100 * abs(r)**3L) ** 2L - p[i]**2L
+                    demerits = (1 + 100 * abs(r)**3) ** 2 - p[i]**2
                 else:
-                    demerits = (1 + 100 * abs(r)**3L) ** 2L
+                    demerits = (1 + 100 * abs(r)**3) ** 2
                 demerits += flagged_demerit * f[i] * f[A.position]
 
                 # Figure out the fitness class of this line (tight, loose,
@@ -406,8 +406,8 @@ class ObjectList(list):
                     demerits += fitness_demerit
 
                 if self.debug:
-                    print '\tDemerits=', demerits
-                    print '\tFitness class=', fitness_class
+                    print('\tDemerits=', demerits)
+                    print('\tFitness class=', fitness_class)
 
                 # Record a feasible break from A to B
                 brk = _BreakNode(position = i, line = A.line + 1,
@@ -420,9 +420,9 @@ class ObjectList(list):
                 breaks.append(brk)
                 # print '=========='
                 if self.debug:
-                    print '\tRecording feasible break', B
-                    print '\t\tDemerits=', demerits
-                    print '\t\tFitness class=', fitness_class
+                    print('\tRecording feasible break', B)
+                    print('\t\tDemerits=', demerits)
+                    print('\t\tFitness class=', fitness_class)
 
                 #print(r)
 
@@ -441,7 +441,7 @@ class ObjectList(list):
             # end for A in active_nodes
             if breaks:
                 if self.debug:
-                    print 'List of breaks at ', i, ':', breaks
+                    print('List of breaks at ', i, ':', breaks)
                 for brk in breaks:
                     self.add_active_node(active_nodes, brk)
 
@@ -452,8 +452,8 @@ class ObjectList(list):
         # end for i in range(m)
 
         if self.debug:
-            print 'Main loop completed'
-            print 'Active nodes=', active_nodes
+            print('Main loop completed')
+            print('Active nodes=', active_nodes)
 
         # Find the active node with the lowest number of demerits.
         least_demerits = min(A.demerits for A in active_nodes)
@@ -543,7 +543,7 @@ if __name__ == '__main__':
     line_lengths = range(120, 20, -10)
     breaks = L.compute_breakpoints( line_lengths,
                                     tolerance = 2)
-    print breaks, len(L)
+    print(breaks, len(L))
 
     assert breaks[0] == 0
     line_start = 0
@@ -565,4 +565,4 @@ if __name__ == '__main__':
         line_start = breakpoint + 1
         sys.stdout.write('\n')
 
-    print
+    print()
