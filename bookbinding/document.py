@@ -53,12 +53,10 @@ class Document(object):
             if isinstance(item, Spacer):
                 if not line.at_bottom(line_height):
                     line = line.next(line_height)
-
-                # if line.at_bottom():
-                    # line = line.next()
-                    # line.words = [u'*']
-                    # line.align = 'center'
-                # line = line.next()
+                if line.at_bottom(line_height):
+                    line.graphics.append((asterisks, width_of))
+                    line = line.next(line_height)
+                    line = line.next(line_height)
                 # if line.at_bottom():
                 #     line = line.down(1)
                 #     line.words = [u'*']
@@ -116,3 +114,11 @@ class Spacer(object):
 
     def __init__(self, *args):
         self.args = args
+
+def asterisks(paint, line, width_of):
+    y = line.ay()
+    pt = 1200 / 72.0
+    a = u'* * *'
+    w = width_of(a)
+    x = line.chase.x * pt + (line.chase.width * pt - w) / 2
+    paint.drawText(x, y * pt, a)
