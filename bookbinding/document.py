@@ -89,8 +89,14 @@ class Document(object):
                 else:
                     indent = 0.0
                 line_lengths = [c.width * 1200 / 72]
+                pieces = item.text.split('<i>')
+                fonts_and_texts = [('body-roman', pieces[0])]
+                for piece in pieces[1:]:
+                    p2 = piece.split('</i>')
+                    fonts_and_texts.append(('body-italic', p2[0]))
+                    fonts_and_texts.append(('body-roman', p2[1]))
                 end_line = wrap_paragraph(switch_font, width_of, line_lengths,
-                                          line, item.text, indent,
+                                          line, fonts_and_texts, indent,
                                           line_height)
                 if end_line is None:
                     break
@@ -122,7 +128,7 @@ class Document(object):
                         call = graphic[0]
                         args = graphic[1:]
                         #graphic.draw(line, paint)
-                        call(paint, line, *args)
+                        call(self.fonts, paint, line, *args)
 
         paint.end()
 
@@ -137,7 +143,8 @@ class Spacer(object):
     def __init__(self, *args):
         self.args = args
 
-def asterisks(paint, line, width_of):
+def asterisks(fonts, paint, line, width_of):
+    # TODO: font?
     y = line.ay()
     pt = 1200 / 72.0
     a = u'* * *'

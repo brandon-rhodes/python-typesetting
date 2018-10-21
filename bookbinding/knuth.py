@@ -10,7 +10,9 @@ NONWORD = re.compile(r'(\W+)')
 BREAKING_SPACE = re.compile(r'[ \n]+')
 ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
-def wrap_paragraph(switch_font, width_of, line_lengths, line, text, indent,
+def wrap_paragraph(switch_font, width_of, line_lengths, line,
+                   fonts_and_texts,
+                   indent,
                    line_height, # TODO: remove this one
 ):
 
@@ -31,15 +33,18 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line, text, indent,
     space = Glue(space_width, space_width * .5, space_width * .3333)
 
     def text_boxes(text):
-        for string in BREAKING_SPACE.split(text):
+        solids = BREAKING_SPACE.split(text)
+        end = len(solids) - 1
+        for ii, string in enumerate(solids):
             i = iter(NONWORD.split(string))
             word = next(i)
             yield from word_boxes(word)
             for punctuation in i:
-                yield from word_boxes(punctuation)
+                yield from punctuation_boxes(punctuation)
                 word = next(i)
                 yield from word_boxes(word)
-            yield space
+            if ii != end:
+                yield space
 
     def word_boxes(word):
         if not word:
@@ -58,8 +63,11 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line, text, indent,
         if punctuation == u'-':
             yield ZERO_WIDTH_BREAK
 
-    #olist.append(Box(0, italic_font))
-    olist.extend(text_boxes(text))
+    for font_name, text in fonts_and_texts:
+        switch_font(font_name)
+        olist.append(Box(0, font_name))  # special sentinel
+        olist.extend(text_boxes(text))
+
     olist.pop()
     olist.add_closing_penalty()
 
@@ -90,11 +98,11 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line, text, indent,
             if box.is_glue():
                 x += box.compute_width(r)
             elif box.is_box():
-                if box.width == 0:
-                    xlist.append((None, box.character))
-                else:
+                if box.width:
                     xlist.append((x, box.character))
                     x += box.width
+                else:
+                    xlist.append((None, box.character))
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width == hyphen_width:
@@ -106,12 +114,12 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line, text, indent,
 
     return line.previous
 
-def knuth_draw(painter, line, xlist):
+def knuth_draw(fonts, painter, line, xlist):
     ay = line.ay()
     pt = 1200 / 72.0
     #painter.setFont(font)
     for x, text in xlist:
         if x is None:
-            painter.setFont(text)
+            painter.setFont(fonts[text])
         else:
             painter.drawText(line.chase.x * pt + x, ay * pt, text)
