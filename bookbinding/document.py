@@ -19,15 +19,28 @@ class Document(object):
 
         QApplication(['my-q-application'])
         f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
+        f = QFontDatabase.addApplicationFont('OldStandard-Italic.ttf')
         names = QFontDatabase.applicationFontFamilies(f)
+        print(names)
         name = names[0]
-        font = QFontDatabase().font(name, u'regular', 11)
         self.writer = QPdfWriter('book.pdf')
         self.writer.setPageSizeMM(QSizeF(page_width * mm, page_height * mm))
         self.painter = QPainter(self.writer)
-        self.painter.setFont(font)
-        self.font = font
-        self.font_metrics = self.painter.fontMetrics()
+
+        self.fonts = {}
+        self.metrics = {}
+
+        for name_and_args in [
+            ('body-roman', name, u'Roman', 11),
+            ('body-italic', name, u'Italic', 11),
+        ]:
+            name = name_and_args[0]
+            font = QFontDatabase().font(*name_and_args[1:])
+            self.fonts[name] = font
+            self.painter.setFont(font)
+            self.metrics[name] = self.painter.fontMetrics()
+
+        self.painter.setFont(self.fonts['body-roman'])
 
     def format(self, story, top_margin, bottom_margin,
                inner_margin, outer_margin):
@@ -35,13 +48,23 @@ class Document(object):
         p = Page(self, self.page_width, self.page_height)
         c = Chase(p, top_margin, bottom_margin, inner_margin, outer_margin)
 
-        _widths = {}
+        _font_caches = {}
+        _cache = None
+
         def width_of(string):
-            w = _widths.get(string)
-            if not w:
-                w = self.font_metrics.width(string)
-                _widths[string] = w
+            w = _cache.get(string)
+            if w is None:
+                w = _cache[string] = self.font_metrics.width(string)
             return w
+
+        def switch_font(name):
+            nonlocal _cache
+            self.font_metrics = self.metrics[name]
+            _cache = _font_caches.get(name)
+            if _cache is None:
+                _cache = _font_caches[name] = {}
+
+        switch_font('body-roman')
 
         font_height_raw = self.font_metrics.height()
         line_height_raw = self.font_metrics.lineSpacing()
@@ -66,7 +89,7 @@ class Document(object):
                 else:
                     indent = 0.0
                 line_lengths = [c.width * 1200 / 72]
-                end_line = wrap_paragraph(width_of, line_lengths,
+                end_line = wrap_paragraph(switch_font, width_of, line_lengths,
                                           line, item.text, indent,
                                           line_height)
                 if end_line is None:

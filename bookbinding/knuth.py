@@ -10,7 +10,7 @@ NONWORD = re.compile(r'(\W+)')
 BREAKING_SPACE = re.compile(r'[ \n]+')
 ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
-def wrap_paragraph(width_of, line_lengths, line, text, indent,
+def wrap_paragraph(switch_font, width_of, line_lengths, line, text, indent,
                    line_height, # TODO: remove this one
 ):
 
@@ -21,6 +21,8 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
         olist.append(Glue(indent, 0, 0))
 
     #space_width = width_of(u' ')
+    # TODO: get rid of these since they change with the font?
+    # Compute and pre-cache them in each metrics cache!
     space_width = width_of(u'm m') - width_of(u'mm')
     #space_width *= 0.9
     hyphen_width = width_of(u'-')
@@ -56,6 +58,7 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
         if punctuation == u'-':
             yield ZERO_WIDTH_BREAK
 
+    #olist.append(Box(0, italic_font))
     olist.extend(text_boxes(text))
     olist.pop()
     olist.add_closing_penalty()
@@ -87,8 +90,11 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
             if box.is_glue():
                 x += box.compute_width(r)
             elif box.is_box():
-                xlist.append((x, box.character))
-                x += box.width
+                if box.width == 0:
+                    xlist.append((None, box.character))
+                else:
+                    xlist.append((x, box.character))
+                    x += box.width
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width == hyphen_width:
@@ -100,8 +106,12 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
 
     return line.previous
 
-def knuth_draw(paint, line, xlist):
+def knuth_draw(painter, line, xlist):
     ay = line.ay()
     pt = 1200 / 72.0
+    #painter.setFont(font)
     for x, text in xlist:
-        paint.drawText(line.chase.x * pt + x, ay * pt, text)
+        if x is None:
+            painter.setFont(text)
+        else:
+            painter.drawText(line.chase.x * pt + x, ay * pt, text)
