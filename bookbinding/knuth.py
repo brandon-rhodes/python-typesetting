@@ -22,12 +22,9 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
     if indent:
         olist.append(Glue(indent, 0, 0))
 
-    #space_width = width_of(u' ')
-    # TODO: get rid of these since they change with the font?
-    # Compute and pre-cache them in each metrics cache!
+    # TODO: get rid of this since it changesd with the font?  Compute
+    # and pre-cache them in each metrics cache?
     space_width = width_of(u'm m') - width_of(u'mm')
-    #space_width *= 0.9
-    hyphen_width = width_of(u'-')
 
     # TODO: should do non-breaking spaces with glue as well
     space = Glue(space_width, space_width * .5, space_width * .3333)
@@ -53,7 +50,7 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
         piece = next(pieces)
         yield Box(width_of(piece), piece)
         for piece in pieces:
-            yield Penalty(hyphen_width, 100)
+            yield Penalty(width_of(u'-'), 100)
             yield Box(width_of(piece), piece)
 
     def punctuation_boxes(punctuation):
@@ -68,7 +65,6 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
         olist.append(Box(0, font_name))  # special sentinel
         olist.extend(text_boxes(text))
 
-    olist.pop()
     olist.add_closing_penalty()
 
     for tolerance in 1, 2, 3, 4:
@@ -105,7 +101,7 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
                     xlist.append((None, box.character))
 
         bbox = olist[breakpoint]
-        if bbox.is_penalty() and bbox.width == hyphen_width:
+        if bbox.is_penalty() and bbox.width:
             xlist.append((x, u'-'))
 
         line.graphics.append((knuth_draw, xlist))
