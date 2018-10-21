@@ -44,7 +44,9 @@ class Document(object):
                 _widths[string] = w
             return w
 
-        line_height = self.font_metrics.lineSpacing() * 72.0 / 1200
+        font_height_raw = self.font_metrics.height()
+        line_height_raw = self.font_metrics.lineSpacing()
+        line_height = line_height_raw * 72.0 / 1200
 
         line = Line(c)
         for item in story:
@@ -62,7 +64,7 @@ class Document(object):
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
                 if item.style == 'indented-paragraph':
-                    indent = 10 * 1200 / 72
+                    indent = font_height_raw
                 else:
                     indent = 0.0
                 line_lengths = [c.width * 1200 / 72]
@@ -87,7 +89,7 @@ class Document(object):
         paint = self.painter
         #paint.setFont(self.font)
 
-        for i, page in enumerate(pages[:3]):
+        for i, page in enumerate(pages):
             if i:
                 self.writer.newPage()
             for graphic in page.graphics:
