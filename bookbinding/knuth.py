@@ -8,6 +8,7 @@ from .hyphenate import hyphenate_word
 
 NONWORD = re.compile(r'(\W+)')
 BREAKING_SPACE = re.compile(r'[ \n]+')
+ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
 def wrap_paragraph(width_of, line_lengths, line, text, indent,
                    line_height, # TODO: remove this one
@@ -28,6 +29,8 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
     space = Glue(space_width, space_width * .5, space_width * .3333)
 
     def word_boxes(word):
+        if not word:
+            return
         pieces = iter(hyphenate_word(word))
         piece = next(pieces)
         yield Box(width_of(piece), piece)
@@ -35,16 +38,21 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
             yield Penalty(hyphen_width, 100)
             yield Box(width_of(piece), piece)
 
+    def punctuation_boxes(punctuation):
+        if not punctuation:
+            return
+        yield Box(width_of(punctuation), punctuation)
+        if punctuation == u'-':
+            yield ZERO_WIDTH_BREAK
+
     for string in BREAKING_SPACE.split(text):
         i = iter(NONWORD.split(string))
-        for word in i:
-            if word:
-                olist.extend(word_boxes(word))
-            punctuation = next(i, None)
-            if punctuation is not None:
-                olist.append(Box(width_of(punctuation), punctuation))
-                if punctuation == u'-':
-                    olist.append(Glue(0, 0, 0))
+        word = next(i)
+        olist.extend(word_boxes(word))
+        for punctuation in i:
+            olist.extend(word_boxes(punctuation))
+            word = next(i)
+            olist.extend(word_boxes(word))
         olist.append(space)
     olist.pop()
     olist.add_closing_penalty()
