@@ -27,15 +27,19 @@ def wrap_paragraph(width_of, line_lengths, line, text, indent,
     # TODO: should do non-breaking spaces with glue as well
     space = Glue(space_width, space_width * .5, space_width * .3333)
 
+    def word_boxes(word):
+        pieces = iter(hyphenate_word(word))
+        piece = next(pieces)
+        yield Box(width_of(piece), piece)
+        for piece in pieces:
+            yield Penalty(hyphen_width, 100)
+            yield Box(width_of(piece), piece)
+
     for string in BREAKING_SPACE.split(text):
         i = iter(NONWORD.split(string))
         for word in i:
             if word:
-                pieces = hyphenate_word(word)
-                for piece in pieces:
-                    olist.append(Box(width_of(piece), piece))
-                    olist.append(Penalty(hyphen_width, 100))
-                olist.pop()
+                olist.extend(word_boxes(word))
             punctuation = next(i, None)
             if punctuation is not None:
                 olist.append(Box(width_of(punctuation), punctuation))
