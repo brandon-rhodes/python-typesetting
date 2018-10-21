@@ -53,10 +53,11 @@ class Document(object):
             if isinstance(item, Spacer):
                 if not line.at_bottom(line_height):
                     line = line.next(line_height)
+
                 # if line.at_bottom():
-                #     line = line.next()
-                #     line.words = [u'*']
-                #     line.align = 'center'
+                    # line = line.next()
+                    # line.words = [u'*']
+                    # line.align = 'center'
                 # line = line.next()
                 # if line.at_bottom():
                 #     line = line.down(1)
@@ -69,7 +70,8 @@ class Document(object):
                     indent = 0.0
                 line_lengths = [c.width * 1200 / 72]
                 end_line = wrap_paragraph(width_of, line_lengths,
-                                          line, item, indent, line_height)
+                                          line, item.text, indent,
+                                          line_height)
                 if end_line is None:
                     break
                 line = end_line.next(line_height)
@@ -97,7 +99,10 @@ class Document(object):
             for chase in page.chases:
                 for line in chase.lines:
                     for graphic in line.graphics:
-                        graphic.draw(line, paint)
+                        call = graphic[0]
+                        args = graphic[1:]
+                        #graphic.draw(line, paint)
+                        call(paint, line, *args)
 
         paint.end()
 

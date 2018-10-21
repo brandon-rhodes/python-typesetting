@@ -9,7 +9,7 @@ from .hyphenate import hyphenate_word
 NONWORD = re.compile(r'(\W+)')
 SPACE = re.compile(r'[ \n]+')
 
-def wrap_paragraph(width_of, line_lengths, line, pp, indent,
+def wrap_paragraph(width_of, line_lengths, line, text, indent,
                    line_height, # TODO: remove this one
 ):
 
@@ -23,9 +23,11 @@ def wrap_paragraph(width_of, line_lengths, line, pp, indent,
     space_width = width_of(u'm m') - width_of(u'mm')
     #space_width *= 0.9
     hyphen_width = width_of(u'-')
+
+    # TODO: should do non-breaking spaces with glue as well
     space = Glue(space_width, space_width * .5, space_width * .3333)
 
-    for string in SPACE.split(pp.text):
+    for string in SPACE.split(text):
         i = iter(NONWORD.split(string))
         for word in i:
             if word:
@@ -77,20 +79,14 @@ def wrap_paragraph(width_of, line_lengths, line, pp, indent,
         if bbox.is_penalty() and bbox.width == hyphen_width:
             xlist.append((x, u'-'))
 
-        line.graphics.append(KnuthLine(xlist))
+        line.graphics.append((knuth_draw, xlist))
         line = line.next(line_height)
         start = breakpoint + 1
 
     return line.previous
 
-class KnuthLine(object):
-    """A graphic that knows how to draw a justified line of text."""
-
-    def __init__(self, xlist):
-        self.xlist = xlist
-
-    def draw(self, line, paint):
-        ay = line.ay()
-        pt = 1200 / 72.0
-        for x, text in self.xlist:
-            paint.drawText(line.chase.x * pt + x, ay * pt, text)
+def knuth_draw(paint, line, xlist):
+    ay = line.ay()
+    pt = 1200 / 72.0
+    for x, text in xlist:
+        paint.drawText(line.chase.x * pt + x, ay * pt, text)
