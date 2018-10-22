@@ -27,38 +27,34 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
     space_width = width_of(u'm m') - width_of(u'mm')
 
     # TODO: should do non-breaking spaces with glue as well
-    space = Glue(space_width, space_width * .5, space_width * .3333)
+    space_glue = Glue(space_width, space_width * .5, space_width * .3333)
+
+    findall = re.compile(r'([\xa0]?)(\w*)([^\xa0\w\s]*)([ \n]*)').findall
 
     def text_boxes(text):
-        solids = BREAKING_SPACE.split(text)
-        end = len(solids) - 1
-        for ii, string in enumerate(solids):
-            i = iter(NONWORD.split(string))
-            word = next(i)
-            yield from word_boxes(word)
-            for punctuation in i:
-                yield from punctuation_boxes(punctuation)
-                word = next(i)
+        for control_code, word, punctuation, space in findall(text):
+            if control_code:
+                if control_code == '\xa0':
+                    yield space_glue
+                    yield Penalty(0, 999999)
+                else:
+                    print('Unsupported control code: %r' % control_code)
+            if word:
                 yield from word_boxes(word)
-            if ii != end:
-                yield space
+            if punctuation:
+                yield Box(width_of(punctuation), punctuation)
+                if punctuation == u'-':
+                    yield ZERO_WIDTH_BREAK
+            if space:
+                yield space_glue
 
     def word_boxes(word):
-        if not word:
-            return
         pieces = iter(hyphenate_word(word))
         piece = next(pieces)
         yield Box(width_of(piece), piece)
         for piece in pieces:
             yield Penalty(width_of(u'-'), 100)
             yield Box(width_of(piece), piece)
-
-    def punctuation_boxes(punctuation):
-        if not punctuation:
-            return
-        yield Box(width_of(punctuation), punctuation)
-        if punctuation == u'-':
-            yield ZERO_WIDTH_BREAK
 
     for font_name, text in fonts_and_texts:
         switch_font(font_name)

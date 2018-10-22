@@ -31,6 +31,7 @@ class Document(object):
         self.metrics = {}
 
         for name_and_args in [
+            ('chapter-title', name, u'Roman', 18),
             ('body-roman', name, u'Roman', 11),
             ('body-italic', name, u'Italic', 11),
         ]:
@@ -102,6 +103,7 @@ class Document(object):
                     break
                 line = end_line.next(line_height)
             else:
+                #print(item)
                 line = line.need(item.height)
                 line.graphics.append(item.draw)
                 line = line.down(item.height)
