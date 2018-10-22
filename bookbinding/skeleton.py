@@ -28,6 +28,9 @@ class Chase(object):
         self.width = page.width - inner_margin - outer_margin
 
         self.x = inner_margin if page.is_recto else outer_margin
+        self.y = top_margin
+
+        self.graphics = []
 
     def next(self):
         return Chase(self.page.next(), self.top_margin, self.bottom_margin,
@@ -69,7 +72,7 @@ class Line(object):
         return self.y > self.chase.height - line_height
 
     def ay(self):
-        return self.chase.bottom_margin + self.y
+        return self.chase.top_margin + self.y
 
     def unroll_document(self):
         lines = unroll(self)

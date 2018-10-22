@@ -1,5 +1,5 @@
-from PySide2.QtCore import QSizeF
-from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase
+from PySide2.QtCore import QSizeF, Qt, QPoint, QMarginsF
+from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase, QPen
 from PySide2.QtWidgets import QApplication
 
 from .knuth import wrap_paragraph
@@ -25,13 +25,15 @@ class Document(object):
         name = names[0]
         self.writer = QPdfWriter('book.pdf')
         self.writer.setPageSizeMM(QSizeF(page_width * mm, page_height * mm))
+        self.writer.setPageMargins(QMarginsF(0, 0, 0, 0))
         self.painter = QPainter(self.writer)
 
         self.fonts = {}
         self.metrics = {}
 
         for name_and_args in [
-            ('chapter-title', name, u'Roman', 18),
+            ('chapter-title-roman', name, u'Roman', 18),
+            ('section-title-roman', name, u'Roman', 14),
             ('body-roman', name, u'Roman', 11),
             ('body-italic', name, u'Italic', 11),
         ]:
@@ -85,13 +87,14 @@ class Document(object):
                 #     line.words = [u'*']
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
-                if item.style == 'indented-paragraph':
+                paragraph = item
+                if item.indented:
                     indent = font_height_raw
                 else:
                     indent = 0.0
                 line_lengths = [c.width * 1200 / 72]
                 pieces = item.text.split('<i>')
-                fonts_and_texts = [('body-roman', pieces[0])]
+                fonts_and_texts = [(paragraph.font_name, pieces[0])]
                 for piece in pieces[1:]:
                     p2 = piece.split('</i>')
                     fonts_and_texts.append(('body-italic', p2[0]))
@@ -116,29 +119,31 @@ class Document(object):
         return self.pages
 
     def render(self, pages):
-        paint = self.painter
+        painter = self.painter
         #paint.setFont(self.font)
 
         for i, page in enumerate(pages):
             if i:
                 self.writer.newPage()
             for graphic in page.graphics:
-                graphic(page, paint)
+                graphic(page, painter)
             for chase in page.chases:
+                mark_chase(painter, chase)
                 for line in chase.lines:
                     for graphic in line.graphics:
                         call = graphic[0]
                         args = graphic[1:]
                         #graphic.draw(line, paint)
-                        call(self.fonts, paint, line, *args)
+                        call(self.fonts, painter, line, *args)
 
-        paint.end()
+        painter.end()
 
 class Paragraph(object):
 
-    def __init__(self, text, style):
+    def __init__(self, text, font_name, indented):
         self.text = text
-        self.style = style
+        self.font_name = font_name
+        self.indented = indented
 
 class Spacer(object):
 
@@ -153,3 +158,21 @@ def asterisks(fonts, paint, line, width_of):
     w = width_of(a)
     x = line.chase.x * pt + (line.chase.width * pt - w) / 2
     paint.drawText(x, y * pt, a)
+
+def mark_chase(painter, chase):
+    pt = 1200 / 72.0
+    P = QPen(Qt.black, pt, Qt.SolidLine, Qt.RoundCap, Qt.RoundJoin)
+    painter.setPen(P)
+
+    x, y = chase.x * pt, chase.y * pt
+    w = chase.width * pt
+    h = chase.height * pt
+
+    print(x,y)
+    painter.drawPolyline([
+        QPoint(x, y),
+        QPoint(x + w, y),
+        QPoint(x + w, y + h),
+        QPoint(x, y + h),
+        QPoint(x, y),
+    ])
