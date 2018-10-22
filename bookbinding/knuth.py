@@ -13,7 +13,7 @@ ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 def wrap_paragraph(switch_font, width_of, line_lengths, line,
                    fonts_and_texts,
                    indent,
-                   line_height, # TODO: remove this one
+                   line_height, ascent, # TODO: remove these
 ):
 
     olist = ObjectList()
@@ -101,7 +101,7 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
             xlist.append((x, u'-'))
 
         line.graphics.append((knuth_draw, xlist))
-        line = line.next(line_height)
+        line = line.next(line_height, ascent)
         start = breakpoint + 1
 
     return line.previous

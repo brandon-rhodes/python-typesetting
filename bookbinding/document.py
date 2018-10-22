@@ -72,16 +72,17 @@ class Document(object):
         font_height_raw = self.font_metrics.height()
         line_height_raw = self.font_metrics.lineSpacing()
         line_height = line_height_raw * 72.0 / 1200
+        ascent = self.font_metrics.ascent() * 72.0 / 1200
 
         line = Line(c)
         for item in story:
             if isinstance(item, Spacer):
                 if not line.at_bottom(line_height):
-                    line = line.next(line_height)
+                    line = line.next(line_height, ascent)
                 if line.at_bottom(line_height):
                     line.graphics.append((asterisks, width_of))
-                    line = line.next(line_height)
-                    line = line.next(line_height)
+                    line = line.next(line_height, ascent)
+                    line = line.next(line_height, ascent)
                 # if line.at_bottom():
                 #     line = line.down(1)
                 #     line.words = [u'*']
@@ -101,10 +102,10 @@ class Document(object):
                     fonts_and_texts.append(('body-roman', p2[1]))
                 end_line = wrap_paragraph(switch_font, width_of, line_lengths,
                                           line, fonts_and_texts, indent,
-                                          line_height)
+                                          line_height, ascent)
                 if end_line is None:
                     break
-                line = end_line.next(line_height)
+                line = end_line.next(line_height, ascent)
             else:
                 #print(item)
                 line = line.need(item.height)

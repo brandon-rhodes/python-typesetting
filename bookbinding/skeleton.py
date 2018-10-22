@@ -58,12 +58,13 @@ class Line(object):
         next_chase = self.chase.next()
         return Line(next_chase, previous=self)
 
-    def next(self, line_height):
+    def next(self, line_height, ascent):
+        # TODO: also accept ascent?
         if not self.at_bottom(line_height):
             return self.down(line_height)
         else:
             next_chase = self.chase.next()
-            return Line(next_chase, previous=self)
+            return Line(next_chase, previous=self, y=ascent)
 
     def down(self, line_height):
         return Line(self.chase, previous=self, y=self.y + line_height)
