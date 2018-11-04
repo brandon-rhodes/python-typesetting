@@ -38,9 +38,7 @@ class Chase(object):
 
 class Line(object):
 
-    def __init__(self, chase, previous=None, y=None):
-        if y is None:
-            y = 0  # TODO: start "ascent()" from top?
+    def __init__(self, chase, y, previous=None):
         self.chase = chase
         self.w = chase.width
         self.y = y

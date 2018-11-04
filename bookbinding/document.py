@@ -39,9 +39,10 @@ class Document(object):
         ]:
             name = name_and_args[0]
             font = QFontDatabase().font(*name_and_args[1:])
-            self.fonts[name] = font
             self.painter.setFont(font)
-            self.metrics[name] = self.painter.fontMetrics()
+            metrics = self.painter.fontMetrics()
+            self.fonts[name] = font
+            self.metrics[name] = metrics
 
         self.painter.setFont(self.fonts['body-roman'])
 
@@ -74,7 +75,7 @@ class Document(object):
         line_height = line_height_raw * 72.0 / 1200
         ascent = self.font_metrics.ascent() * 72.0 / 1200
 
-        line = Line(c)
+        line = Line(c, ascent)
         for item in story:
             if isinstance(item, Spacer):
                 if not line.at_bottom(line_height):
@@ -107,7 +108,6 @@ class Document(object):
                     break
                 line = end_line.next(line_height, ascent)
             else:
-                #print(item)
                 line = line.need(item.height)
                 line.graphics.append(item.draw)
                 line = line.down(item.height)
@@ -141,10 +141,13 @@ class Document(object):
 
 class Paragraph(object):
 
-    def __init__(self, text, font_name, indented):
+    def __init__(self, text, font_name, indented,
+                 margin_top=0.0, margin_bottom=0.0):
         self.text = text
         self.font_name = font_name
         self.indented = indented
+        self.margin_top = margin_top
+        self.margin_bottom = margin_bottom
 
 class Spacer(object):
 
@@ -169,7 +172,6 @@ def mark_chase(painter, chase):
     w = chase.width * pt
     h = chase.height * pt
 
-    print(x,y)
     painter.drawPolyline([
         QPoint(x, y),
         QPoint(x + w, y),
