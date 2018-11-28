@@ -40,8 +40,8 @@ from collections import namedtuple
 
 Font = namedtuple('Font', 'ascent descent height leading')
 
-Page2 = namedtuple('Page', 'previous width height')
-Column = namedtuple('Column', 'previous page width height')
+Page2 = namedtuple('Page', 'width height')
+Column = namedtuple('Column', 'page width height')
 Line2 = namedtuple('Line', 'previous column y words')
 
 class Line(object):
