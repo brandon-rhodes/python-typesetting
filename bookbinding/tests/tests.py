@@ -9,17 +9,25 @@ def next_column(column):
     return Column(page, 10, 34)
 
 def next_line(font, line):
-    column = next_column(line.column if line else None)
-    return Line(None, column, font.height, [])
+    if line:
+        column = line.column
+        y = line.y + font.height + font.leading
+        if y <= column.height:
+            return Line(line, column, y, [])
+    else:
+        column = None
+    return Line(line, next_column(column), font.height, [])
 
 def test_line_positions():
     f = Font(8, 2, 10, 2)
     l1 = next_line(f, None)
     l2 = next_line(f, l1)
+    l3 = next_line(f, l2)
+    l4 = next_line(f, l3)
 
-    p1 = Page(10, 34)
-    c1 = Column(p1, 10, 34)
-    p2 = Page(10, 34)
-    c2 = Column(p2, 10, 34)
-    assert l1 == Line(None, c1, 10, [])
-    assert l2 == Line(None, c2, 10, [])
+    p = Page(10, 34)
+    c = Column(p, 10, 34)
+    assert l1 == Line(None, c, 10, [])
+    assert l2 == Line(l1, c, 22, [])
+    assert l3 == Line(l2, c, 34, [])
+    assert l4 == Line(l3, c, 10, [])
