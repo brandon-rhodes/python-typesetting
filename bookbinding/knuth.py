@@ -12,15 +12,15 @@ ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
 def wrap_paragraph(switch_font, width_of, line_lengths, line,
                    fonts_and_texts,
-                   indent,
+                   indent, first_indent,
                    line_height, ascent, # TODO: remove these
 ):
 
     olist = ObjectList()
     # olist.debug = True
 
-    if indent:
-        olist.append(Glue(indent, 0, 0))
+    if first_indent:
+        olist.append(Glue(first_indent, 0, 0))
 
     # TODO: get rid of this since it changesd with the font?  Compute
     # and pre-cache them in each metrics cache?
@@ -56,6 +56,8 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
             yield Penalty(width_of(u'-'), 100)
             yield Box(width_of(piece), piece)
 
+    indented_lengths = [length - indent for length in line_lengths]
+
     for font_name, text in fonts_and_texts:
         switch_font(font_name)
         olist.append(Box(0, font_name))  # special sentinel
@@ -66,7 +68,7 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
     for tolerance in 1, 2, 3, 4:
         try:
             breaks = olist.compute_breakpoints(
-                line_lengths, tolerance=tolerance)
+                indented_lengths, tolerance=tolerance)
         except RuntimeError:
             pass
         else:
@@ -77,9 +79,9 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
     assert breaks[0] == 0
     start = 0
 
-    for breakpoint in breaks[1:]:
-        r = olist.compute_adjustment_ratio(start, breakpoint, 0,
-                                           (line_lengths[0],))
+    for i, breakpoint in enumerate(breaks[1:]):
+        r = olist.compute_adjustment_ratio(start, breakpoint, i,
+                                           indented_lengths)
 
         r = 1.0
 
@@ -91,14 +93,14 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
                 x += box.compute_width(r)
             elif box.is_box():
                 if box.width:
-                    xlist.append((x, box.character))
+                    xlist.append((x + indent, box.character))
                     x += box.width
                 else:
                     xlist.append((None, box.character))
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width:
-            xlist.append((x, u'-'))
+            xlist.append((x + indent, u'-'))
 
         line.graphics.append((knuth_draw, xlist))
         line = line.next(line_height, ascent)

@@ -90,10 +90,9 @@ class Document(object):
                 #     line.align = 'center'
             elif isinstance(item, Paragraph):
                 paragraph = item
-                if item.indented:
-                    indent = font_height_raw
-                else:
-                    indent = 0.0
+                first_indent = item.first_indent
+                if first_indent is True:
+                    first_indent = font_height_raw
                 line_lengths = [c.width * 1200 / 72]
                 pieces = item.text.split('<i>')
                 fonts_and_texts = [(paragraph.font_name, pieces[0])]
@@ -102,7 +101,8 @@ class Document(object):
                     fonts_and_texts.append(('body-italic', p2[0]))
                     fonts_and_texts.append(('body-roman', p2[1]))
                 end_line = wrap_paragraph(switch_font, width_of, line_lengths,
-                                          line, fonts_and_texts, indent,
+                                          line, fonts_and_texts,
+                                          item.indent, first_indent,
                                           line_height, ascent)
                 if end_line is None:
                     break
@@ -141,11 +141,12 @@ class Document(object):
 
 class Paragraph(object):
 
-    def __init__(self, text, font_name, indent=0, temporary_indent=0,
+    def __init__(self, text, font_name, indent=0, first_indent=0,
                  margin_top=0.0, margin_bottom=0.0):
         self.text = text
         self.font_name = font_name
-        self.indented = temporary_indent
+        self.indent = indent
+        self.first_indent = first_indent
         self.margin_top = margin_top
         self.margin_bottom = margin_bottom
 
