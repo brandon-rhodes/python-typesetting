@@ -36,6 +36,14 @@ class Chase(object):
         return Chase(self.page.next(), self.top_margin, self.bottom_margin,
                      self.inner_margin, self.outer_margin)
 
+from collections import namedtuple
+
+Font = namedtuple('Font', 'ascent descent height leading')
+
+Page2 = namedtuple('Page', 'previous width height')
+Column = namedtuple('Column', 'previous page width height')
+Line2 = namedtuple('Line', 'previous column y words')
+
 class Line(object):
 
     def __init__(self, chase, y, previous=None):

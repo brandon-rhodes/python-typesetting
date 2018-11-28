@@ -1,3 +1,4 @@
 *.pyc
+.cache/
 book.pdf
 bookbinding.egg-info/
