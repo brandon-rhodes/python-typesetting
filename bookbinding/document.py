@@ -141,11 +141,11 @@ class Document(object):
 
 class Paragraph(object):
 
-    def __init__(self, text, font_name, indented,
+    def __init__(self, text, font_name, indent=0, temporary_indent=0,
                  margin_top=0.0, margin_bottom=0.0):
         self.text = text
         self.font_name = font_name
-        self.indented = indented
+        self.indented = temporary_indent
         self.margin_top = margin_top
         self.margin_bottom = margin_bottom
 
