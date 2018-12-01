@@ -98,6 +98,18 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
 
     return end_line
 
+def test_nice_paragraph():
+    # It produces neither an orphan nor a widow.
+    l1 = next_line(None, 10, 2)
+    l3 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 10, 2, 2)
+    l2 = l3.previous
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 10, 34)
+    assert l1 == Line(None, c1, 10, [])
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c1, 34, [])
+
 def test_orphan():
     # A simple situation: an orphan that can be avoided by not using the
     # final line of the starting column.
