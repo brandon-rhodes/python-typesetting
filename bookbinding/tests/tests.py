@@ -57,21 +57,25 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
     if len(lines) == 2:
         return end_line
 
+    def reflow():
+        nonlocal end_line, lines
+        end_line = add_paragraph(line, fancy_next_line, *args)
+        lines = unroll(line, end_line)
+
     def is_orphan():
         return lines[1].column is not lines[2].column
 
     def fix_orphan():
-        nonlocal end_line
         skips.add((lines[1].column.id, lines[1].y))
-        end_line = add_paragraph(line, fancy_next_line, *args)
+        reflow()
 
     def is_widow():
         return lines[-2].column is not lines[-1].column
 
     def fix_widow():
-        nonlocal end_line
+        nonlocal end_line, lines
         skips.add((lines[-2].column.id, lines[-2].y))
-        end_line = add_paragraph(line, fancy_next_line, *args)
+        reflow()
 
     def fancy_next_line(line, height, leading):
         line2 = next_line(line, height, leading)
@@ -83,12 +87,10 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
 
     if is_orphan():
         fix_orphan()
-        lines = unroll(line, end_line)
         if is_widow():
             fix_widow()
     elif is_widow():
         fix_widow()
-        lines = unroll(line, end_line)
         if is_orphan():
             fix_orphan()
 
