@@ -46,9 +46,6 @@ def unroll(start_line, end_line):
     lines.reverse()
     return lines
 
-def skip_lines(next_line, line_numbers):
-    X
-
 def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
     end_line = add_paragraph(line, next_line, *args)
     lines = unroll(line, end_line)
