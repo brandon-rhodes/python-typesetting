@@ -88,8 +88,7 @@ def test_avoids_orphan():
     l2 = next_line(l1, 10, 2)
 
     l5 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 10, 2, 3)
-    l4 = l5.previous
-    l3 = l4.previous
+    l2, l3, l4 = unroll(l2, l5.previous)
 
     p = Page(10, 34)
     c1 = Column(p, 1, 10, 34)
@@ -105,9 +104,7 @@ def test_avoids_widow():
     l1 = None
 
     l5 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 10, 2, 4)
-    l4 = l5.previous
-    l3 = l4.previous
-    l2 = l3.previous
+    l1, l2, l3, l4 = unroll(l1, l5.previous)
 
     p = Page(10, 34)
     c1 = Column(p, 1, 10, 34)
@@ -123,12 +120,7 @@ def test_avoids_widow_after_full_page():
     l0 = None
 
     l7 = avoid_widows_and_orphans(l0, next_line, make_paragraph, 10, 2, 7)
-    l6 = l7.previous
-    l5 = l6.previous
-    l4 = l5.previous
-    l3 = l4.previous
-    l2 = l3.previous
-    l1 = l2.previous
+    l0, l1, l2, l3, l4, l5, l6 = unroll(l0, l7.previous)
 
     p = Page(10, 34)
     c1 = Column(p, 1, 10, 34)
