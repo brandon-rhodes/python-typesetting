@@ -1,12 +1,13 @@
 
-from bookbinding.skeleton import Column, Line2 as Line, Font, Page2 as Page
+from bookbinding.skeleton import Column, Line2 as Line, Page2 as Page
 
 def new_page():
     return Page(10, 34)
 
 def next_column(column):
     page = new_page()
-    return Column(page, 10, 34)
+    id = column.id + 1 if column else 1
+    return Column(page, id, 10, 34)
 
 def next_line(line, height, leading):
     if line:
@@ -25,13 +26,12 @@ def test_line_positions():
     l4 = next_line(l3, 10, 2)
 
     p = Page(10, 34)
-    c = Column(p, 10, 34)
-    assert l1 == Line(None, c, 10, [])
-    assert l2 == Line(l1, c, 22, [])
-    assert l3 == Line(l2, c, 34, [])
-    assert l4 == Line(l3, c, 10, [])
-    assert l1.column is l2.column is l3.column
-    assert l3.column is not l4.column
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    assert l1 == Line(None, c1, 10, [])
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c1, 34, [])
+    assert l4 == Line(l3, c2, 10, [])
 
 def make_paragraph(line, next_line, height, leading, n):
     for i in range(n):
@@ -49,39 +49,69 @@ def unroll(start_line, end_line):
 def skip_lines(next_line, line_numbers):
     X
 
-def avoid_widows_and_orphans(line, next_line, callable, *args):
-    end_line = callable(line, next_line, *args)
+def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
+    end_line = add_paragraph(line, next_line, *args)
     lines = unroll(line, end_line)
 
     # Single-line paragraphs produce neither widows nor orphans.
-    if len(lines) <= 2:
+    if len(lines) == 2:
         return end_line
 
-    # Avoid orphans by moving paragraph to top of next column.
-    if (lines[0].column is lines[1].column # TODO: what if lines[0] is None?
-        and lines[1].column is not lines[2].column):
-        dy = lines[1].y - lines[0].y
-        line = next_line(line, dy, 0)
-        end_line = callable(line, next_line, *args)
+    def orphaned(): return lines[1].column is not lines[2].column
+    def widowed(): return lines[-2].column is not lines[-1].column
+
+    skips = set()
+    if orphaned():
+        skips.add((lines[1].column.id, lines[1].y))
+    elif widowed():
+        skips
+
+    if skips:
+        def next_line2(line, height, leading):
+            line2 = next_line(line, height, leading)
+            if (line2.column.id, line2.y) in skips:
+                line2 = next_line(line, height, leading + 99999)
+            return line2
+        end_line = add_paragraph(line, next_line2, *args)
+        #lines = unroll(line, end_line2)
 
     return end_line
-    #if line.end_line 
+    #if line.end_line
 
 def test_avoids_orphan():
+    # A simple situation: an orphan that can be avoided by not using the
+    # final line of the starting column.
+
     l1 = next_line(None, 10, 2)
     l2 = next_line(l1, 10, 2)
     l5 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 10, 2, 3)
 
     l4 = l5.previous
     l3 = l4.previous
-    lwat = l3.previous
-    assert lwat.previous is l2
+    assert l3.previous is l2
 
     p = Page(10, 34)
-    c = Column(p, 10, 34)
-    assert l2 == Line(l1, c, 22, [])
-    assert l3 == Line(lwat, c, 10, [])
-    assert l4 == Line(l3, c, 22, [])
-    assert l5 == Line(l4, c, 34, [])
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c2, 10, [])
+    assert l4 == Line(l3, c2, 22, [])
+    assert l5 == Line(l4, c2, 34, [])
 
+def xtest_avoids_widow():
+    # Another simple situation: a widow that can be avoided by not using
+    # the final line of the starting chase.
+    l1 = None
+    l5 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 10, 2, 4)
 
+    l4 = l5.previous
+    l3 = l4.previous
+    l2 = l3.previous
+    assert l2.previous is l1
+
+    p = Page(10, 34)
+    c = Column(p, 1, 10, 34)
+    assert l2 == Line(l1, c, 10, [])
+    assert l3 == Line(l2, c, 22, [])
+    assert l4 == Line(l3, c, 10, [])
+    assert l5 == Line(l4, c, 22, [])

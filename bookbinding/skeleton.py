@@ -41,7 +41,7 @@ from collections import namedtuple
 Font = namedtuple('Font', 'ascent descent height leading')
 
 Page2 = namedtuple('Page', 'width height')
-Column = namedtuple('Column', 'page width height')
+Column = namedtuple('Column', 'page id width height')
 Line2 = namedtuple('Line', 'previous column y words')
 
 class Line(object):
