@@ -135,7 +135,8 @@ def test_avoids_widow_after_full_page():
     assert l7 == Line(l6, c3, 22, [])
 
 def test_avoids_orphan_widow():
-    # A two-line paragraph straddling the end of a column.
+    # A two-line paragraph straddling the end of a column, that has both
+    # an orphan and a widow but only needs a 1-line bump to fix both.
     l1 = next_line(None, 10, 2)
     l2 = next_line(l1, 10, 2)
 
@@ -148,3 +149,23 @@ def test_avoids_orphan_widow():
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])
     assert l4 == Line(l3, c2, 22, [])
+
+def test_avoids_orphan_then_full_page_then_widow():
+    # A 3-column paragraph offering both an orphan and a window, that
+    # needs a 1-line bump to fix both (and become a 2-column paragraph).
+    l1 = next_line(None, 10, 2)
+    l2 = next_line(l1, 10, 2)
+
+    l7 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 10, 2, 5)
+    l2, l3, l4, l5, l6 = unroll(l2, l7.previous)
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    c3 = Column(p, 3, 10, 34)
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c2, 10, [])
+    assert l4 == Line(l3, c2, 22, [])
+    assert l5 == Line(l4, c2, 34, [])
+    assert l6 == Line(l5, c3, 10, [])
+    assert l7 == Line(l6, c3, 22, [])
