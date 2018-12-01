@@ -50,22 +50,28 @@ def skip_lines(next_line, line_numbers):
     X
 
 def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
-    end_line = add_paragraph(line, next_line, *args)
+    original_end_line = end_line = add_paragraph(line, next_line, *args)
     lines = unroll(line, end_line)
 
     # Single-line paragraphs produce neither widows nor orphans.
     if len(lines) == 2:
         return end_line
 
+    def is_orphan():
+        return lines[1].column is not lines[2].column
+
     def fix_orphan():
-        if lines[1].column is not lines[2].column:
-            skips.add((lines[1].column.id, lines[1].y))
-            return True
+        nonlocal end_line
+        skips.add((lines[1].column.id, lines[1].y))
+        end_line = add_paragraph(line, fancy_next_line, *args)
+
+    def is_widow():
+        return lines[-2].column is not lines[-1].column
 
     def fix_widow():
-        if lines[-2].column is not lines[-1].column:
-            skips.add((lines[-2].column.id, lines[-2].y))
-            return True
+        nonlocal end_line
+        skips.add((lines[-2].column.id, lines[-2].y))
+        end_line = add_paragraph(line, fancy_next_line, *args)
 
     def fancy_next_line(line, height, leading):
         line2 = next_line(line, height, leading)
@@ -75,15 +81,17 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
 
     skips = set()
 
-    if fix_orphan():
-        end_line = add_paragraph(line, fancy_next_line, *args)
-    elif fix_widow():
-        end_line = add_paragraph(line, fancy_next_line, *args)
+    if is_orphan():
+        fix_orphan()
+    elif is_widow():
+        fix_widow()
         lines = unroll(line, end_line)
-        if fix_orphan():
-            end_line = add_paragraph(line, fancy_next_line, *args)
+        if is_orphan():
+            fix_orphan()
+        # if is_orphan() or is_widow():
+        #     return original_end_line
 
-        #lines = unroll(line, end_line2)
+        #original_end_line
 
     return end_line
     #if line.end_line
