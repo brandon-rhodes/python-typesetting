@@ -101,7 +101,7 @@ def test_avoids_orphan():
 
 def test_avoids_widow():
     # Another simple situation: a widow that can be avoided by not using
-    # the final line of the starting chase.
+    # the final line of the starting column.
     l1 = None
 
     l5 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 10, 2, 4)
@@ -116,3 +116,28 @@ def test_avoids_widow():
     assert l3 == Line(l2, c1, 22, [])
     assert l4 == Line(l3, c2, 10, [])
     assert l5 == Line(l4, c2, 22, [])
+
+def test_avoids_widow_after_full_page():
+    # A widow that can be avoided by not using the final line of the
+    # second column of a 3-column paragraph.
+    l0 = None
+
+    l7 = avoid_widows_and_orphans(l0, next_line, make_paragraph, 10, 2, 7)
+    l6 = l7.previous
+    l5 = l6.previous
+    l4 = l5.previous
+    l3 = l4.previous
+    l2 = l3.previous
+    l1 = l2.previous
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    c3 = Column(p, 3, 10, 34)
+    assert l1 == Line(l0, c1, 10, [])
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c1, 34, [])
+    assert l4 == Line(l3, c2, 10, [])
+    assert l5 == Line(l4, c2, 22, [])
+    assert l6 == Line(l5, c3, 10, [])
+    assert l7 == Line(l6, c3, 22, [])
