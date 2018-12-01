@@ -67,7 +67,7 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
             skips.add((lines[-2].column.id, lines[-2].y))
             return True
 
-    def next_line2(line, height, leading):
+    def fancy_next_line(line, height, leading):
         line2 = next_line(line, height, leading)
         while (line2.column.id, line2.y) in skips:
             line2 = next_line(line, height, leading + 99999)
@@ -76,12 +76,13 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
     skips = set()
 
     if fix_orphan():
-        pass
+        end_line = add_paragraph(line, fancy_next_line, *args)
     elif fix_widow():
-        pass
+        end_line = add_paragraph(line, fancy_next_line, *args)
+        lines = unroll(line, end_line)
+        if fix_orphan():
+            end_line = add_paragraph(line, fancy_next_line, *args)
 
-    if skips:
-        end_line = add_paragraph(line, next_line2, *args)
         #lines = unroll(line, end_line2)
 
     return end_line
@@ -177,7 +178,7 @@ def test_orphan_then_full_page_then_widow():
     assert l6 == Line(l5, c3, 10, [])
     assert l7 == Line(l6, c3, 22, [])
 
-def xtest_widow_that_then_creates_orphan():
+def test_widow_whose_fix_creates_orphan():
     # Situation that needs two rounds: a widow that can be fixed by
     # bumping one line from the column, that then creates an orphan
     # requiring a second line to be bumped.
