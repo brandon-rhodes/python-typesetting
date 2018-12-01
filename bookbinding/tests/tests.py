@@ -60,18 +60,20 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
     def orphaned(): return lines[1].column is not lines[2].column
     def widowed(): return lines[-2].column is not lines[-1].column
 
+    def next_line2(line, height, leading):
+        line2 = next_line(line, height, leading)
+        if (line2.column.id, line2.y) in skips:
+            line2 = next_line(line, height, leading + 99999)
+        return line2
+
     skips = set()
+
     if orphaned():
         skips.add((lines[1].column.id, lines[1].y))
     elif widowed():
-        skips
+        skips.add((lines[-2].column.id, lines[-2].y))
 
     if skips:
-        def next_line2(line, height, leading):
-            line2 = next_line(line, height, leading)
-            if (line2.column.id, line2.y) in skips:
-                line2 = next_line(line, height, leading + 99999)
-            return line2
         end_line = add_paragraph(line, next_line2, *args)
         #lines = unroll(line, end_line2)
 
@@ -84,11 +86,10 @@ def test_avoids_orphan():
 
     l1 = next_line(None, 10, 2)
     l2 = next_line(l1, 10, 2)
-    l5 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 10, 2, 3)
 
+    l5 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 10, 2, 3)
     l4 = l5.previous
     l3 = l4.previous
-    assert l3.previous is l2
 
     p = Page(10, 34)
     c1 = Column(p, 1, 10, 34)
@@ -98,20 +99,20 @@ def test_avoids_orphan():
     assert l4 == Line(l3, c2, 22, [])
     assert l5 == Line(l4, c2, 34, [])
 
-def xtest_avoids_widow():
+def test_avoids_widow():
     # Another simple situation: a widow that can be avoided by not using
     # the final line of the starting chase.
     l1 = None
-    l5 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 10, 2, 4)
 
+    l5 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 10, 2, 4)
     l4 = l5.previous
     l3 = l4.previous
     l2 = l3.previous
-    assert l2.previous is l1
 
     p = Page(10, 34)
-    c = Column(p, 1, 10, 34)
-    assert l2 == Line(l1, c, 10, [])
-    assert l3 == Line(l2, c, 22, [])
-    assert l4 == Line(l3, c, 10, [])
-    assert l5 == Line(l4, c, 22, [])
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    assert l2 == Line(l1, c1, 10, [])
+    assert l3 == Line(l2, c1, 22, [])
+    assert l4 == Line(l3, c2, 10, [])
+    assert l5 == Line(l4, c2, 22, [])
