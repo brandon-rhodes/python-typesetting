@@ -83,18 +83,18 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
 
     if is_orphan():
         fix_orphan()
+        lines = unroll(line, end_line)
+        if is_widow():
+            fix_widow()
     elif is_widow():
         fix_widow()
         lines = unroll(line, end_line)
         if is_orphan():
             fix_orphan()
+
         # if is_orphan() or is_widow():
         #     return original_end_line
-
-        #original_end_line
-
     return end_line
-    #if line.end_line
 
 def test_orphan():
     # A simple situation: an orphan that can be avoided by not using the
@@ -202,3 +202,23 @@ def test_widow_whose_fix_creates_orphan():
     assert l2 == Line(l1, c2, 10, [])
     assert l3 == Line(l2, c2, 22, [])
     assert l4 == Line(l3, c2, 34, [])
+
+def test_orphan_whose_fix_creates_widow():
+    # Another situation that needs two rounds: an orphan that can be
+    # fixed by bumping the final line to the next column, that then
+    # creates a widow.
+    l1 = next_line(None, 10, 2)
+    l2 = next_line(l1, 10, 2)
+
+    l6 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 10, 2, 4)
+    l2, l3, l4, l5 = unroll(l2, l6.previous)
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    c3 = Column(p, 3, 10, 34)
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c2, 10, [])
+    assert l4 == Line(l3, c2, 22, [])
+    assert l5 == Line(l4, c3, 10, [])
+    assert l6 == Line(l5, c3, 22, [])
