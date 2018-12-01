@@ -133,3 +133,18 @@ def test_avoids_widow_after_full_page():
     assert l5 == Line(l4, c2, 22, [])
     assert l6 == Line(l5, c3, 10, [])
     assert l7 == Line(l6, c3, 22, [])
+
+def test_avoids_orphan_widow():
+    # A two-line paragraph straddling the end of a column.
+    l1 = next_line(None, 10, 2)
+    l2 = next_line(l1, 10, 2)
+
+    l4 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 10, 2, 2)
+    l3 = l4.previous
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c2, 10, [])
+    assert l4 == Line(l3, c2, 22, [])
