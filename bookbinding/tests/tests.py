@@ -1,11 +1,11 @@
 
 from bookbinding.skeleton import Column, Line2 as Line, Font, Page2 as Page
 
-def next_page(page):
+def new_page():
     return Page(10, 34)
 
 def next_column(column):
-    page = next_page(column.page if column else None)
+    page = new_page()
     return Column(page, 10, 34)
 
 def next_line(line, height, leading):
