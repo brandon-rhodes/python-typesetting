@@ -50,12 +50,14 @@ def skip_lines(next_line, line_numbers):
     X
 
 def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
-    original_end_line = end_line = add_paragraph(line, next_line, *args)
+    end_line = add_paragraph(line, next_line, *args)
     lines = unroll(line, end_line)
 
     # Single-line paragraphs produce neither widows nor orphans.
     if len(lines) == 2:
         return end_line
+
+    original_end_line = end_line
 
     def reflow():
         nonlocal end_line, lines
@@ -94,8 +96,9 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
         if is_orphan():
             fix_orphan()
 
-        # if is_orphan() or is_widow():
-        #     return original_end_line
+    if is_orphan() or is_widow():
+        return original_end_line
+
     return end_line
 
 def test_orphan():
@@ -224,3 +227,28 @@ def test_orphan_whose_fix_creates_widow():
     assert l4 == Line(l3, c2, 22, [])
     assert l5 == Line(l4, c3, 10, [])
     assert l6 == Line(l5, c3, 22, [])
+
+def test_widow_that_cannot_be_fixed():
+    # What if the next page's columns are narrower, so trying to push
+    # one line to the next page in fact fills the page and creates a
+    # widow all over again?  Then the algorithm should give up and
+    # return the original paragraph.
+
+    state = 0
+    def stateful_make_paragraph(line, next_line, height, leading):
+        nonlocal state
+        n = 6 if state else 4
+        state = 1
+        return make_paragraph(line, next_line, height, leading, n)
+
+    l4 = avoid_widows_and_orphans(None, next_line,
+                                  stateful_make_paragraph, 10, 2)
+    l0, l1, l2, l3 = unroll(None, l4.previous)
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
+    assert l1 == Line(None, c1, 10, [])
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c1, 34, [])
+    assert l4 == Line(l3, c2, 10, [])
