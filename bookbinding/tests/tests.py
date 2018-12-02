@@ -261,3 +261,23 @@ def test_widow_that_cannot_be_fixed():
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c1, 34, [])
     assert l4 == Line(l3, c2, 10, [])
+
+def run(line, actions):
+    i = 0
+    
+
+def tmp_test_title_without_problem():
+    # A title followed by a happy paragraph should stay in place.
+    l1 = next_line(None, 10, 2)
+    actions = [
+        (section_title, 'Title'),
+        (avoid_widows_and_orphans, make_paragraph, 10, 2, 1), #l1, next_line
+    ]
+    l3 = run(l1, actions)
+    l2 = l3.previous
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 10, 34)
+    assert l1 == Line(None, c1, 10, [])
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c1, 34, [])
