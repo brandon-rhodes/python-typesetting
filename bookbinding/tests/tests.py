@@ -262,22 +262,79 @@ def test_widow_that_cannot_be_fixed():
     assert l3 == Line(l2, c1, 34, [])
     assert l4 == Line(l3, c2, 10, [])
 
-def run(line, actions):
-    i = 0
-    
 
-def tmp_test_title_without_problem():
-    # A title followed by a happy paragraph should stay in place.
-    l1 = next_line(None, 10, 2)
+
+def make_paragraph2(actions, a, line, next_line, height, leading, n):
+    for i in range(n):
+        line = next_line(line, height, leading)
+    return a + 1, line
+
+def section_title(actions, a, line, next_line, title):
+    print(actions, a, title)
+    line2 = next_line(line, 10, 2)
+    if a + 1 == len(actions):
+        return a + 1, line2
+    #return a + 1, line2
+    next_action, *args = actions[a + 1]
+    a2, line3 = next_action(actions, a + 1, line2, next_line, *args)
+    lines = unroll(line2, line3)
+
+    # If we are in the same column as the following content, declare
+    # victory.
+    if lines[0].column is lines[1].column:
+        return a2, line3
+
+    # Try moving this title to the top of the next column.
+    line2b = next_line(line, 10, 9999999)
+    a2b, line3b = next_action(actions, a + 1, line2b, next_line, *args)
+    linesb = unroll(line2b, line3b)
+    if linesb[0].column is linesb[1].column:
+        return a2b, line3b
+
+    # We were still separated from our content?  Give up and keep
+    # ourselves on our original page.
+    return a2, line3
+#next_line(line, 10, 2)
+
+def run(actions, line, next_line):
+    a = 0
+    while a < len(actions):
+        action, *args = actions[a]
+        a, line = action(actions, a, line, next_line, *args)
+    return line
+
+def test_title_without_anything_after_it():
     actions = [
         (section_title, 'Title'),
-        (avoid_widows_and_orphans, make_paragraph, 10, 2, 1), #l1, next_line
     ]
-    l3 = run(l1, actions)
+    line = run(actions, None, next_line)
+    assert line.previous is None
+
+def test_title_with_stuff_after_it():
+    # A title followed by a happy paragraph should stay in place.
+    actions = [
+        (section_title, 'Title'),
+        (make_paragraph2, 10, 2, 1),
+    ]
+    line = run(actions, None, next_line)
+    assert line.previous.previous is None
+    return
+
+def test_title_without_enough_room():
+    actions = [
+        (make_paragraph2, 10, 2, 2),
+        (section_title, 'Title'),
+        (make_paragraph2, 10, 2, 1),
+    ]
+    l4 = run(actions, None, next_line)
+    l3 = l4.previous
     l2 = l3.previous
+    l1 = l2.previous
 
     p = Page(10, 34)
     c1 = Column(p, 1, 10, 34)
+    c2 = Column(p, 2, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
-    assert l3 == Line(l2, c1, 34, [])
+    assert l3 == Line(l2, c2, 10, [])
+    assert l4 == Line(l3, c2, 22, [])
