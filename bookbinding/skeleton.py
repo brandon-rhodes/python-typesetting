@@ -9,7 +9,6 @@ class OldPage(object):
         self.is_recto = (folio % 2 == 1)
         self.is_verso = (folio % 2 == 0)
         self.previous = previous
-        self.graphics = []
 
     def next(self):
         return OldPage(self.document, self.width, self.height,

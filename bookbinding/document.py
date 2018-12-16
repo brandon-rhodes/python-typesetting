@@ -8,9 +8,6 @@ from .skeleton import OldPage as Page, Chase, OldLine as Line
 #inch = 72
 mm = 25.4 / 72
 
-class Setter(object):
-    pass
-
 class Document(object):
 
     def __init__(self, page_width, page_height):
@@ -127,8 +124,6 @@ def render(pages, painter, fonts, writer):
     for i, page in enumerate(pages):
         if i:
             writer.newPage()
-        for graphic in page.graphics:
-            graphic(page, painter)
         for chase in page.chases:
             mark_chase(painter, chase)
             for line in chase.lines:
