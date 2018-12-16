@@ -40,7 +40,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     def text_boxes(text):
         for control_code, word, punctuation, space in findall(text):
             if control_code:
-                if control_code == '\xa0':
+                if control_code == u'\xa0':
                     yield space_glue
                     yield Penalty(0, 999999)
                 else:
@@ -133,6 +133,7 @@ def knuth_draw2(fonts, line, painter, xlist):
         if x is None:
             painter.setFont(fonts[text].qt_font)
         else:
+            # TODO: offset y by the descender height?
             painter.drawText((line.column.x + x) * pt,
                              (line.column.y + line.y) * pt,
                              text)

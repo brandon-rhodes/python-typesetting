@@ -11,8 +11,41 @@ def call_action(actions, a, fonts, line, next_line):
     action, *args = actions[a]
     return action(actions, a, fonts, line, next_line, *args)
 
+def section_break(actions, a, fonts, line, next_line, graphic):
+    at_top = line is None
+    a1 = a + 1
+    if at_top:
+        return a1, line
+
+    at_bottom = a1 == len(actions)
+    if at_bottom:
+        return a1, line
+
+    line2 = next_line(line, 2, 10)  # TODO: fix hard-coded values
+
+    if line2.column is not line.column:
+        line2.graphics.append(graphic)
+        line3 = next_line(line2, 2, 10)
+        return a1, line3
+
+    a2, line3 = call_action(actions, a1, fonts, line2, next_line)
+    # if line3 is line2:
+    #     return a2, line3
+    lines = unroll(line2, line3)
+    assert line2 is lines[0]
+    if line2.column is lines[1].column:
+        return a2, line3
+
+    line3 = next_line(line2, 2, 10)
+    line3.graphics.append(graphic)
+    if line3.column is line.column:
+        line4 = next_line(line3, 99999999, 0)
+    else:
+        line4 = next_line(line3, 2, 10)
+    return a1, line4
+
 def section_title(actions, a, fonts, line, next_line, title):
-    line2 = next_line(line, 2, 10)
+    line2 = next_line(line, 2, 10)  # TODO: replace hard-coded numbers
     if a + 1 == len(actions):
         return a + 1, line2
     a2, line3 = call_action(actions, a + 1, fonts, line2, next_line)
