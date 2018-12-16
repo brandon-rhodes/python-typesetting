@@ -10,6 +10,31 @@ NONWORD = re.compile(r'(\W+)')
 BREAKING_SPACE = re.compile(r'[ \n]+')
 ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
+def knuth_paragraph(actions, a, line, next_line, text,
+                    # switch_font, width_of, line_lengths,# line,
+                    # fonts_and_texts,
+                    # indent, first_indent,
+                    # line_height, ascent
+):
+    line = next_line(line, 2, 10)
+    line.graphics.append((knuth_draw2, text))
+    return a + 1, line
+
+def knuth_draw2(painter, line, text):
+    print(line.y)
+    pt = 1200 / 72.0
+    painter.drawText(line.column.x * pt, (line.column.y + line.y) * pt, text)
+    return
+    ay = line.ay()
+    pt = 1200 / 72.0
+    #painter.setFont(font)
+    for x, text in xlist:
+        if x is None:
+            painter.setFont(fonts[text])
+        else:
+            painter.drawText(line.chase.x * pt + x, ay * pt, text)
+
+
 def wrap_paragraph(switch_font, width_of, line_lengths, line,
                    fonts_and_texts,
                    indent, first_indent,

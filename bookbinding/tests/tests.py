@@ -1,8 +1,6 @@
 
 from ..skeleton import Column, Line, Page, unroll, next_line
-from ..composing import (
-    avoid_widows_and_orphans, call_action, run, section_title
-)
+from ..composing import avoid_widows_and_orphans, run, section_title
 
 def make_paragraph(actions, a, line, next_line, leading, height, n):
     for i in range(n):
@@ -16,8 +14,8 @@ def test_line_positions():
     l4 = next_line(l3, 2, 10)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c1, 34, [])
@@ -34,7 +32,7 @@ def test_nice_paragraph():
     l2 = l3.previous
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c1, 34, [])
@@ -53,8 +51,8 @@ def test_orphan():
     l2, l3, l4 = unroll(l2, l5.previous)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])
     assert l4 == Line(l3, c2, 22, [])
@@ -72,8 +70,8 @@ def test_widow():
     l1, l2, l3, l4 = unroll(l1, l5.previous)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
     assert l2 == Line(l1, c1, 10, [])
     assert l3 == Line(l2, c1, 22, [])
     assert l4 == Line(l3, c2, 10, [])
@@ -91,9 +89,9 @@ def test_widow_after_full_page():
     l0, l1, l2, l3, l4, l5, l6 = unroll(l0, l7.previous)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
-    c3 = Column(p, 3, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
+    c3 = Column(p, 3, 0, 0, 10, 34)
     assert l1 == Line(l0, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c1, 34, [])
@@ -115,8 +113,8 @@ def test_orphan_plus_widow():
     l3 = l4.previous
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])
     assert l4 == Line(l3, c2, 22, [])
@@ -134,9 +132,9 @@ def test_orphan_then_full_page_then_widow():
     l2, l3, l4, l5, l6 = unroll(l2, l7.previous)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
-    c3 = Column(p, 3, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
+    c3 = Column(p, 3, 0, 0, 10, 34)
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])
     assert l4 == Line(l3, c2, 22, [])
@@ -157,8 +155,8 @@ def test_widow_whose_fix_creates_orphan():
     l1, l2, l3 = unroll(l1, l4.previous)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c2, 10, [])
     assert l3 == Line(l2, c2, 22, [])
@@ -178,9 +176,9 @@ def test_orphan_whose_fix_creates_widow():
     l2, l3, l4, l5 = unroll(l2, l6.previous)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
-    c3 = Column(p, 3, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
+    c3 = Column(p, 3, 0, 0, 10, 34)
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])
     assert l4 == Line(l3, c2, 22, [])
@@ -207,8 +205,8 @@ def test_widow_that_cannot_be_fixed():
     l0, l1, l2, l3 = unroll(None, l4.previous)
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c1, 34, [])
@@ -273,8 +271,8 @@ def test_title_without_enough_room():
     l1 = l2.previous
 
     p = Page(10, 34)
-    c1 = Column(p, 1, 10, 34)
-    c2 = Column(p, 2, 10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    c2 = Column(p, 2, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])
