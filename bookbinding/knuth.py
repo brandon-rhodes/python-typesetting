@@ -15,7 +15,7 @@ def knuth_paragraph(
                     # text,
                     # font_name, indent, temporary_indent,
 
-        width_of, # (font, text)
+        #width_of, # (font, text)
 
         line_lengths,
         indent,
@@ -51,11 +51,13 @@ def knuth_paragraph(
     if first_indent:
         olist.append(Glue(first_indent, 0, 0))
 
-    font = fonts_and_texts[0][0]
+    font_name = fonts_and_texts[0][0]
+    font = fonts[font_name]
+    width_of = font.width_of
 
     # TODO: get rid of this since it changes with the font?  Compute
     # and pre-cache them in each metrics cache?
-    space_width = width_of(font, u'm m') - width_of(font, u'mm')
+    space_width = width_of(u'm m') - width_of(u'mm')
 
     # TODO: should do non-breaking spaces with glue as well
     space_glue = Glue(space_width, space_width * .5, space_width * .3333)
@@ -73,7 +75,7 @@ def knuth_paragraph(
             if word:
                 yield from word_boxes(word)
             if punctuation:
-                yield Box(width_of(font, punctuation), punctuation)
+                yield Box(width_of(punctuation), punctuation)
                 if punctuation == u'-':
                     yield ZERO_WIDTH_BREAK
             if space:
@@ -82,10 +84,10 @@ def knuth_paragraph(
     def word_boxes(word):
         pieces = iter(hyphenate_word(word))
         piece = next(pieces)
-        yield Box(width_of(font, piece), piece)
+        yield Box(width_of(piece), piece)
         for piece in pieces:
-            yield Penalty(width_of(font, u'-'), 100)
-            yield Box(width_of(font, piece), piece)
+            yield Penalty(width_of(u'-'), 100)
+            yield Box(width_of(piece), piece)
 
     indented_lengths = [length - indent for length in line_lengths]
 
@@ -151,11 +153,11 @@ def knuth_draw(fonts, painter, line, xlist):
         else:
             painter.drawText(line.chase.x * pt + x, ay * pt, text)
 
-def knuth_draw2(painter, line, xlist):
+def knuth_draw2(fonts, line, painter, xlist):
     pt = 1200 / 72.0
     for x, text in xlist:
         if x is None:
-            pass # TODO: set font
+            painter.setFont(fonts[text].qt_font)
         else:
             painter.drawText((line.column.x + x) * pt,
                              (line.column.y + line.y) * pt,
