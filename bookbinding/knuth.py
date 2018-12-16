@@ -11,7 +11,7 @@ BREAKING_SPACE = re.compile(r'[ \n]+')
 ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
 def knuth_paragraph(
-        actions, a, line, next_line,
+        actions, a, fonts, line, next_line,
                     # text,
                     # font_name, indent, temporary_indent,
 

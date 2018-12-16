@@ -2,7 +2,7 @@
 from ..skeleton import Column, Line, Page, unroll, next_line
 from ..composing import avoid_widows_and_orphans, run, section_title
 
-def make_paragraph(actions, a, line, next_line, leading, height, n):
+def make_paragraph(actions, a, fonts, line, next_line, leading, height, n):
     for i in range(n):
         line = next_line(line, leading, height)
     return a + 1, line
@@ -28,7 +28,7 @@ def test_nice_paragraph():
     l3 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 2),
-    ], l1, next_line)
+    ], None, l1, next_line)
     l2 = l3.previous
 
     p = Page(10, 34)
@@ -47,7 +47,7 @@ def test_orphan():
     l5 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 3),
-    ], l2, next_line)
+    ], None, l2, next_line)
     l2, l3, l4 = unroll(l2, l5.previous)
 
     p = Page(10, 34)
@@ -66,7 +66,7 @@ def test_widow():
     l5 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 4),
-    ], l1, next_line)
+    ], None, l1, next_line)
     l1, l2, l3, l4 = unroll(l1, l5.previous)
 
     p = Page(10, 34)
@@ -85,7 +85,7 @@ def test_widow_after_full_page():
     l7 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 7),
-    ], l0, next_line)
+    ], None, l0, next_line)
     l0, l1, l2, l3, l4, l5, l6 = unroll(l0, l7.previous)
 
     p = Page(10, 34)
@@ -109,7 +109,7 @@ def test_orphan_plus_widow():
     l4 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 2),
-    ], l2, next_line)
+    ], None, l2, next_line)
     l3 = l4.previous
 
     p = Page(10, 34)
@@ -128,7 +128,7 @@ def test_orphan_then_full_page_then_widow():
     l7 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 5),
-    ], l2, next_line)
+    ], None, l2, next_line)
     l2, l3, l4, l5, l6 = unroll(l2, l7.previous)
 
     p = Page(10, 34)
@@ -151,7 +151,7 @@ def test_widow_whose_fix_creates_orphan():
     l4 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 3),
-    ], l1, next_line)
+    ], None, l1, next_line)
     l1, l2, l3 = unroll(l1, l4.previous)
 
     p = Page(10, 34)
@@ -172,7 +172,7 @@ def test_orphan_whose_fix_creates_widow():
     l6 = run([
         (avoid_widows_and_orphans,),
         (make_paragraph, 2, 10, 4),
-    ], l2, next_line)
+    ], None, l2, next_line)
     l2, l3, l4, l5 = unroll(l2, l6.previous)
 
     p = Page(10, 34)
@@ -192,16 +192,17 @@ def test_widow_that_cannot_be_fixed():
     # return the original paragraph.
 
     state = 0
-    def stateful_make_paragraph(actions, a, line, next_line, leading, height):
+    def stateful_make_paragraph(actions, a, fonts, line, next_line,
+                                leading, height):
         nonlocal state
         n = 6 if state else 4
         state = 1
-        return make_paragraph(actions, a, line, next_line, leading, height, n)
+        return make_paragraph(actions, a, fonts, line, next_line, leading, height, n)
 
     l4 = run([
         (avoid_widows_and_orphans,),
         (stateful_make_paragraph, 2, 10),
-    ], None, next_line)
+    ], None, None, next_line)
     l0, l1, l2, l3 = unroll(None, l4.previous)
 
     p = Page(10, 34)
@@ -246,7 +247,7 @@ def test_title_without_anything_after_it():
     actions = [
         (section_title, 'Title'),
     ]
-    line = run(actions, None, next_line)
+    line = run(actions, None, None, next_line)
     assert line.previous is None
 
 def test_title_with_stuff_after_it():
@@ -255,7 +256,7 @@ def test_title_with_stuff_after_it():
         (section_title, 'Title'),
         (make_paragraph, 2, 10, 1),
     ]
-    line = run(actions, None, next_line)
+    line = run(actions, None, None, next_line)
     assert line.previous.previous is None
     return
 
@@ -265,7 +266,7 @@ def test_title_without_enough_room():
         (section_title, 'Title'),
         (make_paragraph, 2, 10, 1),
     ]
-    l4 = run(actions, None, next_line)
+    l4 = run(actions, None, None, next_line)
     l3 = l4.previous
     l2 = l3.previous
     l1 = l2.previous

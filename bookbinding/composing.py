@@ -1,22 +1,22 @@
 
 from .skeleton import unroll
 
-def run(actions, line, next_line):
+def run(actions, fonts, line, next_line):
     a = 0
     while a < len(actions):
-        a, line = call_action(actions, a, line, next_line)
+        a, line = call_action(actions, a, fonts, line, next_line)
     return line
 
-def call_action(actions, a, line, next_line):
+def call_action(actions, a, fonts, line, next_line):
     action, *args = actions[a]
-    return action(actions, a, line, next_line, *args)
+    return action(actions, a, fonts, line, next_line, *args)
 
-def section_title(actions, a, line, next_line, title):
-    print(actions, a, title)
+def section_title(actions, a, fonts, line, next_line, title):
+    # print(actions, a, title)
     line2 = next_line(line, 2, 10)
     if a + 1 == len(actions):
         return a + 1, line2
-    a2, line3 = call_action(actions, a + 1, line2, next_line)
+    a2, line3 = call_action(actions, a + 1, fonts, line2, next_line)
     lines = unroll(line2, line3)
 
     # If we are in the same column as the following content, declare
@@ -26,7 +26,7 @@ def section_title(actions, a, line, next_line, title):
 
     # Try moving this title to the top of the next column.
     line2b = next_line(line, 9999999, 10)
-    a2b, line3b = call_action(actions, a + 1, line2b, next_line)
+    a2b, line3b = call_action(actions, a + 1, fonts, line2b, next_line)
     linesb = unroll(line2b, line3b)
     if linesb[0].column is linesb[1].column:
         return a2b, line3b
@@ -35,8 +35,8 @@ def section_title(actions, a, line, next_line, title):
     # ourselves on our original page.
     return a2, line3
 
-def avoid_widows_and_orphans(actions, a, line, next_line, *args):
-    a2, end_line = call_action(actions, a + 1, line, next_line)
+def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
+    a2, end_line = call_action(actions, a + 1, fonts, line, next_line)
     lines = unroll(line, end_line)
 
     # Single-line paragraphs produce neither widows nor orphans.
@@ -48,7 +48,7 @@ def avoid_widows_and_orphans(actions, a, line, next_line, *args):
 
     def reflow():
         nonlocal end_line, lines
-        a2, end_line = call_action(actions, a + 1, line, fancy_next_line)
+        a2, end_line = call_action(actions, a + 1, fonts, line, fancy_next_line)
         lines = unroll(line, end_line)
 
     def is_orphan():
