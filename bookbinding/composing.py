@@ -12,7 +12,6 @@ def call_action(actions, a, fonts, line, next_line):
     return action(actions, a, fonts, line, next_line, *args)
 
 def section_title(actions, a, fonts, line, next_line, title):
-    # print(actions, a, title)
     line2 = next_line(line, 2, 10)
     if a + 1 == len(actions):
         return a + 1, line2

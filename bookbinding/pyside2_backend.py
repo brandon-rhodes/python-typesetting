@@ -1,13 +1,12 @@
-from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase, QPen
+from PySide2.QtGui import QFontDatabase
 
 
-def get_fonts(doc, font_specs):
-    #d = Document(PAGE_WIDTH, PAGE_HEIGHT)
+def get_fonts(painter, font_specs):
     fonts = {}
     for key, name, style, size in font_specs:
         qt_font = QFontDatabase().font(name, style, size)
-        doc.painter.setFont(qt_font)
-        metrics = doc.painter.fontMetrics()
+        painter.setFont(qt_font)
+        metrics = painter.fontMetrics()
         fonts[key] = Font(qt_font, metrics)
     return fonts
 

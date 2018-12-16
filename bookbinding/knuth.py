@@ -10,50 +10,23 @@ NONWORD = re.compile(r'(\W+)')
 BREAKING_SPACE = re.compile(r'[ \n]+')
 ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
-def knuth_paragraph(
-        actions, a, fonts, line, next_line,
-                    # text,
-                    # font_name, indent, temporary_indent,
+def knuth_paragraph(actions, a, fonts, line, next_line,
+                    indent, first_indent, fonts_and_texts):
 
-        #width_of, # (font, text)
+    font_name = fonts_and_texts[0][0]
+    font = fonts[font_name]
+    width_of = font.width_of
+    line = next_line(line, font.leading, font.height)
+    line_lengths = [line.column.width]  # TODO: support interesting shapes
 
-        line_lengths,
-        indent,
-        first_indent,
-        fonts_and_texts,
-
-                    # switch_font, width_of, line_lengths,# line,
-                    # fonts_and_texts,
-                    # indent, first_indent,
-                    # line_height, ascent
-):
-    #print(line_lengths)
-    #print(indent)
-    # line = next_line(line, 2, 10)
-    # line.graphics.append((knuth_draw2, text))
-    # return a + 1, line
-
-# def wrap_paragraph(
-#         # switch_font,
-#         line,
-#         next_line,
-#         line_lengths,
-#         width_of, # (font, text)
-#         fonts_and_texts,
-#         indent,
-#         first_indent,
-#         # line_height, ascent, # TODO: remove these
-# ):
+    if first_indent is True:
+        first_indent = font.height
 
     olist = ObjectList()
     # olist.debug = True
 
     if first_indent:
         olist.append(Glue(first_indent, 0, 0))
-
-    font_name = fonts_and_texts[0][0]
-    font = fonts[font_name]
-    width_of = font.width_of
 
     # TODO: get rid of this since it changes with the font?  Compute
     # and pre-cache them in each metrics cache?
@@ -92,9 +65,11 @@ def knuth_paragraph(
     indented_lengths = [length - indent for length in line_lengths]
 
     for font, text in fonts_and_texts:
-        #switch_font(font_name)
         olist.append(Box(0, font))  # special sentinel
         olist.extend(text_boxes(text))
+
+    if olist[-1] is space_glue:
+        olist.pop()             # ignore trailing whitespace
 
     olist.add_closing_penalty()
 
@@ -117,7 +92,7 @@ def knuth_paragraph(
         r = olist.compute_adjustment_ratio(start, breakpoint, i,
                                            indented_lengths)
 
-        r = 1.0
+        #r = 1.0
 
         xlist = []
         x = 0
@@ -136,12 +111,11 @@ def knuth_paragraph(
         if bbox.is_penalty() and bbox.width:
             xlist.append((x + indent, u'-'))
 
-        print(xlist)
-        line = next_line(line, 2, 10)  #TODO line_height, ascent
         line.graphics.append((knuth_draw2, xlist))
+        line = next_line(line, 2, 10)  #TODO line_height, ascent
         start = breakpoint + 1
 
-    return a + 1, line
+    return a + 1, line.previous
 
 def knuth_draw(fonts, painter, line, xlist):
     ay = line.ay()
