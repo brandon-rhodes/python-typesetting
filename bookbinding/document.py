@@ -121,17 +121,24 @@ class Document(object):
 
 def render(pages, painter, fonts, writer):
     #paint.setFont(self.font)
-    for i, page in enumerate(pages):
-        if i:
-            writer.newPage()
+
+    page_graphics = []
+
+    for page in pages:
+        graphics = []
         for chase in page.chases:
-            mark_chase(painter, chase)
+            graphics.append((mark_chase, painter, chase))
             for line in chase.lines:
                 for graphic in line.graphics:
-                    call = graphic[0]
-                    args = graphic[1:]
-                    #graphic.draw(line, paint)
-                    call(fonts, painter, line, *args)
+                    call, *args = graphic
+                    graphics.append((call, fonts, painter, line) + tuple(args))
+        page_graphics.append(graphics)
+
+    for i, graphics in enumerate(page_graphics):
+        if i:
+            writer.newPage()
+        for call, *args in graphics:
+            call(*args)
     painter.end()
 
 class Paragraph(object):
