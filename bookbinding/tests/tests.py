@@ -269,14 +269,18 @@ def make_paragraph2(actions, a, line, next_line, leading, height, n):
         line = next_line(line, leading, height)
     return a + 1, line
 
+def call_action(actions, a, line, next_line):
+    action, *args = actions[a]
+    return action(actions, a, line, next_line, *args)
+
 def section_title(actions, a, line, next_line, title):
     print(actions, a, title)
     line2 = next_line(line, 2, 10)
     if a + 1 == len(actions):
         return a + 1, line2
-    #return a + 1, line2
-    next_action, *args = actions[a + 1]
-    a2, line3 = next_action(actions, a + 1, line2, next_line, *args)
+    # next_action, *args = actions[a + 1]
+    # a2, line3 = next_action(actions, a + 1, line2, next_line, *args)
+    a2, line3 = call_action(actions, a + 1, line2, next_line)
     lines = unroll(line2, line3)
 
     # If we are in the same column as the following content, declare
@@ -286,7 +290,8 @@ def section_title(actions, a, line, next_line, title):
 
     # Try moving this title to the top of the next column.
     line2b = next_line(line, 9999999, 10)
-    a2b, line3b = next_action(actions, a + 1, line2b, next_line, *args)
+    #a2b, line3b = next_action(actions, a + 1, line2b, next_line, *args)
+    a2b, line3b = call_action(actions, a + 1, line2b, next_line)
     linesb = unroll(line2b, line3b)
     if linesb[0].column is linesb[1].column:
         return a2b, line3b
@@ -295,6 +300,41 @@ def section_title(actions, a, line, next_line, title):
     # ourselves on our original page.
     return a2, line3
 #next_line(line, 10, 2)
+
+def section_title2(#actions, a,
+        line, next_line, title):
+    # What if we use "yield"?
+    title_line = next_line(line, 2, 10)
+    # if a + 1 == len(actions):
+    #     return a + 1, line2
+    #return a + 1, line2
+    lines = yield title_line
+    # next_action, *args = actions[a + 1]
+    # a2, line3 = next_action(actions, a + 1, line2, next_line, *args)
+    # lines = unroll(line2, line3)
+
+    # If we are in the same column as the following content, declare
+    # victory.
+    if lines[0].column is lines[1].column:
+        return # a2, line3
+
+    # Try moving this title to the top of the next column.
+    title_line2 = next_line(line, 9999999, 10)
+    # a2b, line3b = next_action(actions, a + 1, line2b, next_line, *args)
+    # linesb = unroll(line2b, line3b)
+    lines2 = yield title_line2
+    if lines2[0].column is lines2[1].column:
+        return # a2b, line3b
+
+    # We were still separated from our content?  Give up and keep
+    # ourselves on our original page.
+    #return a2, line3
+    yield title_line
+
+# import inspect
+# print(inspect.isgeneratorfunction(section_title2))
+# print(inspect.isgenerator(section_title2))
+# asdf
 
 def run(actions, line, next_line):
     a = 0
@@ -319,6 +359,8 @@ def test_title_with_stuff_after_it():
     line = run(actions, None, next_line)
     assert line.previous.previous is None
     return
+
+import inspect
 
 def test_title_without_enough_room():
     actions = [
