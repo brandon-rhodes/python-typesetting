@@ -40,7 +40,7 @@ def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
 
     # Single-line paragraphs produce neither widows nor orphans.
     if len(lines) == 2:
-        return end_line
+        return a2, end_line  # TODO: untested
 
     original_a2 = a2
     original_end_line = end_line
