@@ -33,10 +33,10 @@ def test_line_positions():
     assert l3 == Line(l2, c1, 34, [])
     assert l4 == Line(l3, c2, 10, [])
 
-def make_paragraph(line, next_line, leading, height, n):
-    for i in range(n):
-        line = next_line(line, leading, height)
-    return line
+# def make_paragraph(line, next_line, leading, height, n):
+#     for i in range(n):
+#         line = next_line(line, leading, height)
+#     return line
 
 def unroll(start_line, end_line):
     lines = [end_line]
@@ -46,19 +46,20 @@ def unroll(start_line, end_line):
     lines.reverse()
     return lines
 
-def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
-    end_line = add_paragraph(line, next_line, *args)
+def avoid_widows_and_orphans(actions, a, line, next_line, *args):
+    a2, end_line = call_action(actions, a + 1, line, next_line)
     lines = unroll(line, end_line)
 
     # Single-line paragraphs produce neither widows nor orphans.
     if len(lines) == 2:
         return end_line
 
+    original_a2 = a2
     original_end_line = end_line
 
     def reflow():
         nonlocal end_line, lines
-        end_line = add_paragraph(line, fancy_next_line, *args)
+        a2, end_line = call_action(actions, a + 1, line, fancy_next_line)
         lines = unroll(line, end_line)
 
     def is_orphan():
@@ -94,14 +95,18 @@ def avoid_widows_and_orphans(line, next_line, add_paragraph, *args):
             fix_orphan()
 
     if is_orphan() or is_widow():
-        return original_end_line
+        return original_a2, original_end_line
 
-    return end_line
+    return a2, end_line
 
 def test_nice_paragraph():
     # It produces neither an orphan nor a widow.
     l1 = next_line(None, 2, 10)
-    l3 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 2, 10, 2)
+    #l3 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 2, 10, 2)
+    l3 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 2),
+    ], l1, next_line)
     l2 = l3.previous
 
     p = Page(10, 34)
@@ -117,7 +122,10 @@ def test_orphan():
     l1 = next_line(None, 2, 10)
     l2 = next_line(l1, 2, 10)
 
-    l5 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 2, 10, 3)
+    l5 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 3),
+    ], l2, next_line)
     l2, l3, l4 = unroll(l2, l5.previous)
 
     p = Page(10, 34)
@@ -133,7 +141,10 @@ def test_widow():
     # the final line of the starting column.
     l1 = None
 
-    l5 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 2, 10, 4)
+    l5 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 4),
+    ], l1, next_line)
     l1, l2, l3, l4 = unroll(l1, l5.previous)
 
     p = Page(10, 34)
@@ -149,7 +160,10 @@ def test_widow_after_full_page():
     # second column of a 3-column paragraph.
     l0 = None
 
-    l7 = avoid_widows_and_orphans(l0, next_line, make_paragraph, 2, 10, 7)
+    l7 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 7),
+    ], l0, next_line)
     l0, l1, l2, l3, l4, l5, l6 = unroll(l0, l7.previous)
 
     p = Page(10, 34)
@@ -170,7 +184,10 @@ def test_orphan_plus_widow():
     l1 = next_line(None, 2, 10)
     l2 = next_line(l1, 2, 10)
 
-    l4 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 2, 10, 2)
+    l4 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 2),
+    ], l2, next_line)
     l3 = l4.previous
 
     p = Page(10, 34)
@@ -186,7 +203,10 @@ def test_orphan_then_full_page_then_widow():
     l1 = next_line(None, 2, 10)
     l2 = next_line(l1, 2, 10)
 
-    l7 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 2, 10, 5)
+    l7 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 5),
+    ], l2, next_line)
     l2, l3, l4, l5, l6 = unroll(l2, l7.previous)
 
     p = Page(10, 34)
@@ -206,7 +226,10 @@ def test_widow_whose_fix_creates_orphan():
     # requiring a second line to be bumped.
     l1 = next_line(None, 2, 10)
 
-    l4 = avoid_widows_and_orphans(l1, next_line, make_paragraph, 2, 10, 3)
+    l4 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 3),
+    ], l1, next_line)
     l1, l2, l3 = unroll(l1, l4.previous)
 
     p = Page(10, 34)
@@ -224,7 +247,10 @@ def test_orphan_whose_fix_creates_widow():
     l1 = next_line(None, 2, 10)
     l2 = next_line(l1, 2, 10)
 
-    l6 = avoid_widows_and_orphans(l2, next_line, make_paragraph, 2, 10, 4)
+    l6 = run([
+        (avoid_widows_and_orphans,),
+        (make_paragraph, 2, 10, 4),
+    ], l2, next_line)
     l2, l3, l4, l5 = unroll(l2, l6.previous)
 
     p = Page(10, 34)
@@ -244,14 +270,16 @@ def test_widow_that_cannot_be_fixed():
     # return the original paragraph.
 
     state = 0
-    def stateful_make_paragraph(line, next_line, leading, height):
+    def stateful_make_paragraph(actions, a, line, next_line, leading, height):
         nonlocal state
         n = 6 if state else 4
         state = 1
-        return make_paragraph(line, next_line, leading, height, n)
+        return make_paragraph(actions, a, line, next_line, leading, height, n)
 
-    l4 = avoid_widows_and_orphans(None, next_line,
-                                  stateful_make_paragraph, 2, 10)
+    l4 = run([
+        (avoid_widows_and_orphans,),
+        (stateful_make_paragraph, 2, 10),
+    ], None, next_line)
     l0, l1, l2, l3 = unroll(None, l4.previous)
 
     p = Page(10, 34)
@@ -262,9 +290,7 @@ def test_widow_that_cannot_be_fixed():
     assert l3 == Line(l2, c1, 34, [])
     assert l4 == Line(l3, c2, 10, [])
 
-
-
-def make_paragraph2(actions, a, line, next_line, leading, height, n):
+def make_paragraph(actions, a, line, next_line, leading, height, n):
     for i in range(n):
         line = next_line(line, leading, height)
     return a + 1, line
@@ -278,8 +304,6 @@ def section_title(actions, a, line, next_line, title):
     line2 = next_line(line, 2, 10)
     if a + 1 == len(actions):
         return a + 1, line2
-    # next_action, *args = actions[a + 1]
-    # a2, line3 = next_action(actions, a + 1, line2, next_line, *args)
     a2, line3 = call_action(actions, a + 1, line2, next_line)
     lines = unroll(line2, line3)
 
@@ -290,7 +314,6 @@ def section_title(actions, a, line, next_line, title):
 
     # Try moving this title to the top of the next column.
     line2b = next_line(line, 9999999, 10)
-    #a2b, line3b = next_action(actions, a + 1, line2b, next_line, *args)
     a2b, line3b = call_action(actions, a + 1, line2b, next_line)
     linesb = unroll(line2b, line3b)
     if linesb[0].column is linesb[1].column:
@@ -299,7 +322,6 @@ def section_title(actions, a, line, next_line, title):
     # We were still separated from our content?  Give up and keep
     # ourselves on our original page.
     return a2, line3
-#next_line(line, 10, 2)
 
 def section_title2(#actions, a,
         line, next_line, title):
@@ -331,16 +353,10 @@ def section_title2(#actions, a,
     #return a2, line3
     yield title_line
 
-# import inspect
-# print(inspect.isgeneratorfunction(section_title2))
-# print(inspect.isgenerator(section_title2))
-# asdf
-
 def run(actions, line, next_line):
     a = 0
     while a < len(actions):
-        action, *args = actions[a]
-        a, line = action(actions, a, line, next_line, *args)
+        a, line = call_action(actions, a, line, next_line)
     return line
 
 def test_title_without_anything_after_it():
@@ -354,19 +370,17 @@ def test_title_with_stuff_after_it():
     # A title followed by a happy paragraph should stay in place.
     actions = [
         (section_title, 'Title'),
-        (make_paragraph2, 2, 10, 1),
+        (make_paragraph, 2, 10, 1),
     ]
     line = run(actions, None, next_line)
     assert line.previous.previous is None
     return
 
-import inspect
-
 def test_title_without_enough_room():
     actions = [
-        (make_paragraph2, 2, 10, 2),
+        (make_paragraph, 2, 10, 2),
         (section_title, 'Title'),
-        (make_paragraph2, 2, 10, 1),
+        (make_paragraph, 2, 10, 1),
     ]
     l4 = run(actions, None, next_line)
     l3 = l4.previous
