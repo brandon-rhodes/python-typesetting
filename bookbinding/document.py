@@ -117,11 +117,10 @@ class Document(object):
         return self.pages
 
     def render(self, pages):
-        return render(pages, self.painter, self.fonts, self.writer)
+        page_graphics = flatten_graphics(pages, self.painter, self.fonts)
+        return render(self.painter, self.writer, page_graphics)
 
-def render(pages, painter, fonts, writer):
-    #paint.setFont(self.font)
-
+def flatten_graphics(pages, painter, fonts):
     page_graphics = []
 
     for page in pages:
@@ -133,6 +132,11 @@ def render(pages, painter, fonts, writer):
                     call, *args = graphic
                     graphics.append((call, fonts, painter, line) + tuple(args))
         page_graphics.append(graphics)
+
+    return page_graphics
+
+def render(painter, writer, page_graphics):
+    #paint.setFont(self.font)
 
     for i, graphics in enumerate(page_graphics):
         if i:
