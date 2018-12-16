@@ -1,5 +1,5 @@
 
-class Page(object):
+class OldPage(object):
 
     def __init__(self, document, width, height, folio=1, previous=None):
         self.document = document
@@ -40,11 +40,11 @@ from collections import namedtuple
 
 Font = namedtuple('Font', 'ascent descent height leading')
 
-Page2 = namedtuple('Page', 'width height')
+Page = namedtuple('Page', 'width height')
 Column = namedtuple('Column', 'page id width height')
-Line2 = namedtuple('Line', 'previous column y words')
+Line = namedtuple('Line', 'previous column y words')
 
-class Line(object):
+class OldLine(object):
 
     def __init__(self, chase, y, previous=None):
         self.chase = chase
@@ -99,9 +99,35 @@ class Line(object):
             line.chase.lines.append(line)
         return pages
 
-def unroll(item):
-    items = []
-    while item:
-        items.append(item)
-        item = item.previous
-    return items
+# def unroll(item):
+#     items = []
+#     while item:
+#         items.append(item)
+#         item = item.previous
+#     return items
+
+def new_page():
+    return Page(10, 34)
+
+def next_column(column):
+    page = new_page()
+    id = column.id + 1 if column else 1
+    return Column(page, id, 10, 34)
+
+def next_line(line, leading, height):
+    if line:
+        column = line.column
+        y = line.y + height + leading
+        if y <= column.height:
+            return Line(line, column, y, [])
+    else:
+        column = None
+    return Line(line, next_column(column), height, [])
+
+def unroll(start_line, end_line):
+    lines = [end_line]
+    while end_line is not start_line:
+        end_line = end_line.previous
+        lines.append(end_line)
+    lines.reverse()
+    return lines

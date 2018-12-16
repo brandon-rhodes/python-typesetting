@@ -1,23 +1,5 @@
 
-from bookbinding.skeleton import Column, Line2 as Line, Page2 as Page
-
-def new_page():
-    return Page(10, 34)
-
-def next_column(column):
-    page = new_page()
-    id = column.id + 1 if column else 1
-    return Column(page, id, 10, 34)
-
-def next_line(line, leading, height):
-    if line:
-        column = line.column
-        y = line.y + height + leading
-        if y <= column.height:
-            return Line(line, column, y, [])
-    else:
-        column = None
-    return Line(line, next_column(column), height, [])
+from bookbinding.skeleton import Column, Line, Page, unroll, next_line
 
 def test_line_positions():
     l1 = next_line(None, 2, 10)
@@ -37,14 +19,6 @@ def test_line_positions():
 #     for i in range(n):
 #         line = next_line(line, leading, height)
 #     return line
-
-def unroll(start_line, end_line):
-    lines = [end_line]
-    while end_line is not start_line:
-        end_line = end_line.previous
-        lines.append(end_line)
-    lines.reverse()
-    return lines
 
 def avoid_widows_and_orphans(actions, a, line, next_line, *args):
     a2, end_line = call_action(actions, a + 1, line, next_line)
