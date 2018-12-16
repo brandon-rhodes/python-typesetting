@@ -1,6 +1,8 @@
 
 from ..skeleton import Column, Line, Page, unroll, next_line
-from ..composing import avoid_widows_and_orphans, call_action, section_title
+from ..composing import (
+    avoid_widows_and_orphans, call_action, run, section_title
+)
 
 def make_paragraph(actions, a, line, next_line, leading, height, n):
     for i in range(n):
@@ -241,12 +243,6 @@ def test_widow_that_cannot_be_fixed():
 #     # ourselves on our original page.
 #     #return a2, line3
 #     yield title_line
-
-def run(actions, line, next_line):
-    a = 0
-    while a < len(actions):
-        a, line = call_action(actions, a, line, next_line)
-    return line
 
 def test_title_without_anything_after_it():
     actions = [

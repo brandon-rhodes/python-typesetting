@@ -12,7 +12,7 @@ class OldPage(object):
         self.graphics = []
 
     def next(self):
-        return Page(self.document, self.width, self.height,
+        return OldPage(self.document, self.width, self.height,
                     self.folio + 1, self)
 
 class Chase(object):
@@ -62,7 +62,7 @@ class OldLine(object):
         if height <= chase.height - self.y: #self.y:
             return self
         next_chase = self.chase.next()
-        return Line(next_chase, previous=self)
+        return OldLine(next_chase, previous=self)
 
     def next(self, line_height, ascent):
         # TODO: also accept ascent?
@@ -70,10 +70,10 @@ class OldLine(object):
             return self.down(line_height)
         else:
             next_chase = self.chase.next()
-            return Line(next_chase, previous=self, y=ascent)
+            return OldLine(next_chase, previous=self, y=ascent)
 
     def down(self, line_height):
-        return Line(self.chase, previous=self, y=self.y + line_height)
+        return OldLine(self.chase, previous=self, y=self.y + line_height)
 
     def at_bottom(self, line_height):
         return self.y > self.chase.height - line_height
@@ -82,8 +82,8 @@ class OldLine(object):
         return self.chase.top_margin + self.y
 
     def unroll_document(self):
-        lines = unroll(self)
-        pages = unroll(self.chase.page)
+        lines = old_unroll(self)
+        pages = old_unroll(self.chase.page)
 
         lines.reverse()
         pages.reverse()
@@ -99,12 +99,12 @@ class OldLine(object):
             line.chase.lines.append(line)
         return pages
 
-# def unroll(item):
-#     items = []
-#     while item:
-#         items.append(item)
-#         item = item.previous
-#     return items
+def old_unroll(item):
+    items = []
+    while item:
+        items.append(item)
+        item = item.previous
+    return items
 
 def new_page():
     return Page(10, 34)

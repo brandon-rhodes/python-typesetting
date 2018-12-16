@@ -1,6 +1,12 @@
 
 from .skeleton import unroll
 
+def run(actions, line, next_line):
+    a = 0
+    while a < len(actions):
+        a, line = call_action(actions, a, line, next_line)
+    return line
+
 def call_action(actions, a, line, next_line):
     action, *args = actions[a]
     return action(actions, a, line, next_line, *args)
