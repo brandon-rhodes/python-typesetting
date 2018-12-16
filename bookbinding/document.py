@@ -120,24 +120,24 @@ class Document(object):
         return self.pages
 
     def render(self, pages):
-        painter = self.painter
-        #paint.setFont(self.font)
+        return render(pages, self.painter, self.fonts, self.writer)
 
-        for i, page in enumerate(pages):
-            if i:
-                self.writer.newPage()
-            for graphic in page.graphics:
-                graphic(page, painter)
-            for chase in page.chases:
-                mark_chase(painter, chase)
-                for line in chase.lines:
-                    for graphic in line.graphics:
-                        call = graphic[0]
-                        args = graphic[1:]
-                        #graphic.draw(line, paint)
-                        call(self.fonts, painter, line, *args)
-
-        painter.end()
+def render(pages, painter, fonts, writer):
+    #paint.setFont(self.font)
+    for i, page in enumerate(pages):
+        if i:
+            writer.newPage()
+        for graphic in page.graphics:
+            graphic(page, painter)
+        for chase in page.chases:
+            mark_chase(painter, chase)
+            for line in chase.lines:
+                for graphic in line.graphics:
+                    call = graphic[0]
+                    args = graphic[1:]
+                    #graphic.draw(line, paint)
+                    call(fonts, painter, line, *args)
+    painter.end()
 
 class Paragraph(object):
 
