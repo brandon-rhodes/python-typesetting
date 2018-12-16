@@ -2,7 +2,8 @@ from PySide2.QtCore import QSizeF, Qt, QPoint, QMarginsF
 from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase, QPen
 from PySide2.QtWidgets import QApplication
 
-from .knuth import wrap_paragraph
+#from .knuth import wrap_paragraph
+from .knuth import knuth_paragraph
 from .skeleton import OldPage as Page, Chase, OldLine as Line
 
 #inch = 72

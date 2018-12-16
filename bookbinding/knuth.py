@@ -10,36 +10,40 @@ NONWORD = re.compile(r'(\W+)')
 BREAKING_SPACE = re.compile(r'[ \n]+')
 ZERO_WIDTH_BREAK = Glue(0, 0, 0)
 
-def knuth_paragraph(actions, a, line, next_line, text,
+def knuth_paragraph(
+        actions, a, line, next_line,
+                    # text,
+                    # font_name, indent, temporary_indent,
+
+        width_of, # (font, text)
+
+        line_lengths,
+        indent,
+        first_indent,
+        fonts_and_texts,
+
                     # switch_font, width_of, line_lengths,# line,
                     # fonts_and_texts,
                     # indent, first_indent,
                     # line_height, ascent
 ):
-    line = next_line(line, 2, 10)
-    line.graphics.append((knuth_draw2, text))
-    return a + 1, line
+    #print(line_lengths)
+    #print(indent)
+    # line = next_line(line, 2, 10)
+    # line.graphics.append((knuth_draw2, text))
+    # return a + 1, line
 
-def knuth_draw2(painter, line, text):
-    print(line.y)
-    pt = 1200 / 72.0
-    painter.drawText(line.column.x * pt, (line.column.y + line.y) * pt, text)
-    return
-    ay = line.ay()
-    pt = 1200 / 72.0
-    #painter.setFont(font)
-    for x, text in xlist:
-        if x is None:
-            painter.setFont(fonts[text])
-        else:
-            painter.drawText(line.chase.x * pt + x, ay * pt, text)
-
-
-def wrap_paragraph(switch_font, width_of, line_lengths, line,
-                   fonts_and_texts,
-                   indent, first_indent,
-                   line_height, ascent, # TODO: remove these
-):
+# def wrap_paragraph(
+#         # switch_font,
+#         line,
+#         next_line,
+#         line_lengths,
+#         width_of, # (font, text)
+#         fonts_and_texts,
+#         indent,
+#         first_indent,
+#         # line_height, ascent, # TODO: remove these
+# ):
 
     olist = ObjectList()
     # olist.debug = True
@@ -47,9 +51,11 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
     if first_indent:
         olist.append(Glue(first_indent, 0, 0))
 
-    # TODO: get rid of this since it changesd with the font?  Compute
+    font = fonts_and_texts[0][0]
+
+    # TODO: get rid of this since it changes with the font?  Compute
     # and pre-cache them in each metrics cache?
-    space_width = width_of(u'm m') - width_of(u'mm')
+    space_width = width_of(font, u'm m') - width_of(font, u'mm')
 
     # TODO: should do non-breaking spaces with glue as well
     space_glue = Glue(space_width, space_width * .5, space_width * .3333)
@@ -67,7 +73,7 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
             if word:
                 yield from word_boxes(word)
             if punctuation:
-                yield Box(width_of(punctuation), punctuation)
+                yield Box(width_of(font, punctuation), punctuation)
                 if punctuation == u'-':
                     yield ZERO_WIDTH_BREAK
             if space:
@@ -76,16 +82,16 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
     def word_boxes(word):
         pieces = iter(hyphenate_word(word))
         piece = next(pieces)
-        yield Box(width_of(piece), piece)
+        yield Box(width_of(font, piece), piece)
         for piece in pieces:
-            yield Penalty(width_of(u'-'), 100)
-            yield Box(width_of(piece), piece)
+            yield Penalty(width_of(font, u'-'), 100)
+            yield Box(width_of(font, piece), piece)
 
     indented_lengths = [length - indent for length in line_lengths]
 
-    for font_name, text in fonts_and_texts:
-        switch_font(font_name)
-        olist.append(Box(0, font_name))  # special sentinel
+    for font, text in fonts_and_texts:
+        #switch_font(font_name)
+        olist.append(Box(0, font))  # special sentinel
         olist.extend(text_boxes(text))
 
     olist.add_closing_penalty()
@@ -99,6 +105,7 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
         else:
             break
     else:
+        print('FAIL')  # TODO
         breaks = [0, len(olist) - 1]  # TODO
 
     assert breaks[0] == 0
@@ -127,13 +134,37 @@ def wrap_paragraph(switch_font, width_of, line_lengths, line,
         if bbox.is_penalty() and bbox.width:
             xlist.append((x + indent, u'-'))
 
-        line.graphics.append((knuth_draw, xlist))
-        line = line.next(line_height, ascent)
+        print(xlist)
+        line = next_line(line, 2, 10)  #TODO line_height, ascent
+        line.graphics.append((knuth_draw2, xlist))
         start = breakpoint + 1
 
-    return line.previous
+    return a + 1, line
 
 def knuth_draw(fonts, painter, line, xlist):
+    ay = line.ay()
+    pt = 1200 / 72.0
+    #painter.setFont(font)
+    for x, text in xlist:
+        if x is None:
+            painter.setFont(fonts[text])
+        else:
+            painter.drawText(line.chase.x * pt + x, ay * pt, text)
+
+def knuth_draw2(painter, line, xlist):
+    pt = 1200 / 72.0
+    for x, text in xlist:
+        if x is None:
+            pass # TODO: set font
+        else:
+            painter.drawText((line.column.x + x) * pt,
+                             (line.column.y + line.y) * pt,
+                             text)
+
+
+
+
+    return
     ay = line.ay()
     pt = 1200 / 72.0
     #painter.setFont(font)
