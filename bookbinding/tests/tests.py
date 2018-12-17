@@ -245,7 +245,7 @@ def test_widow_that_cannot_be_fixed():
 
 def test_title_without_anything_after_it():
     actions = [
-        (section_title, 'Title'),
+        (section_title, 'font', 'Title'),
     ]
     line = run(actions, None, None, next_line)
     assert line.previous is None
@@ -253,7 +253,7 @@ def test_title_without_anything_after_it():
 def test_title_with_stuff_after_it():
     # A title followed by a happy paragraph should stay in place.
     actions = [
-        (section_title, 'Title'),
+        (section_title, 'font', 'Title'),
         (make_paragraph, 2, 10, 1),
     ]
     line = run(actions, None, None, next_line)
@@ -263,7 +263,7 @@ def test_title_with_stuff_after_it():
 def test_title_without_enough_room():
     actions = [
         (make_paragraph, 2, 10, 2),
-        (section_title, 'Title'),
+        (section_title, 'font', 'Title'),
         (make_paragraph, 2, 10, 1),
     ]
     l4 = run(actions, None, None, next_line)

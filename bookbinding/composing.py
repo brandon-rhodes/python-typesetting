@@ -48,9 +48,11 @@ def section_break(actions, a, fonts, line, next_line, graphic):
         line4 = next_line(line3, 99999999, 0)
     else:
         line4 = next_line(line3, 2, 10)
+        if line4.column is not line3.column:
+            line4 = next_line(line3, 99999999, 0)
     return a1, line4
 
-def section_title(actions, a, fonts, line, next_line, title):
+def section_title(actions, a, fonts, line, next_line, font, text):
     line2 = next_line(line, 2, 10)  # TODO: replace hard-coded numbers
     if a + 1 == len(actions):
         return a + 1, line2
@@ -125,3 +127,21 @@ def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
         return original_a2, original_end_line
 
     return a2, end_line
+
+def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
+    leading = max(fonts[name].leading for name, text in fonts_and_texts)
+    height = max(fonts[name].height for name, text in fonts_and_texts)
+    line = next_line(line, leading, height)
+
+    for name, text in fonts_and_texts:
+        font = fonts[name]
+        line.graphics.append((draw_text, name, text))
+
+    return a + 1, line
+
+def draw_text(fonts, line, painter, font_name, text):
+    pt = 1200 / 72.0
+    painter.setFont(fonts[font_name].qt_font)
+    painter.drawText((line.column.x) * pt,
+                     (line.column.y + line.y) * pt,
+                     text)

@@ -16,7 +16,11 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     font_name = fonts_and_texts[0][0]
     font = fonts[font_name]
     width_of = font.width_of
-    line = next_line(line, font.leading, font.height)
+
+    leading = max(fonts[name].leading for name, text in fonts_and_texts)
+    height = max(fonts[name].height for name, text in fonts_and_texts)
+
+    line = next_line(line, leading, height)
     line_lengths = [line.column.width]  # TODO: support interesting shapes
 
     if first_indent is True:
@@ -112,7 +116,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
             xlist.append((x + indent, u'-'))
 
         line.graphics.append((knuth_draw2, xlist))
-        line = next_line(line, 2, 10)  #TODO line_height, ascent
+        line = next_line(line, leading, height)
         start = breakpoint + 1
 
     return a + 1, line.previous
