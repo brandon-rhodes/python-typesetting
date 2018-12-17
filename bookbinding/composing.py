@@ -11,6 +11,12 @@ def call_action(actions, a, fonts, line, next_line):
     action, *args = actions[a]
     return action(actions, a, fonts, line, next_line, *args)
 
+def blank_line(actions, a, fonts, line, next_line, graphic):
+    line2 = next_line(line, 2, 10)
+    if line2.column is not line.column:
+        line2 = next_line(line, 9999999, 0)
+    return a + 1, line2
+
 def section_break(actions, a, fonts, line, next_line, graphic):
     at_top = line is None
     a1 = a + 1
