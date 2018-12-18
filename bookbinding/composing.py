@@ -52,28 +52,22 @@ def section_break(actions, a, fonts, line, next_line, graphic):
             line4 = next_line(line3, 99999999, 0)
     return a1, line4
 
-def section_title(actions, a, fonts, line, next_line, font, text):
-    line2 = next_line(line, 2, 10)  # TODO: replace hard-coded numbers
-    if a + 1 == len(actions):
-        return a + 1, line2
-    a2, line3 = call_action(actions, a + 1, fonts, line2, next_line)
-    lines = unroll(line2, line3)
+def section_title(actions, a, fonts, line, next_line):
+    a1 = a + 1
+    if a1 == len(actions):
+        return a1, line
 
-    # If we are in the same column as the following content, declare
-    # victory.
-    if lines[0].column is lines[1].column:
-        return a2, line3
+    a2, title_line = call_action(actions, a1, fonts, line, next_line)
+    a3, following_line = call_action(actions, a2, fonts, title_line, next_line)
+    lines1 = unroll(line, title_line)
+    lines2 = unroll(title_line, following_line)
+    if lines1[1].column is lines2[1].column:
+        return a3, following_line
 
-    # Try moving this title to the top of the next column.
-    line2b = next_line(line, 9999999, 10)
-    a2b, line3b = call_action(actions, a + 1, fonts, line2b, next_line)
-    linesb = unroll(line2b, line3b)
-    if linesb[0].column is linesb[1].column:
-        return a2b, line3b
-
-    # We were still separated from our content?  Give up and keep
-    # ourselves on our original page.
-    return a2, line3
+    # Otherwise, move the title to the top of the next column.
+    bump_line = next_line(line, 9999999, 0)
+    a2, title_line = call_action(actions, a1, fonts, bump_line, next_line)
+    return a2, title_line
 
 def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
     a2, end_line = call_action(actions, a + 1, fonts, line, next_line)

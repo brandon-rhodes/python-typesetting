@@ -245,28 +245,33 @@ def test_widow_that_cannot_be_fixed():
 
 def test_title_without_anything_after_it():
     actions = [
-        (section_title, 'font', 'Title'),
+        (section_title,),
     ]
     line = run(actions, None, None, next_line)
-    assert line.previous is None
+    assert line is None
+    # TODO: maybe this should this really raise an exception?
 
-def test_title_with_stuff_after_it():
+def test_title_with_enough_room_after_it():
     # A title followed by a happy paragraph should stay in place.
     actions = [
-        (section_title, 'font', 'Title'),
-        (make_paragraph, 2, 10, 1),
+        (section_title,),
+        (make_paragraph, 2, 10, 1), # the title itself
+        (make_paragraph, 2, 10, 1), # the happy 1-line paragraph
     ]
     line = run(actions, None, None, next_line)
     assert line.previous.previous is None
-    return
 
 def test_title_without_enough_room():
+    # A title that would be stranded by itself at the bottom of a column
+    # should be bumped to the next page.
     actions = [
         (make_paragraph, 2, 10, 2),
-        (section_title, 'font', 'Title'),
+        (section_title,),
+        (make_paragraph, 2, 10, 1),
         (make_paragraph, 2, 10, 1),
     ]
-    l4 = run(actions, None, None, next_line)
+    l5 = run(actions, None, None, next_line)
+    l4 = l5.previous
     l3 = l4.previous
     l2 = l3.previous
     l1 = l2.previous
@@ -276,5 +281,6 @@ def test_title_without_enough_room():
     c2 = Column(p, 2, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
-    assert l3 == Line(l2, c2, 10, [])
-    assert l4 == Line(l3, c2, 22, [])
+    assert l3 == Line(l2, c2, 0, [])
+    assert l4 == Line(l3, c2, 12, [])  # whoops - fix
+    assert l5 == Line(l4, c2, 24, [])
