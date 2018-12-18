@@ -61,12 +61,18 @@ def section_title(actions, a, fonts, line, next_line):
     a3, following_line = call_action(actions, a2, fonts, title_line, next_line)
     lines1 = unroll(line, title_line)
     lines2 = unroll(title_line, following_line)
-    if lines1[1].column is lines2[1].column:
+    first_line_of_title = lines1[1]
+    line_after_title = lines2[1]
+    if first_line_of_title.column is line_after_title.column:
         return a3, following_line
 
     # Otherwise, move the title to the top of the next column.
-    bump_line = next_line(line, 9999999, 0)
-    a2, title_line = call_action(actions, a1, fonts, bump_line, next_line)
+    def next_line2(line2, leading, height):
+        if line2 is line:
+            leading = 9999999
+        return next_line(line2, leading, height)
+
+    a2, title_line = call_action(actions, a1, fonts, line, next_line2)
     return a2, title_line
 
 def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
@@ -102,8 +108,8 @@ def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
 
     def fancy_next_line(line, leading, height):
         line2 = next_line(line, leading, height)
-        while (line2.column.id, line2.y) in skips:
-            line2 = next_line(line, leading + 99999, height)
+        if (line2.column.id, line2.y) in skips:
+            line2 = next_line(line, 99999, height)
         return line2
 
     skips = set()

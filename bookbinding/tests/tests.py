@@ -197,7 +197,8 @@ def test_widow_that_cannot_be_fixed():
         nonlocal state
         n = 6 if state else 4
         state = 1
-        return make_paragraph(actions, a, fonts, line, next_line, leading, height, n)
+        return make_paragraph(actions, a, fonts, line, next_line,
+                              leading, height, n)
 
     l4 = run([
         (avoid_widows_and_orphans,),
@@ -212,36 +213,6 @@ def test_widow_that_cannot_be_fixed():
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c1, 34, [])
     assert l4 == Line(l3, c2, 10, [])
-
-# def section_title2(#actions, a,
-#         line, next_line, title):
-#     # What if we use "yield"?
-#     title_line = next_line(line, 2, 10)
-#     # if a + 1 == len(actions):
-#     #     return a + 1, line2
-#     #return a + 1, line2
-#     lines = yield title_line
-#     # next_action, *args = actions[a + 1]
-#     # a2, line3 = next_action(actions, a + 1, line2, next_line, *args)
-#     # lines = unroll(line2, line3)
-
-#     # If we are in the same column as the following content, declare
-#     # victory.
-#     if lines[0].column is lines[1].column:
-#         return # a2, line3
-
-#     # Try moving this title to the top of the next column.
-#     title_line2 = next_line(line, 9999999, 10)
-#     # a2b, line3b = next_action(actions, a + 1, line2b, next_line, *args)
-#     # linesb = unroll(line2b, line3b)
-#     lines2 = yield title_line2
-#     if lines2[0].column is lines2[1].column:
-#         return # a2b, line3b
-
-#     # We were still separated from our content?  Give up and keep
-#     # ourselves on our original page.
-#     #return a2, line3
-#     yield title_line
 
 def test_title_without_anything_after_it():
     actions = [
@@ -270,8 +241,7 @@ def test_title_without_enough_room():
         (make_paragraph, 2, 10, 1),
         (make_paragraph, 2, 10, 1),
     ]
-    l5 = run(actions, None, None, next_line)
-    l4 = l5.previous
+    l4 = run(actions, None, None, next_line)
     l3 = l4.previous
     l2 = l3.previous
     l1 = l2.previous
@@ -281,6 +251,5 @@ def test_title_without_enough_room():
     c2 = Column(p, 2, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
-    assert l3 == Line(l2, c2, 0, [])
-    assert l4 == Line(l3, c2, 12, [])  # whoops - fix
-    assert l5 == Line(l4, c2, 24, [])
+    assert l3 == Line(l2, c2, 10, [])  # whoops - fix
+    assert l4 == Line(l3, c2, 22, [])
