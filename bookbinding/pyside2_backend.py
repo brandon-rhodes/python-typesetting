@@ -15,6 +15,7 @@ class Font(object):
         self.qt_font = qt_font
         self.metrics = metrics
         self.ascent = metrics.ascent() * 72 / 1200
+        self.descent = metrics.descent() * 72 / 1200
         self.height = metrics.height() * 72 / 1200
         self.leading = metrics.lineSpacing() * 72 / 1200 - self.height
 

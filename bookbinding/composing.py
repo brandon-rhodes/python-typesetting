@@ -133,15 +133,16 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     height = max(fonts[name].height for name, text in fonts_and_texts)
     line = next_line(line, leading, height)
 
-    for name, text in fonts_and_texts:
-        font = fonts[name]
-        line.graphics.append((draw_text, name, text))
+    for font_name, text in fonts_and_texts:
+        font = fonts[font_name]
+        line.graphics.append((draw_text, font_name, text))
 
     return a + 1, line
 
 def draw_text(fonts, line, painter, font_name, text):
     pt = 1200 / 72.0
-    painter.setFont(fonts[font_name].qt_font)
+    font = fonts[font_name]
+    painter.setFont(font.qt_font)
     painter.drawText((line.column.x) * pt,
-                     (line.column.y + line.y) * pt,
+                     (line.column.y + line.y - font.descent) * pt,
                      text)

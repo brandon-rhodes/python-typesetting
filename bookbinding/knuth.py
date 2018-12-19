@@ -115,42 +115,22 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
         if bbox.is_penalty() and bbox.width:
             xlist.append((x + indent, u'-'))
 
-        line.graphics.append((knuth_draw2, xlist))
+        line.graphics.append((knuth_draw, xlist))
         line = next_line(line, leading, height)
         start = breakpoint + 1
 
     return a + 1, line.previous
 
-def knuth_draw(fonts, painter, line, xlist):
-    ay = line.ay()
+def knuth_draw(fonts, line, painter, xlist):
     pt = 1200 / 72.0
-    #painter.setFont(font)
+    font = fonts['body-roman']
     for x, text in xlist:
         if x is None:
-            painter.setFont(fonts[text])
+            font = fonts[text]
+            painter.setFont(font.qt_font)
         else:
-            painter.drawText(line.chase.x * pt + x, ay * pt, text)
-
-def knuth_draw2(fonts, line, painter, xlist):
-    pt = 1200 / 72.0
-    for x, text in xlist:
-        if x is None:
-            painter.setFont(fonts[text].qt_font)
-        else:
-            # TODO: offset y by the descender height?
-            painter.drawText((line.column.x + x) * pt,
-                             (line.column.y + line.y) * pt,
-                             text)
-
-
-
-
-    return
-    ay = line.ay()
-    pt = 1200 / 72.0
-    #painter.setFont(font)
-    for x, text in xlist:
-        if x is None:
-            painter.setFont(fonts[text])
-        else:
-            painter.drawText(line.chase.x * pt + x, ay * pt, text)
+            x = (line.column.x + x) * pt
+            y = (line.column.y + line.y - font.descent) * pt
+            #from PySide2.QtCore import Qt
+            #painter.fillRect(x, y, 1000, 10, Qt.cyan)
+            painter.drawText(x, y, text)
