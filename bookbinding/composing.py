@@ -1,5 +1,5 @@
 
-from .skeleton import unroll
+from .skeleton import Line, unroll
 
 def run(actions, fonts, line, next_line):
     a = 0
@@ -17,6 +17,20 @@ def blank_line(actions, a, fonts, line, next_line, graphic):
         line2 = next_line(line, 9999999, 0)  # TODO: bad solution
     return a + 1, line2
 
+class LineWithSpaceAfter(Line):
+    offset = None
+    @property
+    def y(self):
+        return self[2] + self.offset
+
+def wrap_graphic(original_graphic, original_line):
+    # TODO: this is a bit wonky; simplify
+    def graphic(fonts, line, painter, *args):
+        return original_graphic[0](fonts, original_line, painter, *args)
+    call_and_args = list(original_graphic)
+    call_and_args[0] = graphic
+    return tuple(call_and_args)
+
 def space_before_and_after(actions, a, fonts, line, next_line, above, below):
     def next_line2(line2, leading, height):
         if line2 is line:
@@ -24,6 +38,15 @@ def space_before_and_after(actions, a, fonts, line, next_line, above, below):
         return next_line(line2, leading, height)
 
     a2, line2 = call_action(actions, a + 1, fonts, line, next_line2)
+
+    if below:
+        line2 = Line(
+            previous=line2.previous,
+            column=line2.column,
+            y=line2.y + below,
+            graphics=[wrap_graphic(g, line2) for g in line2.graphics],
+        )
+
     return a2, line2
 
 def section_break(actions, a, fonts, line, next_line, graphic):

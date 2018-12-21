@@ -272,5 +272,43 @@ def test_space_before_and_after_with_zeros():
     p = Page(10, 34)
     c1 = Column(p, 1, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
-    assert l2 == Line(l1, c1, 20, [])  # asked to drop leading to zero
+    assert l2 == Line(l1, c1, 20, [])
     assert l3 == Line(l2, c1, 32, [])
+
+def test_space_before_and_after_with_before_distance():
+    actions = [
+        (make_paragraph, 2, 10, 1),
+        (section_title,),
+        (space_before_and_after, 1, 0),
+        (make_paragraph, 2, 10, 1), # the title itself
+        (make_paragraph, 2, 10, 1),
+    ]
+    l3 = run(actions, None, None, next_line)
+    l2 = l3.previous
+    l1 = l2.previous
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    assert l1 == Line(None, c1, 10, [])
+    assert l2 == Line(l1, c1, 21, [])
+    assert l3 == Line(l2, c1, 33, [])
+
+from bookbinding.composing import LineWithSpaceAfter
+
+def test_space_before_and_after_with_after_distance():
+    actions = [
+        (make_paragraph, 2, 10, 1),
+        (section_title,),
+        (space_before_and_after, 0, 1),
+        (make_paragraph, 2, 10, 1), # the title itself
+        (make_paragraph, 2, 10, 1),
+    ]
+    l3 = run(actions, None, None, next_line)
+    l2 = l3.previous
+    l1 = l2.previous
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    assert l1 == Line(None, c1, 10, [])
+    assert l2 == Line(l1, c1, 21, [])
+    assert l3 == Line(l2, c1, 33, [])
