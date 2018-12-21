@@ -18,12 +18,12 @@ def blank_line(actions, a, fonts, line, next_line, graphic):
     return a + 1, line2
 
 def space_before_and_after(actions, a, fonts, line, next_line, above, below):
-    # def next_line2(line2, leading, height):
-    #     # if line2 is line:
-    #     #     leading = above
-    #     return next_line(line2, leading, height)
+    def next_line2(line2, leading, height):
+        if line2 is line:
+            leading = above
+        return next_line(line2, leading, height)
 
-    a2, line2 = call_action(actions, a + 1, fonts, line, next_line)
+    a2, line2 = call_action(actions, a + 1, fonts, line, next_line2)
     return a2, line2
 
 def section_break(actions, a, fonts, line, next_line, graphic):
@@ -144,7 +144,7 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     line = next_line(line, leading, height)
 
     for font_name, text in fonts_and_texts:
-        font = fonts[font_name]
+        #font = fonts[font_name]
         line.graphics.append((draw_text, font_name, text))
 
     return a + 1, line
