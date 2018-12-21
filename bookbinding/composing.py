@@ -14,8 +14,17 @@ def call_action(actions, a, fonts, line, next_line):
 def blank_line(actions, a, fonts, line, next_line, graphic):
     line2 = next_line(line, 2, 10)
     if line2.column is not line.column:
-        line2 = next_line(line, 9999999, 0)
+        line2 = next_line(line, 9999999, 0)  # TODO: bad solution
     return a + 1, line2
+
+def space_before_and_after(actions, a, fonts, line, next_line, above, below):
+    # def next_line2(line2, leading, height):
+    #     # if line2 is line:
+    #     #     leading = above
+    #     return next_line(line2, leading, height)
+
+    a2, line2 = call_action(actions, a + 1, fonts, line, next_line)
+    return a2, line2
 
 def section_break(actions, a, fonts, line, next_line, graphic):
     at_top = line is None
@@ -53,6 +62,7 @@ def section_break(actions, a, fonts, line, next_line, graphic):
     return a1, line4
 
 def section_title(actions, a, fonts, line, next_line):
+    """Move the next action on to the same page as the action that follows."""
     a1 = a + 1
     if a1 == len(actions):
         return a1, line

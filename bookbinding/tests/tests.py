@@ -1,6 +1,9 @@
 
 from ..skeleton import Column, Line, Page, unroll, next_line
-from ..composing import avoid_widows_and_orphans, run, section_title
+from ..composing import (
+    avoid_widows_and_orphans, run, section_title,
+    space_before_and_after,
+)
 
 def make_paragraph(actions, a, fonts, line, next_line, leading, height, n):
     for i in range(n):
@@ -253,3 +256,21 @@ def test_title_without_enough_room():
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])  # whoops - fix
     assert l4 == Line(l3, c2, 22, [])
+
+def test_space_before_and_after_with_zeros():
+    actions = [
+        (make_paragraph, 2, 10, 1),
+        (section_title,),
+        (space_before_and_after, 0, 0),
+        (make_paragraph, 2, 10, 1), # the title itself
+        (make_paragraph, 2, 10, 1),
+    ]
+    l3 = run(actions, None, None, next_line)
+    l2 = l3.previous
+    l1 = l2.previous
+
+    p = Page(10, 34)
+    c1 = Column(p, 1, 0, 0, 10, 34)
+    assert l1 == Line(None, c1, 10, [])
+    assert l2 == Line(l1, c1, 22, [])
+    assert l3 == Line(l2, c1, 34, [])

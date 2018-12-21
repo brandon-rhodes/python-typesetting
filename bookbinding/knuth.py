@@ -131,6 +131,4 @@ def knuth_draw(fonts, line, painter, xlist):
         else:
             x = (line.column.x + x) * pt
             y = (line.column.y + line.y - font.descent) * pt
-            #from PySide2.QtCore import Qt
-            #painter.fillRect(x, y, 1000, 10, Qt.cyan)
             painter.drawText(x, y, text)
