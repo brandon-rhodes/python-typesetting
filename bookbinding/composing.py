@@ -164,11 +164,31 @@ def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
 def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
-    line = next_line(line, leading, height)
+
+    if len(fonts_and_texts) > 1:
+        raise NotImplementedError('TODO')
 
     for font_name, text in fonts_and_texts:
-        #font = fonts[font_name]
-        line.graphics.append((draw_text, font_name, text))
+        font = fonts[font_name]
+        text = ' '.join(text.split(' \n'))
+        i = 0
+        while i < len(text):
+            j = text.find(' ', i) + 1
+            while True:
+                if j == len(text):
+                    break
+                j2 = text.find(' ', j + 1) + 1
+                if j2 == -1 + 1:
+                    j2 = len(text)
+                print(text[i:j], font.width_of(text[i:j]), line.column.width)
+                if font.width_of(text[i:j2]) > line.column.width:
+                    break
+                j = j2
+            print(text[i:j])
+            line = next_line(line, leading, height)
+            line.graphics.append((draw_text, font_name, text[i:j]))
+            i = j
+        #line.graphics.append((draw_text, font_name, text))
 
     return a + 1, line
 
