@@ -39,12 +39,12 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     # TODO: should do non-breaking spaces with glue as well
     space_glue = Glue(space_width, space_width * .5, space_width * .3333)
 
-    findall = re.compile(r'([\xa0]?)(\w*)([^\xa0\w\s]*)([ \n]*)').findall
+    findall = re.compile(r'([\u00a0]?)(\w*)([^\u00a0\w\s]*)([ \n]*)').findall
 
     def text_boxes(text):
         for control_code, word, punctuation, space in findall(text):
             if control_code:
-                if control_code == u'\xa0':
+                if control_code == '\xa0':
                     yield space_glue
                     yield Penalty(0, 999999)
                 else:

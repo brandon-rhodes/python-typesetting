@@ -11,6 +11,15 @@ def call_action(actions, a, fonts, line, next_line):
     action, *args = actions[a]
     return action(actions, a, fonts, line, next_line, *args)
 
+def new_page(actions, a, fonts, line, next_line):
+    if line is None:
+        return a + 1, line
+    def next_line2(line2, leading, height):
+        if line2 is line:
+            leading = 9999999
+        return next_line(line2, leading, height)
+    return call_action(actions, a + 1, fonts, line, next_line2)
+
 def blank_line(actions, a, fonts, line, next_line, graphic):
     line2 = next_line(line, 2, 10)
     if line2.column is not line.column:
