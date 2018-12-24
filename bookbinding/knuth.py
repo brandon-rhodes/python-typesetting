@@ -34,7 +34,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
     # TODO: get rid of this since it changes with the font?  Compute
     # and pre-cache them in each metrics cache?
-    space_width = width_of(u'm m') - width_of(u'mm')
+    space_width = width_of('m m') - width_of('mm')
 
     # TODO: should do non-breaking spaces with glue as well
     space_glue = Glue(space_width, space_width * .5, space_width * .3333)
@@ -42,9 +42,11 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     findall = re.compile(r'([\u00a0]?)(\w*)([^\u00a0\w\s]*)([ \n]*)').findall
 
     def text_boxes(text):
+        #print(repr(text))
         for control_code, word, punctuation, space in findall(text):
+            #print((control_code, word, punctuation, space))
             if control_code:
-                if control_code == '\xa0':
+                if control_code == '\u00a0':
                     yield space_glue
                     yield Penalty(0, 999999)
                 else:
@@ -60,9 +62,9 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
             if strings:
                 for i, string in enumerate(strings):
                     if i:
-                        yield Penalty(width_of(u'-'), 100)
+                        yield Penalty(width_of('-'), 100)
                     yield Box(width_of(string), string)
-            if punctuation == u'-':
+            if punctuation == '-':
                 yield ZERO_WIDTH_BREAK
             if space:
                 yield space_glue
@@ -114,7 +116,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width:
-            xlist.append((x + indent, u'-'))
+            xlist.append((x + indent, '-'))
 
         line.graphics.append((knuth_draw, xlist))
         line = next_line(line, leading, height)

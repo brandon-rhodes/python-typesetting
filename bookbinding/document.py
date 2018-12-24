@@ -26,10 +26,10 @@ class Document(object):
         self.metrics = {}
 
         for name_and_args in [
-            ('chapter-title-roman', name, u'Roman', 18),
-            ('section-title-roman', name, u'Roman', 14),
-            ('body-roman', name, u'Roman', 11),
-            ('body-italic', name, u'Italic', 11),
+            ('chapter-title-roman', name, 'Roman', 18),
+            ('section-title-roman', name, 'Roman', 14),
+            ('body-roman', name, 'Roman', 11),
+            ('body-italic', name, 'Italic', 11),
         ]:
             name = name_and_args[0]
             font = QFontDatabase().font(*name_and_args[1:])
