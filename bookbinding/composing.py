@@ -1,4 +1,4 @@
-
+import sys
 from .skeleton import Line, unroll
 
 def run(actions, fonts, line, next_line):
@@ -48,7 +48,7 @@ def space_before_and_after(actions, a, fonts, line, next_line, above, below):
 
     a2, line2 = call_action(actions, a + 1, fonts, line, next_line2)
 
-    if below:
+    if below: # TODO: can break things when unroll() is called!
         line2 = Line(
             previous=line2.previous,
             column=line2.column,
@@ -100,6 +100,12 @@ def section_title(actions, a, fonts, line, next_line):
         return a1, line
 
     a2, title_line = call_action(actions, a1, fonts, line, next_line)
+    if title_line is line:
+        die('The action:', actions[a],
+            'expects to be followed by an action that generates at least one'
+            ' line, but the actions that followed:', actions[a1:a2],
+            'did not generate a line.')
+
     a3, following_line = call_action(actions, a2, fonts, title_line, next_line)
     lines1 = unroll(line, title_line)
     lines2 = unroll(title_line, following_line)
@@ -208,3 +214,12 @@ def draw_text(fonts, line, painter, font_name, text):
     painter.drawText((line.column.x) * pt,
                      (line.column.y + line.y - font.descent) * pt,
                      text)
+
+def die(*args):
+    strings = []
+    for arg in args:
+        if not isinstance(arg, str):
+            arg = '\n\n{}\n\n'.format(arg)
+        strings.append(arg)
+    print('Composing error - ' + ''.join(strings), file=sys.stderr)
+    sys.exit(1)
