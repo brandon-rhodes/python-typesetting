@@ -50,21 +50,20 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
                 else:
                     print('Unsupported control code: %r' % control_code)
             if word:
-                yield from word_boxes(word)
-            if punctuation:
-                yield Box(width_of(punctuation), punctuation)
-                if punctuation == u'-':
-                    yield ZERO_WIDTH_BREAK
+                strings = hyphenate_word(word)
+                if punctuation:
+                    strings[-1] += punctuation
+            elif punctuation:
+                strings = [punctuation]
+            else:
+                strings = None
+            if strings:
+                for string in strings:
+                    yield Box(width_of(string), string)
+            if punctuation == u'-':
+                yield ZERO_WIDTH_BREAK
             if space:
                 yield space_glue
-
-    def word_boxes(word):
-        pieces = iter(hyphenate_word(word))
-        piece = next(pieces)
-        yield Box(width_of(piece), piece)
-        for piece in pieces:
-            yield Penalty(width_of(u'-'), 100)
-            yield Box(width_of(piece), piece)
 
     indented_lengths = [length - indent for length in line_lengths]
 
