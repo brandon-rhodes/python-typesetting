@@ -58,7 +58,9 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
             else:
                 strings = None
             if strings:
-                for string in strings:
+                for i, string in enumerate(strings):
+                    if i:
+                        yield Penalty(width_of(u'-'), 100)
                     yield Box(width_of(string), string)
             if punctuation == u'-':
                 yield ZERO_WIDTH_BREAK
@@ -76,7 +78,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
     olist.add_closing_penalty()
 
-    for tolerance in 1, 2, 3, 4:
+    for tolerance in 1, 2, 3, 4, 5, 6, 7:  # TODO: went to 7 to avoid errors
         try:
             breaks = olist.compute_breakpoints(
                 indented_lengths, tolerance=tolerance)
