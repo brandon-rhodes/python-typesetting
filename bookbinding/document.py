@@ -14,6 +14,7 @@ class Document(object):
         QApplication(['my-q-application'])
         f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
         f = QFontDatabase.addApplicationFont('OldStandard-Italic.ttf')
+        f = QFontDatabase.addApplicationFont('OldStandard-Bold.ttf')
         names = QFontDatabase.applicationFontFamilies(f)
         print(names)
         name = names[0]
