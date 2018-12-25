@@ -181,38 +181,52 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
-    if len(fonts_and_texts) > 1:
-        raise NotImplementedError('TODO')
+    def next_stop(start):
+        print(repr(start))
+        s1 = text.find(' ', start + 1)
+        if s1 == -1:
+            s1 = len(text)
+        s2 = text.find('\n', start + 1)
+        if s2 == -1:
+            s2 = len(text)
+        return min(s1, s2)
 
-    for font_name, full_text in fonts_and_texts:
+    # def end_line():
+    #     nonlocal line, x
+    #     line = next_line(line, leading, height)
+    #     x = 0
+
+    line = next_line(line, leading, height)
+    x = 0
+
+    for font_name, text in fonts_and_texts:
+        if not text:
+            continue
         font = fonts[font_name]
-        line_texts = full_text.split('\n')
-        for text in line_texts:
-            text = ' '.join(text.split(' '))
-            i = 0
-            while i < len(text):
-                j = text.find(' ', i) + 1
-                while True:
-                    if j == len(text):
-                        break
-                    j2 = text.find(' ', j + 1)
-                    if j2 == -1:
-                        j2 = len(text)
-                    if font.width_of(text[i:j2]) > line.column.width:
-                        break
-                    j = j2
+        i = 0
+        j = next_stop(i)
+        while j < len(text):
+            if text[j] == '\n':
+                if j > 1:
+                    line.graphics.append((draw_text, x, font_name, text[i:j]))
                 line = next_line(line, leading, height)
-                line.graphics.append((draw_text, font_name, text[i:j]))
+                x = 0
                 i = j + 1
-        #line.graphics.append((draw_text, font_name, text))
+            j = next_stop(j)
+        width = font.width_of(text[i:j])
+        line.graphics.append((draw_text, x, font_name, text[i:j]))
+        x += width
+
+    if not line.graphics:
+        line = line.previous
 
     return a + 1, line
 
-def draw_text(fonts, line, painter, font_name, text):
+def draw_text(fonts, line, painter, x, font_name, text):
     pt = 1200 / 72.0
     font = fonts[font_name]
     painter.setFont(font.qt_font)
-    painter.drawText((line.column.x) * pt,
+    painter.drawText((line.column.x + x) * pt,
                      (line.column.y + line.y - font.descent) * pt,
                      text)
 
