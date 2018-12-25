@@ -293,8 +293,6 @@ def test_space_before_and_after_with_before_distance():
     assert l2 == Line(l1, c1, 21, [])
     assert l3 == Line(l2, c1, 33, [])
 
-from bookbinding.composing import LineWithSpaceAfter
-
 def test_space_before_and_after_with_after_distance():
     actions = [
         (make_paragraph, 2, 10, 1),

@@ -33,12 +33,6 @@ def blank_line(actions, a, fonts, line, next_line, graphic):
         line2 = next_line(line, 9999999, 0)  # TODO: bad solution
     return a + 1, line2
 
-class LineWithSpaceAfter(Line):
-    offset = None
-    @property
-    def y(self):
-        return self[2] + self.offset
-
 def wrap_graphic(original_graphic, original_line):
     # TODO: this is a bit wonky; simplify
     def graphic(fonts, line, painter, *args):
