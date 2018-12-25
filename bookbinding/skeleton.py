@@ -18,7 +18,11 @@ def single_column_layout(width, height, top, bottom, inner, outer):
     def next_column(column):
         page = new_page()
         id = column.id + 1 if column else 1
-        return Column(page, id, inner, top, column_width, column_height)
+        if id % 2:
+            left = inner
+        else:
+            left = outer
+        return Column(page, id, left, top, column_width, column_height)
 
     def next_line(line, leading, height):
         if line:
