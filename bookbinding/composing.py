@@ -20,6 +20,13 @@ def new_page(actions, a, fonts, line, next_line):
         return next_line(line2, leading, height)
     return call_action(actions, a + 1, fonts, line, next_line2)
 
+def new_recto_page(actions, a, fonts, line, next_line):
+    if line is None:
+        return a + 1, line
+    if line.column.id % 2:
+        line = next_line(line, 9999999, 0)
+    return new_page(actions, a, fonts, line, next_line)
+
 def blank_line(actions, a, fonts, line, next_line, graphic):
     line2 = next_line(line, 2, 10)
     if line2.column is not line.column:
@@ -48,7 +55,7 @@ def space_before_and_after(actions, a, fonts, line, next_line, above, below):
 
     a2, line2 = call_action(actions, a + 1, fonts, line, next_line2)
 
-    if below: # TODO: can break things when unroll() is called!
+    if below:
         line2 = Line(
             previous=line2.previous,
             column=line2.column,
