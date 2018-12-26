@@ -47,8 +47,8 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
             #print((control_code, word, punctuation, space))
             if control_code:
                 if control_code == '\u00a0':
+                    yield Penalty(0, 1000)
                     yield space_glue
-                    yield Penalty(0, 999999)
                 else:
                     print('Unsupported control code: %r' % control_code)
             if word:
