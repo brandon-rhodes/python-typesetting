@@ -181,30 +181,43 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
-    for line_fonts_and_texts in split_texts_into_lines(fonts_and_texts):
+    unwrapped_lines = split_texts_into_lines(fonts_and_texts)
+    wrapped_lines = wrap_long_lines(fonts, unwrapped_lines, line.column.width)
+
+    for tuples in wrapped_lines:
+        print(tuples)
         line = next_line(line, leading, height)
-        if not line:
-            continue
         x = 0
-        for font_name, text in line_fonts_and_texts:
+        for font_name, text, width in tuples:
             line.graphics.append((draw_text, x, font_name, text))
-            font = fonts[font_name]
-            width = font.width_of(text)
             x += width
 
     return a + 1, line
 
+def wrap_long_lines(fonts, lines, width):
+    return [list(wrap_long_line(fonts, line, width)) for line in lines]
+
+def wrap_long_line(fonts, texts_and_fonts, width):
+    #line = []
+    x = 0
+    for font_name, text in texts_and_fonts:
+        # if line:
+        #     pass
+        width = fonts[font_name].width_of(text)
+        yield font_name, text, width
+    #yield line
+
 def split_texts_into_lines(fonts_and_texts):
     line = []
-    for font, text in fonts_and_texts:
+    for font_name, text in fonts_and_texts:
         pieces = text.split('\n')
         if pieces[0]:
-            line.append((font, pieces[0]))
+            line.append((font_name, pieces[0]))
         for piece in pieces[1:]:
             yield line
             line = []
             if piece:
-                line.append((font, piece))
+                line.append((font_name, piece))
     yield line
 
 # def wrap_lines(lines_of_fonts_and_texts):
