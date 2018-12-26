@@ -194,6 +194,27 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
 
     return a + 1, line
 
+def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
+    # Just like a ragged paragraph, but with different x's. TODO: can
+    # probably be refectored to share more code; but can they shared
+    # more code without making them both more complicated?
+    leading = max(fonts[name].leading for name, text in fonts_and_texts)
+    height = max(fonts[name].height for name, text in fonts_and_texts)
+
+    unwrapped_lines = split_texts_into_lines(fonts_and_texts)
+    wrapped_lines = wrap_long_lines(fonts, unwrapped_lines, line.column.width)
+
+    for tuples in wrapped_lines:
+        print(tuples)
+        line = next_line(line, leading, height)
+        content_width = sum(width for font_name, text, width in tuples)
+        x = (line.column.width - content_width) / 2.0
+        for font_name, text, width in tuples:
+            line.graphics.append((draw_text, x, font_name, text))
+            x += width
+
+    return a + 1, line
+
 def wrap_long_lines(fonts, lines, width):
     return [list(wrap_long_line(fonts, line, width)) for line in lines]
 
