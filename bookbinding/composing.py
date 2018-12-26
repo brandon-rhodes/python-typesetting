@@ -181,46 +181,33 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
-    def next_stop(start):
-        print(repr(start))
-        s1 = text.find(' ', start + 1)
-        if s1 == -1:
-            s1 = len(text)
-        s2 = text.find('\n', start + 1)
-        if s2 == -1:
-            s2 = len(text)
-        return min(s1, s2)
-
-    # def end_line():
-    #     nonlocal line, x
-    #     line = next_line(line, leading, height)
-    #     x = 0
-
-    line = next_line(line, leading, height)
-    x = 0
-
-    for font_name, text in fonts_and_texts:
-        if not text:
+    for line_fonts_and_texts in split_texts_into_lines(fonts_and_texts):
+        line = next_line(line, leading, height)
+        if not line:
             continue
-        font = fonts[font_name]
-        i = 0
-        j = next_stop(i)
-        while j < len(text):
-            if text[j] == '\n':
-                if j > 1:
-                    line.graphics.append((draw_text, x, font_name, text[i:j]))
-                line = next_line(line, leading, height)
-                x = 0
-                i = j + 1
-            j = next_stop(j)
-        width = font.width_of(text[i:j])
-        line.graphics.append((draw_text, x, font_name, text[i:j]))
-        x += width
-
-    if not line.graphics:
-        line = line.previous
+        x = 0
+        for font_name, text in line_fonts_and_texts:
+            line.graphics.append((draw_text, x, font_name, text))
+            font = fonts[font_name]
+            width = font.width_of(text)
+            x += width
 
     return a + 1, line
+
+def split_texts_into_lines(fonts_and_texts):
+    line = []
+    for font, text in fonts_and_texts:
+        pieces = text.split('\n')
+        if pieces[0]:
+            line.append((font, pieces[0]))
+        for piece in pieces[1:]:
+            yield line
+            line = []
+            if piece:
+                line.append((font, piece))
+    yield line
+
+# def wrap_lines(lines_of_fonts_and_texts):
 
 def draw_text(fonts, line, painter, x, font_name, text):
     pt = 1200 / 72.0
