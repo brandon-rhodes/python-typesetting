@@ -185,7 +185,7 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     wrapped_lines = wrap_long_lines(fonts, unwrapped_lines, line.column.width)
 
     for tuples in wrapped_lines:
-        print(tuples)
+        #print(tuples)
         line = next_line(line, leading, height)
         x = 0
         for font_name, text, width in tuples:
@@ -205,7 +205,7 @@ def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     wrapped_lines = wrap_long_lines(fonts, unwrapped_lines, line.column.width)
 
     for tuples in wrapped_lines:
-        print(tuples)
+        #print(tuples)
         line = next_line(line, leading, height)
         content_width = sum(width for font_name, text, width in tuples)
         x = (line.column.width - content_width) / 2.0

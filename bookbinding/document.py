@@ -17,7 +17,6 @@ class Document(object):
         f = QFontDatabase.addApplicationFont('OldStandard-Bold.ttf')
         names = QFontDatabase.applicationFontFamilies(f)
         print(names)
-        # name = names[0]
         self.writer = QPdfWriter('book.pdf')
         self.writer.setPageSizeMM(QSizeF(page_width * mm, page_height * mm))
         self.writer.setPageMargins(QMarginsF(0, 0, 0, 0))
