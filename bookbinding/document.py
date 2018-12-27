@@ -17,29 +17,11 @@ class Document(object):
         f = QFontDatabase.addApplicationFont('OldStandard-Bold.ttf')
         names = QFontDatabase.applicationFontFamilies(f)
         print(names)
-        name = names[0]
+        # name = names[0]
         self.writer = QPdfWriter('book.pdf')
         self.writer.setPageSizeMM(QSizeF(page_width * mm, page_height * mm))
         self.writer.setPageMargins(QMarginsF(0, 0, 0, 0))
         self.painter = QPainter(self.writer)
-
-        self.fonts = {}
-        self.metrics = {}
-
-        for name_and_args in [
-            ('chapter-title-roman', name, 'Roman', 18),
-            ('section-title-roman', name, 'Roman', 14),
-            ('body-roman', name, 'Roman', 11),
-            ('body-italic', name, 'Italic', 11),
-        ]:
-            name = name_and_args[0]
-            font = QFontDatabase().font(*name_and_args[1:])
-            self.painter.setFont(font)
-            metrics = self.painter.fontMetrics()
-            self.fonts[name] = font
-            self.metrics[name] = metrics
-
-        self.painter.setFont(self.fonts['body-roman'])
 
 def mark_chase(painter, chase):
     pt = 1200 / 72.0
