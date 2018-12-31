@@ -95,13 +95,15 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     assert breaks[0] == 0
     start = 0
 
+    font = 'body-roman'
+
     for i, breakpoint in enumerate(breaks[1:]):
         r = olist.compute_adjustment_ratio(start, breakpoint, i,
                                            indented_lengths)
 
         #r = 1.0
 
-        xlist = []
+        xlist = [(None, font_name)]
         x = 0
         for i in range(start, breakpoint):
             box = olist[i]
@@ -112,7 +114,8 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
                     xlist.append((x + indent, box.character))
                     x += box.width
                 else:
-                    xlist.append((None, box.character))
+                    font_name = box.character
+                    xlist.append((None, font_name))
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width:
@@ -126,8 +129,6 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
 def knuth_draw(fonts, line, painter, xlist):
     pt = 1200 / 72.0
-    font = fonts['body-roman']
-    painter.setFont(font.qt_font)
     for x, text in xlist:
         if x is None:
             font = fonts[text]
