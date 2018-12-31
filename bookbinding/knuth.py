@@ -127,6 +127,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 def knuth_draw(fonts, line, painter, xlist):
     pt = 1200 / 72.0
     font = fonts['body-roman']
+    painter.setFont(font.qt_font)
     for x, text in xlist:
         if x is None:
             font = fonts[text]

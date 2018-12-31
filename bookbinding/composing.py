@@ -11,6 +11,14 @@ def call_action(actions, a, fonts, line, next_line):
     action, *args = actions[a]
     return action(actions, a, fonts, line, next_line, *args)
 
+def add_leading(line, next_line, leading=9999999):
+    """Add `leading` to the leading of the first line after `line`."""
+    def next_line2(line2, leading2, height):
+        if line2 is line:
+            leading2 = leading
+        return next_line(line2, leading2, height)
+    return next_line2
+
 def new_page(actions, a, fonts, line, next_line):
     if line is None:
         return a + 1, line
@@ -59,7 +67,8 @@ def space_before_and_after(actions, a, fonts, line, next_line, above, below):
 
     return a2, line2
 
-def section_break(actions, a, fonts, line, next_line, graphic):
+def section_break(actions, a, fonts, line, next_line,
+                  leading, height, graphic):
     at_top = line is None
     a1 = a + 1
     if at_top:
@@ -69,30 +78,42 @@ def section_break(actions, a, fonts, line, next_line, graphic):
     if at_bottom:
         return a1, line
 
-    line2 = next_line(line, 2, 10)  # TODO: fix hard-coded values
+    # Add a blank line.
+    line2 = next_line(line, leading, height)
 
     if line2.column is not line.column:
+        # Our attempt to add a blank line pushed us to the next page.
+        # Instead, use the line for the graphic.
         line2.graphics.append(graphic)
-        line3 = next_line(line2, 2, 10)
+        line3 = next_line(line2, leading, height)
         return a1, line3
 
+    # See what the following content does after the blank line.
     a2, line3 = call_action(actions, a1, fonts, line2, next_line)
-    # if line3 is line2:
-    #     return a2, line3
     lines = unroll(line2, line3)
     assert line2 is lines[0]
     if line2.column is lines[1].column:
+        # A simple blank line works! The following content (at least its
+        # first line) stayed here on the same page.
         return a2, line3
 
-    line3 = next_line(line2, 2, 10)
+    # A blank line pushed the following content to the next page. Add a
+    # separator graphic.
+    line3 = next_line(line2, leading, height)
     line3.graphics.append(graphic)
-    if line3.column is line.column:
-        line4 = next_line(line3, 99999999, 0)
-    else:
-        line4 = next_line(line3, 2, 10)
-        if line4.column is not line3.column:
-            line4 = next_line(line3, 99999999, 0)
-    return a1, line4
+
+    if line3.column is not line.column:
+        # The separator landed on the next page! To avoid the extra
+        # blank line at the bottom of the column, rebuild atop `line`,
+        # and put a blank line after the separator instead.
+        line2 = next_line(line, 9999999, height)
+        line2.graphics.append(graphic)
+        line3 = next_line(line2, leading, height)
+        return a1, line3
+
+    # Re-run the following content, forcing it on to the next page.
+    a = add_leading(line3, next_line)
+    return call_action(actions, a1, fonts, line3, a)
 
 def section_title(actions, a, fonts, line, next_line):
     """Move the next action on to the same page as the action that follows."""
