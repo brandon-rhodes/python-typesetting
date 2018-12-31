@@ -68,7 +68,11 @@ def space_before_and_after(actions, a, fonts, line, next_line, above, below):
     return a2, line2
 
 def section_break(actions, a, fonts, line, next_line,
-                  leading, height, graphic):
+                  font_name, graphic):
+    font = fonts[font_name]
+    leading = font.leading
+    height = font.height
+
     at_top = line is None
     a1 = a + 1
     if at_top:

@@ -1,5 +1,5 @@
 
-from ..skeleton import Column, Line, Page, unroll, next_line
+from ..skeleton import Column, Font, Line, Page, unroll, next_line
 from ..composing import (
     avoid_widows_and_orphans, run, section_break, section_title,
     space_before_and_after,
@@ -221,21 +221,20 @@ def test_widow_that_cannot_be_fixed():
     assert l4 == Line(l3, c2, 10, [])
 
 def test_section_break_that_creates_blank_line():
-    l0, l1, l2, l3 = unroll(None, run([
+    assert _run(
         (make_paragraph, 2, 10, 1, 'p1'),
-        (section_break, 2, 10, 'graphic'),
+        (section_break, 'body', 'graphic'),
         (make_paragraph, 2, 10, 1, 'p2'),
-    ], None, None, next_line))
-    p = Page(10, 34)
-    c1 = Column(p, 1, 0, 0, 10, 34)
-    assert l1 == Line(None, c1, 10, ['p1'])
-    assert l2 == Line(l1, c1, 22, [])
-    assert l3 == Line(l2, c1, 34, ['p2'])
+    ) == [
+        (1, 10, ['p1']),
+        (1, 22, []),
+        (1, 34, ['p2']),
+    ]
 
 def test_section_break_that_naturally_lands_at_top():
     assert _run(
         (make_paragraph, 2, 10, 3, 'p1'),
-        (section_break, 2, 10, '* * *'),
+        (section_break, 'body', '* * *'),
         (make_paragraph, 2, 10, 1, 'p2'),
     ) == [
         (1, 10, ['p1']),
@@ -249,7 +248,7 @@ def test_section_break_that_naturally_lands_at_top():
 def test_section_break_that_skips_to_top():
     assert _run(
         (make_paragraph, 2, 10, 2, 'p1'),
-        (section_break, 2, 10, '* * *'),
+        (section_break, 'body', '* * *'),
         (make_paragraph, 2, 10, 1, 'p2'),
     ) == [
         (1, 10, ['p1']),
@@ -262,7 +261,7 @@ def test_section_break_that_skips_to_top():
 def test_section_break_with_graphic_on_bottom_():
     assert _run(
         (make_paragraph, 2, 10, 1, 'p1'),
-        (section_break, 2, 10, '* * *'),
+        (section_break, 'body', '* * *'),
         (make_paragraph, 3, 10, 1, 'p2'),
     ) == [
         (1, 10, ['p1']),
@@ -282,7 +281,7 @@ def test_section_break_with_graphic_on_bottom_but_content_wants_to_stay():
 
     assert _run(
         (make_paragraph, 2, 10, 1, 'p1'),
-        (section_break, 2, 2, '* * *'),
+        (section_break, 'tiny', '* * *'),
         (awkward_paragraph,),
     ) == [
         (1, 10, ['p1']),
@@ -385,8 +384,13 @@ def test_space_before_and_after_with_after_distance():
     assert l2 == Line(l1, c1, 21, [])
     assert l3 == Line(l2, c1, 33, [])
 
+_fonts = {
+    'body': Font(8, 2, 10, 2),  # 10 point, with 2 points leading
+    'tiny': Font(8, 2, 2, 2),   # 2 point, with 2 points leading
+}
+
 def _run(*actions):
-    line = run(actions, None, None, next_line)
+    line = run(actions, _fonts, None, next_line)
     lines = unroll(None, line)[1:]
     return [(line.column.id, line.y, line.graphics) for line in lines]
 
