@@ -216,38 +216,39 @@ class ObjectList(list):
         return r
 
 
-    def add_active_node(self, active_nodes, node):
-        """Add a node to the active node list.
-        The node is added so that the list of active nodes is always
+    def add_active_nodes(self, active_nodes, nodes):
+        """Add nodes to the active node list.
+        The nodes are added so that the list of active nodes is always
         sorted by line number, and so that the set of (position, line,
         fitness_class) tuples has no repeated values.
         """
 
-        index = 0
+        for node in nodes:
+            index = 0
 
-        # Find the first index at which the active node's line number
-        # is equal to or greater than the line for 'node'.  This gives
-        # us the insertion point.
-        while (index < len(active_nodes) and
-               active_nodes[index].line < node.line):
-            index = index + 1
+            # Find the first index at which the active node's line number
+            # is equal to or greater than the line for 'node'.  This gives
+            # us the insertion point.
+            while (index < len(active_nodes) and
+                   active_nodes[index].line < node.line):
+                index = index + 1
 
-        insert_index = index
+            insert_index = index
 
-        # Check if there's a node with the same line number and
-        # position and fitness.  This lets us ensure that the list of
-        # active nodes always has unique (line, position, fitness)
-        # values.
-        while (index < len(active_nodes) and
-               active_nodes[index].line == node.line):
-            if (active_nodes[index].fitness_class == node.fitness_class and
-                active_nodes[index].position == node.position):
-                # A match, so just return without adding the node
-                return
+            # Check if there's a node with the same line number and
+            # position and fitness.  This lets us ensure that the list of
+            # active nodes always has unique (line, position, fitness)
+            # values.
+            while (index < len(active_nodes) and
+                   active_nodes[index].line == node.line):
+                if (active_nodes[index].fitness_class == node.fitness_class and
+                    active_nodes[index].position == node.position):
+                    # A match, so just return without adding the node
+                    return
 
-            index = index + 1
+                index = index + 1
 
-        active_nodes.insert(insert_index, node)
+            active_nodes.insert(insert_index, node)
 
     def compute_breakpoints(self,
                             line_lengths,
@@ -442,8 +443,7 @@ class ObjectList(list):
             if breaks:
                 if self.debug:
                     print('List of breaks at ', i, ':', breaks)
-                for brk in breaks:
-                    self.add_active_node(active_nodes, brk)
+                self.add_active_nodes(active_nodes, breaks)
 
             if not active_nodes:
                 raise RuntimeError('no solutions for this paragraph within a'
