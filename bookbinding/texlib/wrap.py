@@ -342,10 +342,9 @@ class ObjectList(list):
             if self.debug:
                 # Print the list of active nodes, sorting them
                 # so they can be visually checked for uniqueness.
-                def cmp_f(n1, n2):
-                    return cmp( (n1.line, n1.position, n1.fitness_class),
-                                 (n2.line, n2.position, n2.fitness_class) )
-                active_nodes.sort(cmp_f)
+                def key_f(n):
+                    return (n.line, n.position, n.fitness_class)
+                active_nodes.sort(key=key_f)
                 for A in active_nodes:
                     print(A.position, A.line, A.fitness_class)
                 print ; print
