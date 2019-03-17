@@ -71,8 +71,10 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
     indented_lengths = [length - indent for length in line_lengths]
 
-    for font, text in fonts_and_texts:
-        olist.append(Box(0, font))  # special sentinel
+    for font_name, text in fonts_and_texts:
+        font = fonts[font_name]
+        width_of = font.width_of
+        olist.append(Box(0, font_name))  # special sentinel
         olist.extend(text_boxes(text))
 
     if olist[-1] is space_glue:
