@@ -11,6 +11,7 @@ class Document(object):
         self.page_width = page_width
         self.page_height = page_height
         self.margin_width = margin_width
+        self.include_crop_marks = bool(margin_width)
 
         QApplication(['my-q-application'])
         f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
@@ -26,11 +27,13 @@ class Document(object):
                             margin_width, margin_width)
         self.writer.setPageMargins(margins)
         self.painter = QPainter(self.writer)
-        self.draw_crop_marks()
+        if self.include_crop_marks:
+            self.draw_crop_marks()
 
     def new_page(self):
         self.writer.newPage()
-        self.draw_crop_marks()
+        if self.include_crop_marks:
+            self.draw_crop_marks()
 
     def draw_crop_marks(self):
         pt = 1200 / 72.0
