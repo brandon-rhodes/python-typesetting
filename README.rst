@@ -11,7 +11,7 @@ The margins are 72 points all around.
 
 .. code:: python
 
-    >>> import bookbinding as bb
+    >>> import typesetting as bb
     >>> story = [
     ...     bb.Paragraph(
     ...         text=(

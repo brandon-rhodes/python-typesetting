@@ -1,16 +1,16 @@
 from distutils.core import setup
 
 setup(
-    name = 'bookbinding',
+    name = 'typesetting',
     version = '0.1-dev',
     #description = description,
     #long_description = long_description,
     license = 'MIT',
     author = 'Brandon Rhodes',
     author_email = 'brandon@rhodesmill.org',
-    url = 'https://github.com/brandon-rhodes/python-bookbinding',
+    url = 'https://github.com/brandon-rhodes/python-typesetting',
     classifiers = [
     ],
-    packages = ['bookbinding'],
+    packages = ['typesetting'],
     install_requires = ['PySide2'],
 )

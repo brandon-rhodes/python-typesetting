@@ -1,4 +1,4 @@
-from bookbinding import document as bb
+from typesetting import document as bb
 
 story = [
     bb.Paragraph(
