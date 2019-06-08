@@ -6,7 +6,9 @@ import argparse
 import sys
 from textwrap import dedent
 
-from typesetting.composing import centered_paragraph, ragged_paragraph, run
+from typesetting.composing import (
+    centered_paragraph, ragged_paragraph, run, space_before_and_after,
+)
 from typesetting.document import Document
 from typesetting.knuth import knuth_paragraph
 from typesetting.pyside2_backend import get_fonts
@@ -22,22 +24,27 @@ def main(argv):
     fonts = get_fonts(d.painter, [
         ('bold', 'Gentium Basic', 'Bold', 12),
         ('roman', 'Gentium Basic', 'Roman', 12),
-        ('typewriter', 'Courier', 'Roman', 12),
+        ('typewriter', 'Courier', 'Roman', 11),
+        #('typewriter', 'Inconsolata', 'Roman', 10),
+        #('typewriter', 'Ubuntu Mono', 'Roman', 10),
     ])
 
     simple_slide = make_simple_slide_function(fonts, d)
     code_slide = make_code_slide_function(fonts, d)
 
     next_line = slide_layout()
+    narrow_line = slide_layout(0.5)
 
-    actions = [
+    lotr = [
         (knuth_paragraph, 0, 0, [('roman', """
 
+        and all but Hobbits would find them exceedingly dull.
         Hobbits delighted in such things, if they were accurate: they
         liked to have books filled with things that they already knew,
         set out fair and square with no contradictions.
 
         """.strip())]),
+        (space_before_and_after, 8, 2),
         (knuth_paragraph, 0, 0, [('bold', """
         2. Concerning Pipe-weed
         """.strip())]),
@@ -50,22 +57,26 @@ def main(argv):
 
         """.strip())]),
     ]
-    run_and_draw(actions, fonts, None, next_line, d.painter)
 
+    simple_slide('Problem:', 'Headings')
+
+    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
     d.new_page()
 
     code_slide('''
-    def set_paragraph():
-        it happens
+    y = line.y + need_y
+    if y > column.height:
+        page = next_page()
+        y = 0
     ''')
 
     simple_slide('I want to be', 'in the room where it happens')
 
     d.painter.end()
 
-def slide_layout():
+def slide_layout(narrow=0):
     factor = 72 / 4
-    margin = 1 * factor
+    margin = (1 + narrow) * factor
     return single_column_layout(
         16 * factor, 9 * factor,
         margin, margin, margin, margin,
