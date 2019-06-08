@@ -226,6 +226,9 @@ def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
+    # TODO: this is ugly, creating a throw-away line to learn the width
+    # of the upcoming column. Maybe ask for lines as we need them,
+    # instead?
     tmpline = next_line(line, leading, height)
 
     unwrapped_lines = split_texts_into_lines(fonts_and_texts)
