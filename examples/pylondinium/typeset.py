@@ -5,7 +5,7 @@ from __future__ import print_function
 import argparse
 import sys
 
-from typesetting.composing import run
+from typesetting.composing import centered_paragraph, run
 from typesetting.document import Document
 from typesetting.knuth import knuth_paragraph
 from typesetting.pyside2_backend import get_fonts
@@ -15,7 +15,7 @@ def main(argv):
     parser = argparse.ArgumentParser(description='Generate slides')
     parser.parse_args(argv)
 
-    factor = 72 / 4
+    factor = 72 / 4  # TODO: have Document pull from layout instead?
     d = Document(16 * factor, 9 * factor)
 
     fonts = get_fonts(d.painter, [
@@ -24,9 +24,9 @@ def main(argv):
         ('typewriter', 'Courier', 'Roman', 12),
     ])
 
-    margin = 1 * factor
-    next_line = single_column_layout(16 * factor, 9 * factor,
-                                  margin, margin, margin, margin)
+    simple_slide = make_simple_slide_function(fonts, d.painter)
+
+    next_line = slide_layout()
 
     actions = [
         (knuth_paragraph, 0, 0, [('roman', """
@@ -50,7 +50,29 @@ def main(argv):
     ]
     run_and_draw(actions, fonts, None, next_line, d.painter)
 
+    d.new_page()
+
+    simple_slide('I want to be', 'in the room where it happens')
+
     d.painter.end()
+
+def slide_layout():
+    factor = 72 / 4
+    margin = 1 * factor
+    return single_column_layout(
+        16 * factor, 9 * factor,
+        margin, margin, margin, margin,
+    )
+
+def make_simple_slide_function(fonts, painter):
+    def simple_slide(*texts):
+        next_line = slide_layout()
+        actions = [
+            (centered_paragraph, [('roman', text)])
+            for text in texts
+        ]
+        run_and_draw(actions, fonts, None, next_line, painter)
+    return simple_slide
 
 def run_and_draw(actions, fonts, line, next_line, painter):
     line2 = run(actions, fonts, line, next_line)
