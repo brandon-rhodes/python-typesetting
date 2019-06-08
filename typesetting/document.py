@@ -7,11 +7,11 @@ mm = 25.4 / 72
 
 class Document(object):
 
-    def __init__(self, page_width, page_height, margin_width=0):
+    def __init__(self, page_width, page_height, crop_margin_width=0):
         self.page_width = page_width
         self.page_height = page_height
-        self.margin_width = margin_width
-        self.include_crop_marks = bool(margin_width)
+        self.margin_width = crop_margin_width
+        self.include_crop_marks = bool(crop_margin_width)
 
         QApplication(['my-q-application'])
         f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
@@ -20,11 +20,11 @@ class Document(object):
         names = QFontDatabase.applicationFontFamilies(f)
         print(names)
         self.writer = QPdfWriter('book.pdf')
-        size = QSizeF((2 * margin_width + page_width) * mm,
-                      (2 * margin_width + page_height) * mm)
+        size = QSizeF((2 * crop_margin_width + page_width) * mm,
+                      (2 * crop_margin_width + page_height) * mm)
         self.writer.setPageSizeMM(size)
-        margins = QMarginsF(margin_width, margin_width,
-                            margin_width, margin_width)
+        margins = QMarginsF(crop_margin_width, crop_margin_width,
+                            crop_margin_width, crop_margin_width)
         self.writer.setPageMargins(margins)
         self.painter = QPainter(self.writer)
         if self.include_crop_marks:
