@@ -4,8 +4,9 @@ from __future__ import print_function
 
 import argparse
 import sys
+from textwrap import dedent
 
-from typesetting.composing import centered_paragraph, run
+from typesetting.composing import centered_paragraph, ragged_paragraph, run
 from typesetting.document import Document
 from typesetting.knuth import knuth_paragraph
 from typesetting.pyside2_backend import get_fonts
@@ -24,7 +25,8 @@ def main(argv):
         ('typewriter', 'Courier', 'Roman', 12),
     ])
 
-    simple_slide = make_simple_slide_function(fonts, d.painter)
+    simple_slide = make_simple_slide_function(fonts, d)
+    code_slide = make_code_slide_function(fonts, d)
 
     next_line = slide_layout()
 
@@ -52,6 +54,11 @@ def main(argv):
 
     d.new_page()
 
+    code_slide('''
+    def set_paragraph():
+        it happens
+    ''')
+
     simple_slide('I want to be', 'in the room where it happens')
 
     d.painter.end()
@@ -64,15 +71,28 @@ def slide_layout():
         margin, margin, margin, margin,
     )
 
-def make_simple_slide_function(fonts, painter):
+def make_simple_slide_function(fonts, d):
     def simple_slide(*texts):
         next_line = slide_layout()
         actions = [
             (centered_paragraph, [('roman', text)])
             for text in texts
         ]
-        run_and_draw_centered(actions, fonts, None, next_line, painter)
+        run_and_draw_centered(actions, fonts, None, next_line, d.painter)
+        d.new_page()
     return simple_slide
+
+def make_code_slide_function(fonts, d):
+    def code_slide(text):
+        text = dedent(text.rstrip()).strip('\n')
+        next_line = slide_layout()
+        actions = [
+            (ragged_paragraph, [('typewriter', line)])
+            for line in text.splitlines()
+        ]
+        run_and_draw_centered(actions, fonts, None, next_line, d.painter)
+        d.new_page()
+    return code_slide
 
 def run_and_draw(actions, fonts, line, next_line, painter):
     line2 = run(actions, fonts, line, next_line)
