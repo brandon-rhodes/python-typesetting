@@ -4,10 +4,12 @@ from __future__ import print_function
 
 import argparse
 import sys
+from copy import deepcopy
 from textwrap import dedent
 
 from typesetting.composing import (
-    centered_paragraph, ragged_paragraph, run, space_before_and_after,
+    avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
+    run, space_before_and_after,
 )
 from typesetting.document import Document
 from typesetting.knuth import knuth_paragraph
@@ -57,11 +59,10 @@ def main(argv):
 
         """.strip())]),
     ]
-
-    simple_slide('Problem:', 'Headings')
-
-    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    d.new_page()
+    lotr2 = deepcopy(lotr)
+    lotr2[-1:-1] = [(avoid_widows_and_orphans,)]
+    lotr3 = deepcopy(lotr)
+    lotr3[-1][3][0] = ('roman', 'There is another astonishing thing.')
 
     code_slide('''
     y = line.y + need_y
@@ -69,6 +70,74 @@ def main(argv):
         page = next_page()
         y = 0
     ''')
+
+    simple_slide('Problem:', 'Headings')
+
+    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('Q: What if there were no text', 'below the heading?')
+
+    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    code_slide('''
+    # Q: Can the Heading simply
+    #    leave extra space?
+
+    y = line.y + need_y + extra_y
+    if y > column.height:
+        page = next_page()
+        y = 0
+    ''')
+
+    simple_slide('A: No')
+
+    simple_slide('Why?', 'Widows and orphans')
+
+    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('A 1-line paragraph would', 'follow the heading',
+                 'without complaint')
+
+    run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('But a several-line paragraph will',
+                 'bump its opening line to the next page,',
+                 'leaving the heading stranded')
+
+    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('How can the heading predict',
+                 'when it will be stranded alone?',
+                 '',
+                 '1. Know everything about paragraphs',
+                 '',
+                 '')
+
+    simple_slide('How can the heading predict',
+                 'when it will be stranded alone?',
+                 '',
+                 '(a) Know everything about paragraphs',
+                 '— or —',
+                 '(b) Ask next item to lay itself out speculatively')
+
+    simple_slide('Heading algorithm', '',
+                 '1. Add heading to this page',
+                 '2. Run the following paragraph',
+                 '3. Is its first line on the same page? Done!',
+                 '4. If not? Remove paragraph & heading',
+                 '5. Move heading to next page instead',
+                 '6. Lay the paragraph out again!')
+
+    simple_slide('Consequence #1', '', 'Layout and drawing',
+                 'need to be separate steps')
+
+    simple_slide('Consequence #2', '', 'The output of the layout step',
+                 'needs to be easy to discard')
 
     simple_slide('I want to be', 'in the room where it happens')
 
