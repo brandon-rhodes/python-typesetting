@@ -221,6 +221,7 @@ def main(argv):
     print(r.defaultSize())
     b = r.viewBox()
     print(dir(b))
+    print(b.width() * 30, b.height() * 30)
     b2 = PySide2.QtCore.QRect(100, 100, b.width() * 30, b.height() * 30)
     r.render(d.painter, b2)
 
