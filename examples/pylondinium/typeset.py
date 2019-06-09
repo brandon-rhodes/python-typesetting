@@ -3,6 +3,7 @@
 from __future__ import print_function
 
 import argparse
+import os
 import sys
 from copy import deepcopy
 from textwrap import dedent
@@ -19,6 +20,8 @@ from typesetting.skeleton import single_column_layout, unroll
 def main(argv):
     parser = argparse.ArgumentParser(description='Generate slides')
     parser.parse_args(argv)
+
+    os.chdir(os.path.dirname(__file__))
 
     factor = 72 / 4  # TODO: have Document pull from layout instead?
     d = Document(16 * factor, 9 * factor)
@@ -207,6 +210,22 @@ def main(argv):
 
     # when a crucial decision is made, where do you want to be?
     simple_slide('I want to be', 'in the room where it happens')
+
+    import PySide2
+    rect = PySide2.QtCore.QRect(100, 100, 2000, 9000)
+    import PySide2.QtSvg
+    #w = PySide2.QtSvg.QSvgWidget('formula.svg')
+    r = PySide2.QtSvg.QSvgRenderer('formula.svg')
+    print(r.viewBox())
+
+    print(r.defaultSize())
+    b = r.viewBox()
+    print(dir(b))
+    b2 = PySide2.QtCore.QRect(100, 100, b.width() * 30, b.height() * 30)
+    r.render(d.painter, b2)
+
+    # pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    # d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
     # resisted Premature OO
     # next_line() was bare and decoupled and easy to control
