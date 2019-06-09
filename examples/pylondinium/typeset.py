@@ -64,6 +64,20 @@ def main(argv):
     lotr3 = deepcopy(lotr)
     lotr3[-1][3][0] = ('roman', 'There is another astonishing thing.')
 
+    # Slides
+
+    # why?
+    # different input forms
+    # real language rather than macro language
+    # (show what a macro language is)
+    # (mention backslash?)
+    # be in control
+
+    # Paragraph layout: can it simply return its decision, given "width"?
+    # No, because next column might be different width.
+    # So it needs a way to ask for new pages/columns as it goes along.
+    # And it will do something like:
+
     code_slide('''
     y = line.y + need_y
     if y > column.height:
@@ -139,7 +153,76 @@ def main(argv):
     simple_slide('Consequence #2', '', 'The output of the layout step',
                  'needs to be easy to discard')
 
+    # so, linked list
+    # line.y
+    # so we no longer need to pass in y or column
+    # so code started to look like:
+    # (have code that combines leading, height, next_column, line)
+    # and it always looks like that
+    # idea: instead of next_column(), could we put this logic in next_line()?
+    # so how do you find what next thing is?
+    # of other alternatives, chose to pass array and index.
+    # and have them pass back new index so they don't throw away layout.
+    # and in case they were nondeterministic.
+    # so, rule: if you lay out next element, keep the result.
+    # show example list of items, and what array/a would be passed, returned.
+    # TEMPTATION: special call convention for "simple" routines
+    # that don't look at next.
+    # (actions, a, fonts, line, next_line, ...)
+    # could: introspect? register? decorate?
+    # BUT: symmetry is more important than brevity. (and than DRY?)
+    # Makes hard case harder to be unusual?
+    #  .................................................................................................................................
+    # TEMPTATION: Premature Object Orientation
+    # want to add next() to line instead of having next_line()
+    # TODO: how do we motivate wanting to control next_line() decision?
+    # do we use wanting to separate out avoid_widows_and_orphans()
+    # instead of having switch because:
+    # Composition is better than Configuration(?)Switches(?)
+    # (^^^ [farther up] show 2 different ways para would look in actions list)
+    # Isn't widow/orphan like heading logic but without a heading?
+    # It's a transform applied to a paragraph.
+    # If we decide, "orphan", then we need to push to next page.
+    # How do we control where its next line goes?
+    # Alternatives: fake line; fake column height; fake page height.
+    # All of these are frameworky!
+    # You are adjusting inputs trying to control output.
+
+    # "Fuzzy Knowledge-Based Control for Backing Multi-Trailer Systems"
+    # Andri Riid , Jaakko Ketola , Ennu Rüstern
+
+    import PySide2
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
+    # What if instead of setting up, I provided my own next_line()?
+    # 1. it was right decision to pass as argument!
+    # 2. it was right decision to not make it a method
+    # ways to override a method:
+    # monkey patching; decorator, which requires spinning up whole other class.
+    # we would have to create entire object just to intercept one method!
+    # instead, we kept it decoupled,
+    # so we can just return wrapped next_line().
+    # (^^ linked list: "Try it both ways")
+
+    # when a crucial decision is made, where do you want to be?
     simple_slide('I want to be', 'in the room where it happens')
+
+    # resisted Premature OO
+    # next_line() was bare and decoupled and easy to control
+    # show code (# The room where it happens)
+    # easier to write tests for this simple function
+
+    # the right track:
+    # when I adjusted for headings,
+    # and was able to separate orphan/widow for free!
+
+    # give my father a hardback with his father's memories
+    # photo of book
+
+    # Lessons:
+    # ...
+    # The Right Track
 
     d.painter.end()
 
