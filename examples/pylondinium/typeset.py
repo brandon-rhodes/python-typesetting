@@ -32,6 +32,7 @@ def main(argv):
     fonts = get_fonts(d.painter, [
         ('bold', 'Gentium Basic', 'Bold', 12),
         ('roman', 'Gentium Basic', 'Roman', 12),
+        ('roman-small', 'Gentium Basic', 'Roman', 4), #?
         ('typewriter', 'Courier', 'Roman', 11),
         #('typewriter', 'Inconsolata', 'Roman', 10),
         #('typewriter', 'Ubuntu Mono', 'Roman', 10),
@@ -72,11 +73,56 @@ def main(argv):
 
     # Slides
 
-    # TeX
+    s = simple_slide
+    s('Letterpress')
+    s('In the distant past,',
+      'books and journals were',
+      'typeset by hand')
+    s('But as machines replaced humans,',
+      'mathematics journals became so ugly that',
+      'Donald Knuth could no longer bear to publish')
+    s('TeX Typesetting System')
+    s('τέχνη', 'craftsmanship / art')
+    s('The Good', '',
+      '1. Fonts',
+      '2. Keyboard',
+      '3. Math formulas',
+      '4. Paragraph line breaking')
+
+    s('1. Fonts',
+      '',
+      '“MetaFont”',
+      'algorithmic',
+      'vectors',
+    )
+
+    # next_line = slide_layout()
+    # actions = [
+    #     (centered_paragraph, [('roman', 'this very summer')]),
+    #     (centered_paragraph, [('roman-small', 'this very summer')]),
+    # ]
+    # run_and_draw_centered(actions, fonts, None, next_line, d.painter)
+    # d.new_page()
+
     # vector fonts: won!
     # fonts change shape as size changes (can show?)
-    # math: beautiful
 
+    s('2. Keyboard',
+      '',
+      'Learning to type .tex files',
+      'was a small course in typography')
+    s('- – — −')
+    s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
+    code_slide('Hobbit-lore',
+               '1158--60',
+               'Stick to your plan---your whole plan',
+               r'$-\pi$')
+    code_slide("``No secrets between us, Frodo''",
+               'Mr.~Baggins',
+               r"N\'umenor",
+               r'Nazg\^ul')
+
+    s('3. Math formulas')
     with open('formula.tex') as f:
         code = f.read()
     code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
@@ -84,6 +130,12 @@ def main(argv):
 
     center_formula(d, 'formula.svg')
     d.new_page()
+
+    s('MathJax')
+
+    s('4. Paragraph line breaking')
+
+    # (show that "War" looked bad)
 
     # paragraphs: beautiful
     # boxes and glue -> dynamic programming
@@ -284,7 +336,8 @@ def make_simple_slide_function(fonts, d):
     return simple_slide
 
 def make_code_slide_function(fonts, d):
-    def code_slide(text):
+    def code_slide(*texts):
+        text = '\n'.join(texts)
         text = dedent(text.rstrip()).strip('\n')
         next_line = slide_layout()
         actions = [
@@ -294,6 +347,15 @@ def make_code_slide_function(fonts, d):
         run_and_draw_centered(actions, fonts, None, next_line, d.painter)
         d.new_page()
     return code_slide
+
+def progressive_slide(f, *texts):
+    texts = list(texts)
+    i = len(texts) - 1
+    while i > -1:
+        if texts[i]:
+            f(*texts)
+            texts[i] = ''
+        i -= 1
 
 def run_and_draw(actions, fonts, line, next_line, painter):
     line2 = run(actions, fonts, line, next_line)
