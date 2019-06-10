@@ -8,6 +8,9 @@ import sys
 from copy import deepcopy
 from textwrap import dedent
 
+import PySide2
+import PySide2.QtSvg
+
 from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
     run, space_before_and_after,
@@ -68,6 +71,24 @@ def main(argv):
     lotr3[-1][3][0] = ('roman', 'There is another astonishing thing.')
 
     # Slides
+
+    # TeX
+    # vector fonts: won!
+    # fonts change shape as size changes (can show?)
+    # math: beautiful
+
+    with open('formula.tex') as f:
+        code = f.read()
+    code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
+    code_slide(code)
+
+    center_formula(d, 'formula.svg')
+    d.new_page()
+
+    # paragraphs: beautiful
+    # boxes and glue -> dynamic programming
+
+    # page layout
 
     # why?
     # different input forms
@@ -211,20 +232,6 @@ def main(argv):
     # when a crucial decision is made, where do you want to be?
     simple_slide('I want to be', 'in the room where it happens')
 
-    import PySide2
-    rect = PySide2.QtCore.QRect(100, 100, 2000, 9000)
-    import PySide2.QtSvg
-    #w = PySide2.QtSvg.QSvgWidget('formula.svg')
-    r = PySide2.QtSvg.QSvgRenderer('formula.svg')
-    print(r.viewBox())
-
-    print(r.defaultSize())
-    b = r.viewBox()
-    print(dir(b))
-    print(b.width() * 30, b.height() * 30)
-    b2 = PySide2.QtCore.QRect(100, 100, b.width() * 30, b.height() * 30)
-    r.render(d.painter, b2)
-
     # pm = PySide2.QtGui.QPixmap('two-trailers.png')
     # d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
@@ -253,6 +260,17 @@ def slide_layout(narrow=0):
         16 * factor, 9 * factor,
         margin, margin, margin, margin,
     )
+
+def center_formula(d, path):
+    formula_scale = 32
+    r = PySide2.QtSvg.QSvgRenderer(path)
+    b = r.viewBox()
+    w = b.width() * formula_scale
+    h = b.height() * formula_scale
+    x = (d.painter.device().width() - w) // 2
+    y = (d.painter.device().height() - h) // 2
+    b2 = PySide2.QtCore.QRect(x, y, w, h)
+    r.render(d.painter, b2)
 
 def make_simple_slide_function(fonts, d):
     def simple_slide(*texts):
