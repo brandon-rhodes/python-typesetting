@@ -98,14 +98,6 @@ def main(argv):
       'vectors',
     )
 
-    # next_line = slide_layout()
-    # actions = [
-    #     (centered_paragraph, [('roman', 'this very summer')]),
-    #     (centered_paragraph, [('roman-small', 'this very summer')]),
-    # ]
-    # run_and_draw_centered(actions, fonts, None, next_line, d.painter)
-    # d.new_page()
-
     # vector fonts: won!
     # fonts change shape as size changes (can show?)
 
@@ -139,24 +131,40 @@ def main(argv):
 
     # (show that "War" looked bad)
 
-    # paragraphs: beautiful
-    # boxes and glue -> dynamic programming
+    s('Boxes and glue (and penalties)')
+    s('• Boxes have a fixed width',
+      '• Glue can shrink, stretch to fix the line length',
+      '• But glue incurs “badness” if shrinks, stretches',
+      '• You can break the line wherever there is glue',
+      '• But you incur “badness” where there’s a penalty',
+      '• Taking a penalty can also add length to the line')
+    s('Can also configure:',
+      '• More badness for 2 taking penalties in row',
+      '• More badness for shrinking then stretching',
+      '• More badness for a very short last line')
+    progressive_slide('Isn’t that bizarre?',
+                      '',
+                      'It’s a classic framework')
+    s('Framework, noun:', '',
+      'A collection of knobs and levers',
+      'that makes it easy to do anything',
+      'that its author expected you to do')
+    s('Boxes = text',
+      'Glue = space between words',
+      'Penalty = non-breaking space',
+      'Penalty w/length = hyphenation',
+      'Two penalties in a row = stacked hyphens')
+    s('Despite a paragraph having 2ⁿ possible layouts,',
+      'Knuth can find the optimal solution to boxes-and-glue',
+      'in O(n²) worse case and usually close to O(n)!')
+    s('How?', '', 'Dynamic programming!', '',
+      '(I’ll bet you thought it only existed',
+      'to provide programming interview questions!)')
+    s('Result: *beautiful* paragraphs')
 
-    # page layout
-
-    # why?
-    # different input forms
-    # real language rather than macro language
-    # (show what a macro language is)
-    # (mention backslash?)
-    # be in control
-
-    # Paragraph layout: can it simply return its decision, given "width"?
-    # No, because next column might be different width.
-    # So it needs a way to ask for new pages/columns as it goes along.
-    # And it will do something like:
-
-    # Idea: paragraph layout that asks for space dynamically.
+    s('But', '', 'TeX had a clunky macro language',
+      'No support for modern markup languages',
+      'Deep limitations in page layout')
 
     simple_slide('I wanted to improve upon TeX')
     simple_slide('(text, width) → paragraph',
