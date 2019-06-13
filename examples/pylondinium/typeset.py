@@ -590,7 +590,7 @@ def main(argv):
       'Object `obj` with a method `m()`',
       'is not so easy to control')
     s('Monkey patching?',
-      'Adapter?',
+      'An Adapter class?',
       'Gang of Four Decorator?')
     s('In Object Orientation, customizing a verb',
       'can require an entire design pattern')
@@ -598,42 +598,19 @@ def main(argv):
       'if you treat verbs as first class citizens —',
       'a simple wrapper function can put you',
       'inside of the room where it happens')
-    # photos of book
+    s('This design makes me', '', '— happy —')
+    s('When simplifications appear',
+      'in several places I wasn’t expecting them',
+      'I feel that design is going in the right',
+      'direction')
 
-    # so, linked list
-    # line.y
-    # so we no longer need to pass in y or column
-    # so code started to look like:
-    # (have code that combines leading, height, next_column, line)
-    # and it always looks like that
-    # idea: instead of next_column(), could we put this logic in next_line()?
-    # so how do you find what next thing is?
-    # of other alternatives, chose to pass array and index.
-    # and have them pass back new index so they don't throw away layout.
-    # and in case they were nondeterministic.
-    # so, rule: if you lay out next element, keep the result.
-    # show example list of items, and what array/a would be passed, returned.
-    # TEMPTATION: special call convention for "simple" routines
-    # that don't look at next.
-    # (actions, a, fonts, line, next_line, ...)
-    # could: introspect? register? decorate?
-    # BUT: symmetry is more important than brevity. (and than DRY?)
-    # Makes hard case harder to be unusual?
-    #  .................................................................................................................................
-    # TEMPTATION: Premature Object Orientation
-    # want to add next() to line instead of having next_line()
-    # TODO: how do we motivate wanting to control next_line() decision?
-    # do we use wanting to separate out avoid_widows_and_orphans()
-    # instead of having switch because:
-    # Composition is better than Configuration(?)Switches(?)
-    # (^^^ [farther up] show 2 different ways para would look in actions list)
-    # Isn't widow/orphan like heading logic but without a heading?
-    # It's a transform applied to a paragraph.
-    # If we decide, "orphan", then we need to push to next page.
-    # How do we control where its next line goes?
-    # Alternatives: fake line; fake column height; fake page height.
-    # All of these are frameworky!
-    # You are adjusting inputs trying to control output.
+    s('Lessons', '',
+      'Start verbose, simplify later',
+      'Value symmetry over special cases',
+      'Let verbs be first-class citizens',
+      'Avoid premature Object Orientation')
+
+    # photos of book
 
     # "Fuzzy Knowledge-Based Control for Backing Multi-Trailer Systems"
     # Andri Riid , Jaakko Ketola , Ennu Rüstern
@@ -642,37 +619,10 @@ def main(argv):
     pm = PySide2.QtGui.QPixmap('two-trailers.png')
     d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
-    # What if instead of setting up, I provided my own next_line()?
-    # 1. it was right decision to pass as argument!
-    # 2. it was right decision to not make it a method
-    # ways to override a method:
-    # monkey patching; decorator, which requires spinning up whole other class.
-    # we would have to create entire object just to intercept one method!
-    # instead, we kept it decoupled,
-    # so we can just return wrapped next_line().
     # (^^ linked list: "Try it both ways")
-
-    # when a crucial decision is made, where do you want to be?
-    simple_slide('I want to be', 'in the room where it happens')
-
-    # pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    # d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
-
-    # resisted Premature OO
-    # next_line() was bare and decoupled and easy to control
-    # show code (# The room where it happens)
-    # easier to write tests for this simple function
-
-    # the right track:
-    # when I adjusted for headings,
-    # and was able to separate orphan/widow for free!
 
     # give my father a hardback with his father's memories
     # photo of book
-
-    # Lessons:
-    # ...
-    # The Right Track
 
     d.painter.end()
 
