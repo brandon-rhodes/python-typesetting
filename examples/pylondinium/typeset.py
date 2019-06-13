@@ -74,6 +74,8 @@ def main(argv):
     # Slides
 
     s = simple_slide
+    c = code_slide
+
     s('Letterpress')
     s('In the distant past,',
       'books and journals were',
@@ -173,6 +175,9 @@ def main(argv):
     if y + leading + height > column.height:
         # ask for another column
     ''')
+
+    # How do we ask for more columns?
+
     simple_slide('Q: How do we ask for another column?')
     code_slide('''
     def lay_out_paragraph(column, y, ...):
@@ -208,28 +213,19 @@ def main(argv):
 
     # What will we return?
     ''')
+
+    # What output will the paragraph return?
+
     simple_slide('Can the paragraph',
                  'simply go ahead and draw',
                  'on the output device?')
     simple_slide('No')
-
-    code_slide('''
-    y = line.y + need_y
-    if y > column.height:
-        page = next_page()
-        y = 0
-    ''')
-
     simple_slide('Problem:', 'Headings')
-
     run_and_draw(lotr, fonts, None, narrow_line, d.painter)
     d.new_page()
-
     simple_slide('Q: What if there were no text', 'below the heading?')
-
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     d.new_page()
-
     code_slide('''
     # Q: Can the Heading simply
     #    leave extra space?
@@ -239,115 +235,168 @@ def main(argv):
         page = next_page()
         y = 0
     ''')
-
     simple_slide('A: No')
-
     simple_slide('Why?', 'Widows and orphans')
-
     run_and_draw(lotr, fonts, None, narrow_line, d.painter)
     d.new_page()
-
     simple_slide('A 1-line paragraph would', 'follow the heading',
                  'without complaint')
-
     run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
     d.new_page()
-
     simple_slide('But a several-line paragraph will',
                  'bump its opening line to the next page,',
                  'leaving the heading stranded')
-
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     d.new_page()
-
     simple_slide('How can the heading predict',
                  'when it will be stranded alone?',
                  '',
                  '1. Know everything about paragraphs',
                  '',
                  '')
-
     simple_slide('How can the heading predict',
                  'when it will be stranded alone?',
                  '',
                  '(a) Know everything about paragraphs',
                  '— or —',
                  '(b) Ask next item to lay itself out speculatively')
-
     simple_slide('Heading algorithm', '',
                  '1. Add heading to this page',
                  '2. Run the following paragraph',
                  '3. Is its first line on the same page? Done!',
                  '4. If not? Remove paragraph & heading',
-                 '5. Move heading to next page instead',
+                 '5. Place heading on the next page instead',
                  '6. Lay the paragraph out again!')
 
     simple_slide('Consequence #1', '', 'Layout and drawing',
                  'need to be separate steps')
-
     simple_slide('Consequence #2', '', 'The output of the layout step',
                  'needs to be easy to discard')
 
-# How will the heading work?
-# :add heading to column
-# :ask paragraph to lay itself out
-# :if paragraph's first line's column != column:
-# :    remove the paragraph
-# :    remove ourselves
-# :    column = next_column()
-# :    re-add heading
-# :    re-add paragraph
-# How?
-# generators?
-# iterators?
-# lists of lists?
-# linked list!
-# Column = NamedTuple(..., 'width, height')
-# Line = NamedTuple(..., 'previous_line column y')
+    # How will the heading work?
+    # :add heading to column
+    # :ask paragraph to lay itself out
+    # :if paragraph's first line's column != column:
+    # :    remove the paragraph
+    # :    remove ourselves
+    # :    column = next_column()
+    # :    re-add heading
+    # :    re-add paragraph
 
-#                    col5     col6    col6    col6
-#                    line9 ← line1 ← line2 ← line3
-#  col5     col5  <  HEADING  P1       P2      P3
-#  line7 ← line8 <
-#                    col6     col6    col6    col6
-#                    line1 ← line2 ← line3 ← line4
-#                    HEADING  P1      P2      P3
-# We can run any number
-# of speculative layout steps
-# and when we keep one, Python
-# decrements the refcounts
-# and discards all the rest!
-# so we have a linked list
-# we need to pass it so that callee can add to it.
-# lay_out_paragraph(column, y, line, next_column, ...)
-# simplify / eliminate redundnancy / something? yes! simplify!
-# lay_out_paragraph(xxxx column, xxx y, line, next_column, ...)
-# because line already has them
-# lay_out_paragraph(line, next_column, ...)
-# yay
-# SYMMMETRY: we started out passing one thing returning another
-# but now we are passed a `line` and later we return a different `line`
-# Line = NamedTuple(..., 'previous_line column y')
-# so we now know how to return speculative layout.
-# But how does the heading invoke the paragraph to make it do layout?
-# Reality: markdown or rst → list of calls
-# actions = [
-#     (chapter_title, 'Intro'),
-#     (paragraph, 'hobbits'),
-#     (heading, '1. title'),
-#     (paragraph, 'hobbits'),
-#     (paragraph, 'hobbits'),
-#     (heading, '2. on pipe-weed'),
-#     (paragraph, 'hobbits'),
-#     ...
-# ]
-# decision: pass in list and index
-#   lay_out_paragraph(actions, a, ...)
-# could try to hide it, but.
-# so the paragraph lays out its content and is done.
-# but the heading asks the following paragraph to work too.
-# how can it return finished work?
-# return a + i; can either do its own work, or return several subseq.
+    s('Generators?', 'Iterators?', 'Lists of lists?')
+    progressive_slide('A:', 'Linked list')
+    code_slide('''
+    Column = NamedTuple(..., 'width height')
+    Line = NamedTuple(..., 'previous column y graphics')
+
+    c1 = Column(...)
+    line1 = Line(None, c1, 0, [])
+    line2 = Line(line1, c1, 14, [])
+    line3 = Line(line2, c1, 28, [])
+    ''')
+    # TODO:
+    #                    col5     col6    col6    col6
+    #                    line9 ← line1 ← line2 ← line3
+    #  col5     col5  <  HEADING  P1       P2      P3
+    #  line7 ← line8 <
+    #                    col6     col6    col6    col6
+    #                    line1 ← line2 ← line3 ← line4
+    #                    HEADING  P1      P2      P3
+    s('A linked list lets us attach any number',
+      'of speculative layouts to the document so far,',
+      'and automatically disposes of the layouts',
+      'that we do not wind up keeping')
+    s('Consequence: to return a',
+      'new head for the linked list,',
+      'we will need the current head')
+    c('lay_out_paragraph(line, column, y, next_column, ...):')
+    s('But wait!', 'We can eliminate common variables')
+    c('''
+    lay_out_paragraph(line, column, y, next_column, ...)
+
+    # But what is a line?
+    Line = NamedTuple(..., 'previous column y graphics')
+    ''')
+    s('That’s nice!', '', 'Designing our return value',
+      'wound up eliminating two', 'of our input arguments',
+      '', 'Always look for chances to simplify',
+      'after designing a new part of your system')
+    c('''
+    lay_out_paragraph(line, next_column, ...)
+    ''')
+    s('Also nice:', 'Symmetry!')
+    c('''
+    # The Line becomes a common currency that is
+    # both our argument and our return value:
+
+    def lay_out_paragraph(line, next_column, ...):
+        ...
+        return last_line
+    ''')
+
+    s('So', '', 'We now have a scheme where a paragraph',
+      'can lay itself out speculatively',
+      'instead of immediately printing ink', '',
+      'But how will the heading invoke it?')
+    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)  #?
+    s('Well: what drives the layout process?')
+    c('''
+    # Input (Markdown, RST, etc) produces:
+    actions = [
+        (title, 'Prologue'),
+        (heading, '1. Concerning Hobbits'),
+        (paragraph, 'Hobbits are an unobtrusive...'),
+        (paragraph, 'For they are a little people...'),
+        (heading, '2. Concerning Pipe-weed'),
+        (paragraph, 'There is another astonishing...'),
+    ]
+    ''')
+    s('Q:', 'How can the heading see', 'the paragraph that follows?')
+    s('A:', 'Easiest thing?', 'Just pass in the list')
+    c('''
+    def lay_out_heading(actions, a, line, next_column, ...):
+        ...
+        return last_line
+    ''')
+    s('Q:', 'But wait!', 'Which last_line should', 'the heading return?')
+    c('''
+    def lay_out_heading(actions, a, line, next_column, ...):
+        ...
+        return last_line  # <- Is this the heading line?
+                          #    Or the paragraph's last line?
+    ''')
+    # Should I show the heading logic? Or does that come later?
+    s('If, to decide its own location,', 'the heading goes ahead and asks',
+      'the following paragraph to lay itself out,',
+      'shouldn’t we keep that work instead',
+      'of throwing it away?')
+    s('But how can the heading tell the engine,',
+      '“I am returning the output of 2 items',
+      'instead of just my own?”')
+    c('''
+    def lay_out_heading(actions, a, line, next_column, ...):
+        ...
+        return a + 2, last_line  # New return value: index!
+    ''')
+    s('Stepping back, I looked askance',
+      'at the repetition in my code')
+    c('''
+    # Some routines use `actions` and `a`:
+    def heading(actions, a, line, next_column, ...):
+        ... return a + 2, line_n
+    def section(actions, a, line, next_column, ...):
+        ... return a + 3, line_n
+
+    # But many ignored `actions` and returned `a + 1`:
+    def paragraph(actions, a, line, next_column, ...):
+        ... return a + 1, line_n
+    def centered_text(actions, a, line, next_column, ...):
+        ... return a + 1, line_2
+    def horizontal_rule(actions, a, line, next_column, ...):
+        ... return a + 1, line_2
+    ''')
+    s('DRY')
 # `return line_n, a+1`
 # so how does our arg list look
 # lay_out_paragraph(actions, a, line, next_column, ...)
