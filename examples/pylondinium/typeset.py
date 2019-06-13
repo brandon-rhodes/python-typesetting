@@ -33,9 +33,9 @@ def main(argv):
         ('bold', 'Gentium Basic', 'Bold', 12),
         ('roman', 'Gentium Basic', 'Roman', 12),
         ('roman-small', 'Gentium Basic', 'Roman', 4), #?
-        ('typewriter', 'Courier', 'Roman', 11),
+        ('typewriter', 'Courier', 'Roman', 9),
         #('typewriter', 'Inconsolata', 'Roman', 10),
-        #('typewriter', 'Ubuntu Mono', 'Roman', 10),
+        #('typewriter', 'Ubuntu Mono', 'Roman', 9),
     ])
 
     simple_slide = make_simple_slide_function(fonts, d)
@@ -76,6 +76,9 @@ def main(argv):
     s = simple_slide
     c = code_slide
 
+    s('Typesetting with Python', '', '', '', '@brandon_rhodes',
+      '2019 June 16', 'PyLondinium')
+
     s('Letterpress')
     s('In the distant past,',
       'books and journals were',
@@ -83,7 +86,11 @@ def main(argv):
     s('But as machines replaced humans,',
       'mathematics journals became so ugly that',
       'Donald Knuth could no longer bear to publish')
-    s('TeX Typesetting System')
+
+    center_formula(d, 'logo.svg')
+    d.new_page()
+
+    s('“TeX” Typesetting System')
     s('τέχνη', 'craftsmanship / art')
     s('The Good', '',
       '1. Fonts',
@@ -142,13 +149,13 @@ def main(argv):
       '• More badness for 2 taking penalties in row',
       '• More badness for shrinking then stretching',
       '• More badness for a very short last line')
-    progressive_slide('Isn’t that bizarre?',
+    progressive_slide(s, 'Isn’t that bizarre?',
                       '',
                       'It’s a classic framework')
     s('Framework, noun:', '',
       'A collection of knobs and levers',
       'that makes it easy to do anything',
-      'that its author expected you to do')
+      'that its author already anticipated')
     s('Boxes = text',
       'Glue = space between words',
       'Penalty = non-breaking space',
@@ -292,7 +299,7 @@ def main(argv):
     # :    re-add paragraph
 
     s('Generators?', 'Iterators?', 'Lists of lists?')
-    progressive_slide('A:', 'Linked list')
+    progressive_slide(s, 'A:', 'Linked list')
     code_slide('''
     Column = NamedTuple(..., 'width height')
     Line = NamedTuple(..., 'previous column y graphics')
@@ -679,12 +686,15 @@ def make_code_slide_function(fonts, d):
 
 def progressive_slide(f, *texts):
     texts = list(texts)
-    i = len(texts) - 1
-    while i > -1:
+    for i in range(len(texts)):
         if texts[i]:
-            f(*texts)
-            texts[i] = ''
-        i -= 1
+            f(*texts[:i+1] + [''] * (len(texts) - i))
+    # i = len(texts) - 1
+    # while i > -1:
+    #     if texts[i]:
+    #         f(*texts)
+    #         texts[i] = ''
+    #     i -= 1
 
 def run_and_draw(actions, fonts, line, next_line, painter):
     line2 = run(actions, fonts, line, next_line)
@@ -704,7 +714,7 @@ def run_and_draw_centered(actions, fonts, line, next_line, painter):
     lines = unroll(line, line2)
     page = None
     assert lines[0] is None
-    assert lines[1].column.page is lines[-1].column.page
+    #assert lines[1].column.page is lines[-1].column.page
     y = lines[-1].y
     offset = (lines[1].column.height - y) / 2
     for line in lines[1:]:
