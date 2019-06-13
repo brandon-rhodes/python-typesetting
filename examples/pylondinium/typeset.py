@@ -170,8 +170,8 @@ def main(argv):
                'lay_out_paragraph(column, y, ...)')
     code_slide('''
     # Each time the paragraph needs another line:
-    leading = ...
-    height = ...
+    leading = 2pt
+    height = 12pt
     if y + leading + height > column.height:
         # ask for another column
     ''')
@@ -478,37 +478,127 @@ def main(argv):
         ... return a + 1, line_2
     ''')
 
-# (show "how heading works") <- (what?)
-# BONUS ROUND
-# inside para: multi calls to inner p. Looks like heading!
-# so, shouldn't this be its own action in the list?
-# BUT: needs to subvert LAST line. How? Twiddle?
-# Fake params? Fake column? That's like a framework?
-# NO-
-# All these routines have the same logic. Over and over. [show logic?]
-# That routine is going to be making a decision you want to control.
-# Where do you want to be when a big decision is made.
-# WHERE DO YOU WANT TO BE?
-# In the room where it happens...
-# I had been imagining:
-# single_line(actions, a, line, next_column, ...)
-#     ...
-#     column2 = next_column(line.column)
-# but what I really wanted was to take control away:
-# single_line(actions, a, line, next_line, ...)
-#     ...
-#     line2 = next_line(leading=2, height=12)
-# so you can subvert it
-# (TODO: look up how I actually do this. How does it work?)
-# And why are we able to do that?
-# Becuase of avoiding Premature OO!
-# Otherwise it would be difficult to replace one method of an object;
-# would have to use Gang of Four Decorator, or monkeypatching, or worse.
-# If you pass an object and need to live override a method
-# you are in trouble.
-# But if you pass a callable and need to tweak it?
-# Very easy!
-# End with showing photos of book.
+    # (show "how heading works") <- (what?)
+
+    s('BONUS ROUND')
+    s('widows', 'and', 'orphans')
+    s('How does that look in code?')
+    c('''
+    def paragraph(...):
+        lay out paragraph
+        if it creates an orphan:
+            adjust, and try again
+        if it creates a widow:
+            adjust, and try again
+    ''')
+    s('So paragraph() hides an inner routine',
+      'that does simple paragraph layout',
+      'inside of widow-orphan logic')
+    s('What if you just want the simple part?')
+    s('Parametrize?')
+    c('''
+    def paragraph(..., no_widows=True, no_orphans=True):
+        lay out paragraph
+        if no_widows and it creates an orphan:
+            adjust, and try again
+        if no_orphans and it creates a widow:
+            adjust, and try again
+    ''')
+    c('But —', '', 'This looks a lot', 'like our heading logic')
+    c('''
+    if it creates an orphan:
+        adjust, and try again
+
+    if heading is alone at bottom of column:
+        adjust, and try again
+    ''')
+    c('''
+    actions = [
+        (heading, '1. Concerning Hobbits'),
+        (paragraph, 'Hobbits are an unobtrusive...'),
+    ]
+    ''')
+    s('What if, instead of widow-orphan logic',
+      'being coupled to the paragraph() routine,',
+      'it lived outside and could be composed',
+      'with the paragraph?')
+    c('''
+    actions = [
+        (avoid_widows_and_orphans,),
+        (paragraph, 'Hobbits are an unobtrusive...'),
+    ]
+    ''')
+    s('Composition » Coupling+Configuration')
+    s('Problem:', '', 'To avoid a widow, the paragraph needs',
+      'to move to the second column early',
+      '', 'How will we convince it to do that?')
+    c('''
+    # Each time the paragraph needs another line:
+    leading = ...
+    height = ...
+    if y + leading + height > column.height:
+        # ask for another column
+    ''')
+    s('Provide an inflated y value, fix later?',
+      'Provide a fake column with a smaller height?',
+      '?')
+    s('This feels a lot like a framework', '',
+      'It feels we are looking desperately for levers',
+      'because we are standing on the outside',
+      'of the crucial decision we need to control')
+    s('Where do you want to be during a crucial decision?', '',
+      'On the outside, desperatly adjusting configuration?')
+    s('You want to be', 'in the room where it happens')
+    c('''
+    # Previously, layout routines only consulted
+    # us when they needed a new column, but handled
+    # lines themselves:
+
+    def paragraph(..., next_column, ...):
+        ...
+        if y + leading + height > column.height:
+             ...
+    ''')
+    c('''
+    # Let's change that up.
+
+    def paragraph(..., next_line, ...):
+        ...
+    ''')
+    c('''
+    def next_line(line, leading, height):
+        column = line.column
+        y = y + leading + height
+        if y > line.column.height:
+             column = next_column(line.column)
+             y = height
+        return Line(line, column, y, [])
+    ''')
+    s('Then, all the widow-orphan', 'logic has to do is —')
+    c('''
+    def avoid_widows_and_orphans(..., next_line, ...):
+
+        def fancy_next_line(...):
+            # A wrapper that makes its own decisions!
+
+        # Call the paragraph with fancy_next_line()
+    ''')
+    s('Did you catch the win?')
+    s('The simple wrapper would not have worked',
+      'if we had not avoided Premature Object Orientation!')
+    s('Function `f()` is easy to wrap!', '',
+      'Object `obj` with a method `m()`',
+      'is not so easy to control')
+    s('Monkey patching?',
+      'Adapter?',
+      'Gang of Four Decorator?')
+    s('In Object Orientation, customizing a verb',
+      'can require an entire design pattern')
+    s('But if you pass functions —',
+      'if you treat verbs as first class citizens —',
+      'a simple wrapper function can put you',
+      'inside of the room where it happens')
+    # photos of book
 
     # so, linked list
     # line.y
