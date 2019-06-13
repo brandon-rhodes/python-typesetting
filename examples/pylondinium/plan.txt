@@ -1,0 +1,154 @@
+
+
+where on page will paragraph be laid out? TeX kept secret; did it later.
+I wanted to do even better than TeX,
+by having paragraph ask for more columns as it needed them.
+lay_out_paragraph(width, height, y, ...)
+Column = NamedTuple(..., 'width, height')
+lay_out_paragraph(column, y, ...)
+each time you need a line:
+height = ... # compute space needed
+if y + height > column.height:
+    # ask for another column
+How do we do that?
+layout.next_column() OR column.next() OR next_column(column)
+lay_out_paragraph(column, y, next_column, ...)
+Why? To avoid Premature Object Orientation!
+Looking at options:
+layout.next_column() OR column.next() OR next_column(column)
+ask WHY?
+What necessity requires the verb you need
+to be attached to a noun?
+Unless the answer is, "because you can't avoid it", skip it.
+So my arguments are coming together
+lay_out_paragraph(column, y, next_column, ...)
+What about the return value?
+Can the routine simply draw on the page when it's done?
+No!
+Because we need speculation.
+... (put existing slides here that show what headings need to do) ...
+How will the heading work?
+:add heading to column
+:ask paragraph to lay itself out
+:if paragraph's first line's column != column:
+:    remove the paragraph
+:    remove ourselves
+:    column = next_column()
+:    re-add heading
+:    re-add paragraph
+How?
+generators?
+iterators?
+lists of lists?
+linked list!
+Column = NamedTuple(..., 'width, height')
+Line = NamedTuple(..., 'previous_line column y')
+
+                   col5     col6    col6    col6
+                   line9 ← line1 ← line2 ← line3
+ col5     col5  <  HEADING  P1       P2      P3
+ line7 ← line8 <
+                   col6     col6    col6    col6
+                   line1 ← line2 ← line3 ← line4
+                   HEADING  P1      P2      P3
+We can run any number
+of speculative layout steps
+and when we keep one, Python
+decrements the refcounts
+and discards all the rest!
+so we have a linked list
+we need to pass it so that callee can add to it.
+lay_out_paragraph(column, y, line, next_column, ...)
+simplify / eliminate redundnancy / something? yes! simplify!
+lay_out_paragraph(xxxx column, xxx y, line, next_column, ...)
+because line already has them
+lay_out_paragraph(line, next_column, ...)
+yay
+SYMMMETRY: we started out passing one thing returning another
+but now we are passed a `line` and later we return a different `line`
+Line = NamedTuple(..., 'previous_line column y')
+so we now know how to return speculative layout.
+But how does the heading invoke the paragraph to make it do layout?
+Reality: markdown or rst → list of calls
+actions = [
+    (chapter_title, 'Intro'),
+    (paragraph, 'hobbits'),
+    (heading, '1. title'),
+    (paragraph, 'hobbits'),
+    (paragraph, 'hobbits'),
+    (heading, '2. on pipe-weed'),
+    (paragraph, 'hobbits'),
+    ...
+]
+decision: pass in list and index
+  lay_out_paragraph(actions, a, ...)
+could try to hide it, but.
+so the paragraph lays out its content and is done.
+but the heading asks the following paragraph to work too.
+how can it return finished work?
+return a + i; can either do its own work, or return several subseq.
+`return line_n, a+1`
+so how does our arg list look
+lay_out_paragraph(actions, a, line, next_column, ...)
+even though half our routines are going to ignore `actions`
+and return `a+1`
+arg list is long because it's general
+it handles the case where you have to call n subseq steps
+idea: maybe make an EXCEPTION for simple layout routines
+that aren't going to look at `actions` and always return `a+1`
+1990s: would have introspected arguments magic!
+2000s: would have registered simple and complex
+2010s: would have defined decorator to convert
+@simple
+could be:
+def simple(callable):
+    def wrapper(actions, a, line, next_column, *args):
+        line2 = callable(line, next_column, *args)
+        return a + 1, line2
+    return wrapper
+what did I decide?
+NO NO NO
+Keep all the routines the same
+The very simplest routine
+single_line(actions, a, line, next_column, ...)
+    ...
+    return a + 1, line2
+why?
+because I learn my code by re-reading
+if I have 5 sophisticated routines
+and 5 simple ones,
+and I give the simple ones an exception,
+1. I now have two calling conventions rather than one
+2. I only have half the number of examples of each one
+A single calling convention brings SYMMETRY
+(show "how heading works") <- (what?)
+BONUS ROUND
+inside para: multi calls to inner p. Looks like heading!
+so, shouldn't this be its own action in the list?
+BUT: needs to subvert LAST line. How? Twiddle?
+Fake params? Fake column? That's like a framework?
+NO-
+All these routines have the same logic. Over and over. [show logic?]
+That routine is going to be making a decision you want to control.
+Where do you want to be when a big decision is made.
+WHERE DO YOU WANT TO BE?
+In the room where it happens...
+I had been imagining:
+single_line(actions, a, line, next_column, ...)
+    ...
+    column2 = next_column(line.column)
+but what I really wanted was to take control away:
+single_line(actions, a, line, next_line, ...)
+    ...
+    line2 = next_line(leading=2, height=12)
+so you can subvert it
+(TODO: look up how I actually do this. How does it work?)
+And why are we able to do that?
+Becuase of avoiding Premature OO!
+Otherwise it would be difficult to replace one method of an object;
+would have to use Gang of Four Decorator, or monkeypatching, or worse.
+If you pass an object and need to live override a method
+you are in trouble.
+But if you pass a callable and need to tweak it?
+Very easy!
+End with showing photos of book.

@@ -41,7 +41,7 @@ def main(argv):
     simple_slide = make_simple_slide_function(fonts, d)
     code_slide = make_code_slide_function(fonts, d)
 
-    next_line = slide_layout()
+    #next_line = slide_layout()
     narrow_line = slide_layout(0.5)
 
     lotr = [
