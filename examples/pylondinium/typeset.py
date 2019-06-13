@@ -154,39 +154,140 @@ def main(argv):
     # So it needs a way to ask for new pages/columns as it goes along.
     # And it will do something like:
 
+    # Idea: paragraph layout that asks for space dynamically.
+
     simple_slide('I wanted to improve upon TeX')
     simple_slide('(text, width) → paragraph',
                  '(paragraph, height) → page')
     simple_slide('Different width columns?', 'Not supported in TeX')
-    simple_slide('My idea: paragraph that asks',
-                 'for more space as it needs it,'
+    simple_slide('My idea: paragraph layout that',
+                 'asks for more space as it needs it,'
                  'so we know when it has filled one',
                  'column and moves to the next')
-# by having paragraph ask for more columns as it needed them.
-# lay_out_paragraph(width, height, y, ...)
-# Column = NamedTuple(..., 'width, height')
-# lay_out_paragraph(column, y, ...)
-# each time you need a line:
-# height = ... # compute space needed
-# if y + height > column.height:
-#     # ask for another column
-# How do we do that?
-# layout.next_column() OR column.next() OR next_column(column)
-# lay_out_paragraph(column, y, next_column, ...)
-# Why? To avoid Premature Object Orientation!
-# Looking at options:
-# layout.next_column() OR column.next() OR next_column(column)
-# ask WHY?
-# What necessity requires the verb you need
-# to be attached to a noun?
-# Unless the answer is, "because you can't avoid it", skip it.
-# So my arguments are coming together
-# lay_out_paragraph(column, y, next_column, ...)
-# What about the return value?
-# Can the routine simply draw on the page when it's done?
-# No!
-# Because we need speculation.
-# ... (put existing slides here that show what headings need to do) ...
+    code_slide('Column = NamedTuple(width, height)',
+               'lay_out_paragraph(column, y, ...)')
+    code_slide('''
+    # Each time the paragraph needs another line:
+    leading = ...
+    height = ...
+    if y + leading + height > column.height:
+        # ask for another column
+    ''')
+    simple_slide('Q: How do we ask for another column?')
+    code_slide('''
+    def lay_out_paragraph(column, y, ...):
+        column2 = column.next()
+
+    def lay_out_paragraph(column, y, layout, ...):
+        column2 = layout.next_column(column)
+
+    def lay_out_paragraph(column, y, next_column, ...):
+        column2 = next_column(column)
+    ''')
+    simple_slide('A: Pass a plain callable!')
+    code_slide('''
+    def lay_out_paragraph(column, y, next_column, ...):
+        column2 = next_column(column)
+    ''')
+    simple_slide('Why? To avoid', 'Premature Object Orientation')
+    simple_slide('Premature Object Orientation:',
+                 'attaching a verb to a noun',
+                 "when you needn't")
+    simple_slide('Symptom:',
+                 'An object argument',
+                 'on which you only call',
+                 'a single method')
+    simple_slide('Premature Object Orientation',
+                 'couples code that needs only a verb',
+                 'to all the implementation details of the noun')
+    code_slide('''
+    # So we now have a rough plan for our inputs:
+
+    def lay_out_paragraph(column, y, next_column, ...):
+        column2 = next_column(column)
+
+    # What will we return?
+    ''')
+    simple_slide('Can the paragraph',
+                 'simply go ahead and draw',
+                 'on the output device?')
+    simple_slide('No')
+
+    code_slide('''
+    y = line.y + need_y
+    if y > column.height:
+        page = next_page()
+        y = 0
+    ''')
+
+    simple_slide('Problem:', 'Headings')
+
+    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('Q: What if there were no text', 'below the heading?')
+
+    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    code_slide('''
+    # Q: Can the Heading simply
+    #    leave extra space?
+
+    y = line.y + need_y + extra_y
+    if y > column.height:
+        page = next_page()
+        y = 0
+    ''')
+
+    simple_slide('A: No')
+
+    simple_slide('Why?', 'Widows and orphans')
+
+    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('A 1-line paragraph would', 'follow the heading',
+                 'without complaint')
+
+    run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('But a several-line paragraph will',
+                 'bump its opening line to the next page,',
+                 'leaving the heading stranded')
+
+    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
+    d.new_page()
+
+    simple_slide('How can the heading predict',
+                 'when it will be stranded alone?',
+                 '',
+                 '1. Know everything about paragraphs',
+                 '',
+                 '')
+
+    simple_slide('How can the heading predict',
+                 'when it will be stranded alone?',
+                 '',
+                 '(a) Know everything about paragraphs',
+                 '— or —',
+                 '(b) Ask next item to lay itself out speculatively')
+
+    simple_slide('Heading algorithm', '',
+                 '1. Add heading to this page',
+                 '2. Run the following paragraph',
+                 '3. Is its first line on the same page? Done!',
+                 '4. If not? Remove paragraph & heading',
+                 '5. Move heading to next page instead',
+                 '6. Lay the paragraph out again!')
+
+    simple_slide('Consequence #1', '', 'Layout and drawing',
+                 'need to be separate steps')
+
+    simple_slide('Consequence #2', '', 'The output of the layout step',
+                 'needs to be easy to discard')
+
 # How will the heading work?
 # :add heading to column
 # :ask paragraph to lay itself out
@@ -312,81 +413,6 @@ def main(argv):
 # But if you pass a callable and need to tweak it?
 # Very easy!
 # End with showing photos of book.
-
-    code_slide('''
-    y = line.y + need_y
-    if y > column.height:
-        page = next_page()
-        y = 0
-    ''')
-
-    simple_slide('Problem:', 'Headings')
-
-    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    d.new_page()
-
-    simple_slide('Q: What if there were no text', 'below the heading?')
-
-    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
-    d.new_page()
-
-    code_slide('''
-    # Q: Can the Heading simply
-    #    leave extra space?
-
-    y = line.y + need_y + extra_y
-    if y > column.height:
-        page = next_page()
-        y = 0
-    ''')
-
-    simple_slide('A: No')
-
-    simple_slide('Why?', 'Widows and orphans')
-
-    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    d.new_page()
-
-    simple_slide('A 1-line paragraph would', 'follow the heading',
-                 'without complaint')
-
-    run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
-    d.new_page()
-
-    simple_slide('But a several-line paragraph will',
-                 'bump its opening line to the next page,',
-                 'leaving the heading stranded')
-
-    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
-    d.new_page()
-
-    simple_slide('How can the heading predict',
-                 'when it will be stranded alone?',
-                 '',
-                 '1. Know everything about paragraphs',
-                 '',
-                 '')
-
-    simple_slide('How can the heading predict',
-                 'when it will be stranded alone?',
-                 '',
-                 '(a) Know everything about paragraphs',
-                 '— or —',
-                 '(b) Ask next item to lay itself out speculatively')
-
-    simple_slide('Heading algorithm', '',
-                 '1. Add heading to this page',
-                 '2. Run the following paragraph',
-                 '3. Is its first line on the same page? Done!',
-                 '4. If not? Remove paragraph & heading',
-                 '5. Move heading to next page instead',
-                 '6. Lay the paragraph out again!')
-
-    simple_slide('Consequence #1', '', 'Layout and drawing',
-                 'need to be separate steps')
-
-    simple_slide('Consequence #2', '', 'The output of the layout step',
-                 'needs to be easy to discard')
 
     # so, linked list
     # line.y
