@@ -379,6 +379,9 @@ def main(argv):
         ...
         return a + 2, last_line  # New return value: index!
     ''')
+
+    # The spammish repetition.
+
     s('Stepping back, I looked askance',
       'at the repetition in my code')
     c('''
@@ -397,40 +400,84 @@ def main(argv):
         ... return a + 1, line_2
     ''')
     s('DRY')
-# `return line_n, a+1`
-# so how does our arg list look
-# lay_out_paragraph(actions, a, line, next_column, ...)
-# even though half our routines are going to ignore `actions`
-# and return `a+1`
-# arg list is long because it's general
-# it handles the case where you have to call n subseq steps
-# idea: maybe make an EXCEPTION for simple layout routines
-# that aren't going to look at `actions` and always return `a+1`
-# 1990s: would have introspected arguments magic!
-# 2000s: would have registered simple and complex
-# 2010s: would have defined decorator to convert
-# @simple
-# could be:
-# def simple(callable):
-#     def wrapper(actions, a, line, next_column, *args):
-#         line2 = callable(line, next_column, *args)
-#         return a + 1, line2
-#     return wrapper
-# what did I decide?
-# NO NO NO
-# Keep all the routines the same
-# The very simplest routine
-# single_line(actions, a, line, next_column, ...)
-#     ...
-#     return a + 1, line2
-# why?
-# because I learn my code by re-reading
-# if I have 5 sophisticated routines
-# and 5 simple ones,
-# and I give the simple ones an exception,
-# 1. I now have two calling conventions rather than one
-# 2. I only have half the number of examples of each one
-# A single calling convention brings SYMMETRY
+    s('“Don’t Repeat Yourself”', '', 'And suddenly',
+      'I heard the call', 'of other decades')
+    s('How can I eliminate `actions` and `a`',
+      'from innocent routines that don’t need them?')
+    s('1990s', '', 'Introspect each function to learn',
+      'if it takes `actions` and `a` or not!')
+    s('Magic!')
+    c('''
+    def heading(actions, a, line, next_column, ...):
+        ... return a + 2, line_n
+    def section(actions, a, line, next_column, ...):
+        ... return a + 3, line_n
+
+    def paragraph(line, next_column, ...):
+        ... return line_n
+    def centered_text(line, next_column, ...):
+        ... return line_2
+    def horizontal_rule(line, next_column, ...):
+        ... return line_2
+    ''')
+    s('Early 2000s', '', 'Special registry for functions',
+      'that don’t need `actions` and `a`')
+    s('Late 2000s', '', 'A decorator for functions',
+      'that don’t need `actions` and `a`')
+    c('''
+    def simple(function):
+        def wrapper(actions, a, line, next_column, *args):
+            line2 = callable(line, next_column, *args)
+            return a + 1, line2
+        return wrapper
+    ''')
+    c('''
+    def heading(actions, a, line, next_column, ...):
+        ... return a + 2, line_n
+    def section(actions, a, line, next_column, ...):
+        ... return a + 3, line_n
+
+    @simple
+    def paragraph(line, next_column, ...):
+        ... return line_n
+    @simple
+    def centered_text(line, next_column, ...):
+        ... return line_2
+    def horizontal_rule(line, next_column, ...):
+        ... return line_2
+    ''')
+    s('And what did I decide?')
+    s('Symmetry')
+    s('When I return to code,', 'I learn by re-reading')
+    s('Given a stack of functions',
+      'that do exactly the same thing,',
+      'if ½ of them use one convention',
+      'and ½ use another —')
+    s('— then I now have twice',
+      'the number of conventions to re-learn,',
+      'and only half the number of examples',
+      'of each to learn from!')
+    s('I chose verbose symmetry', 'over obscure complexity')
+    s('As a reader,',
+      'I need routines',
+      'that behave the same',
+      'to look the same')
+    c('''
+    # Some routines use `actions` and `a`:
+    def heading(actions, a, line, next_column, ...):
+        ... return a + 2, line_n
+    def section(actions, a, line, next_column, ...):
+        ... return a + 3, line_n
+
+    # But many ignored `actions` and returned `a + 1`:
+    def paragraph(actions, a, line, next_column, ...):
+        ... return a + 1, line_n
+    def centered_text(actions, a, line, next_column, ...):
+        ... return a + 1, line_2
+    def horizontal_rule(actions, a, line, next_column, ...):
+        ... return a + 1, line_2
+    ''')
+
 # (show "how heading works") <- (what?)
 # BONUS ROUND
 # inside para: multi calls to inner p. Looks like heading!
