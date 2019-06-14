@@ -11,3 +11,6 @@ logo.svg: logo.dvi
 
 logo.dvi: logo.tex
 	tex logo.tex && rm logo.log
+
+# Photos:
+# for f in ~/Downloads/IMG_20190611_212*.jpg; do convert $f -scale 640 -sharpen 0x0.5 $(basename $f); done

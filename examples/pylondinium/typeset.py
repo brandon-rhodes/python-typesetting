@@ -79,6 +79,10 @@ def main(argv):
     s('Typesetting with Python', '', '', '', '@brandon_rhodes',
       '2019 June 16', 'PyLondinium')
 
+    s('Goal:', '', 'I wanted to turn my grandfather’s',
+      'essays about family history and his own',
+      'childhood in 1920s Birmingham, Alabama,',
+      'into a printed hardcover book')
     s('Letterpress')
     s('In the distant past,',
       'books and journals were',
@@ -86,12 +90,12 @@ def main(argv):
     s('But as machines replaced humans,',
       'mathematics journals became so ugly that',
       'Donald Knuth could no longer bear to publish')
+    s('“TeX” Typesetting System')
 
     center_formula(d, 'logo.svg')
     d.new_page()
 
-    s('“TeX” Typesetting System')
-    s('τέχνη', 'craftsmanship / art')
+    s('τέχνη', 'craft / art')
     s('The Good', '',
       '1. Fonts',
       '2. Keyboard',
@@ -156,6 +160,13 @@ def main(argv):
       'A collection of knobs and levers',
       'that makes it easy to do anything',
       'that its author already anticipated')
+
+    # "Fuzzy Knowledge-Based Control for Backing Multi-Trailer Systems"
+    # Andri Riid , Jaakko Ketola , Ennu Rüstern
+
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
     s('Boxes = text',
       'Glue = space between words',
       'Penalty = non-breaking space',
@@ -627,12 +638,21 @@ def main(argv):
 
     # photos of book
 
-    # "Fuzzy Knowledge-Based Control for Backing Multi-Trailer Systems"
-    # Andri Riid , Jaakko Ketola , Ennu Rüstern
+    n = 5
 
-    import PySide2
-    pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+    s('')
+    pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
+    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+
+    s('')
+    pm = PySide2.QtGui.QPixmap('IMG_20190611_212247.jpg')
+    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+
+    s('')
+    pm = PySide2.QtGui.QPixmap('IMG_20190611_212354.jpg')
+    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+
+    s('Thank you very much!', '', '', '@brandon_rhodes')
 
     # (^^ linked list: "Try it both ways")
 
@@ -662,13 +682,14 @@ def center_formula(d, path):
 
 def make_simple_slide_function(fonts, d):
     def simple_slide(*texts):
+        if 'PyLondinium' not in texts:  # awkward special case: title slide
+            d.new_page()
         next_line = slide_layout()
         actions = [
             (centered_paragraph, [('roman', text)])
             for text in texts
         ]
         run_and_draw_centered(actions, fonts, None, next_line, d.painter)
-        d.new_page()
     return simple_slide
 
 def make_code_slide_function(fonts, d):
