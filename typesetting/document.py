@@ -14,7 +14,7 @@ class Document(object):
         self.include_crop_marks = bool(crop_margin_width)
 
         QApplication(['my-q-application'])
-        f = QFontDatabase.addApplicationFont('OldStandard-Regular.ttf')
+        f = QFontDatabase.addApplicationFont('../../fonts/OldStandard-Regular.ttf')
         f = QFontDatabase.addApplicationFont('OldStandard-Italic.ttf')
         f = QFontDatabase.addApplicationFont('OldStandard-Bold.ttf')
         f = QFontDatabase.addApplicationFont('fonts/Inconsolata-Regular.ttf')

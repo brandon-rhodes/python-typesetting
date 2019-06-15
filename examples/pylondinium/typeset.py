@@ -31,6 +31,7 @@ def main(argv):
 
     fonts = get_fonts(d.painter, [
         ('bold', 'Gentium Basic', 'Bold', 12),
+        ('old-standard', 'Old Standard TT', 'Roman', 12),
         ('roman', 'Gentium Basic', 'Roman', 12),
         ('roman-small', 'Gentium Basic', 'Roman', 4), #?
         ('typewriter', 'Courier', 'Roman', 9),
@@ -224,6 +225,13 @@ def main(argv):
     d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
 
+
+    # (TODO: kerning and selection of layout engine?)
+    d.new_page()
+    lay_out_paragraph(fonts, d, [(centered_paragraph, [
+        ('old-standard', 'Revolutionary W'),
+        ('old-standard', 'ar'),
+    ])])
 
 
     simple_slide('I wanted to improve upon TeX')
@@ -721,6 +729,10 @@ def center_formula(d, path, formula_scale=32):
     b2 = PySide2.QtCore.QRect(x, y, w, h)
     r.render(d.painter, b2)
 
+def lay_out_paragraph(fonts, d, actions):
+    next_line = slide_layout()
+    run_and_draw_centered(actions, fonts, None, next_line, d.painter)
+
 def make_simple_slide_function(fonts, d):
     def simple_slide(*texts):
         if 'PyLondinium' not in texts:  # awkward special case: title slide
@@ -783,9 +795,10 @@ def run_and_draw_centered(actions, fonts, line, next_line, painter):
         if page is not None and page is not line.column.page:
             break
         page = line.column.page
+        #print(line.graphics)
+        line = line._replace(y = line.y + offset)
         for graphic in line.graphics:
             function, *args = graphic
-            line = line._replace(y = line.y + offset)
             function(fonts, line, painter, *args)
     return line
 
