@@ -38,6 +38,7 @@ def main(argv):
         #('typewriter', 'Inconsolata', 'Roman', 10),
         #('typewriter', 'Ubuntu Mono', 'Roman', 9),
     ])
+    fonts['typewriter'].leading = 0
 
     simple_slide = make_simple_slide_function(fonts, d)
     code_slide = make_code_slide_function(fonts, d)
@@ -289,24 +290,34 @@ def main(argv):
     def paragraph(column, y, next_column, ...):
         column2 = next_column(column)
     ''')
-    simple_slide('Why? To avoid', 'Premature Object Orientation')
+    simple_slide('Why?', '', 'To avoid', 'premature', 'Object Orientation')
+    progressive_slide(
+        s,
+        '“Premature optimization is the root of all evil”',
+        '— Donald Knuth',
+    )
     simple_slide('Premature Object Orientation:',
                  'attaching a verb to a noun',
                  "when you needn't")
-    simple_slide('Symptom:',
-                 'An object argument',
-                 'on which you only call',
-                 'a single method')
+    simple_slide('Symptom: eagerly binding each verb to a noun',
+                 'before the overall architecture is complete')
+    simple_slide('Concrete symptom:',
+                 'An object argument on which',
+                 'you only call a single method')
     simple_slide('Premature Object Orientation',
                  'couples code that needs only a verb',
                  'to all the implementation details of the noun')
     code_slide('''
-    # So we now have a rough plan for our inputs:
+    def paragraph(column, y, next_column, ...):
+        column2 = next_column(column)
+    ''')
+    code_slide('''
+    # So now I had a rough plan for layout inputs:
 
     def paragraph(column, y, next_column, ...):
         column2 = next_column(column)
 
-    # What will we return?
+    # What would it return?
     ''')
 
     # What output will the paragraph return?
@@ -316,37 +327,44 @@ def main(argv):
                  'on the output device?')
     simple_slide('No')
     simple_slide('Problem:', 'Headings')
+    d.new_page()
     run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    simple_slide('Q: What if the column lacked room',
+                 'for a line below the heading?')
     d.new_page()
-    simple_slide('Q: What if there were no text', 'below the heading?')
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
-    d.new_page()
     code_slide('''
-    # Q: Can the Heading simply
-    #    leave extra space?
+    # Q: Can the Heading avoid being orphaned
+    #    by checking that one more line is free?
 
-    y = line.y + need_y + extra_y
-    if y > column.height:
-        page = next_page()
+    if y + 2 * (leading + height) > column.height:
+        column = next_column(column)
         y = 0
     ''')
     simple_slide('A: No')
     simple_slide('Why?', 'Widows and orphans')
+    d.new_page()
     run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    d.new_page()
-    simple_slide('A 1-line paragraph would', 'follow the heading',
+    simple_slide('It could be that', 'one line is enough',
+                 '', 'A 1-line paragraph', 'would follow the heading',
                  'without complaint')
-    run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
     d.new_page()
+    run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
     simple_slide('But a several-line paragraph will',
                  'bump its opening line to the next page,',
                  'leaving the heading stranded')
-    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     d.new_page()
+    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     simple_slide('How can the heading predict',
                  'when it will be stranded alone?',
                  '',
-                 '1. Know everything about paragraphs',
+                 '',
+                 '',
+                 '')
+    simple_slide('How can the heading predict',
+                 'when it will be stranded alone?',
+                 '',
+                 '(a) Know everything about paragraphs',
                  '',
                  '')
     simple_slide('How can the heading predict',
@@ -355,17 +373,21 @@ def main(argv):
                  '(a) Know everything about paragraphs',
                  '— or —',
                  '(b) Ask next item to lay itself out speculatively')
-    simple_slide('Heading algorithm', '',
-                 '1. Add heading to this page',
-                 '2. Run the following paragraph',
-                 '3. Is its first line on the same page? Done!',
-                 '4. If not? Remove paragraph & heading',
-                 '5. Place heading on the next page instead',
-                 '6. Lay the paragraph out again!')
+    c('''
+    # Heading
 
+    def heading(...):
+        add heading to document
+        add next paragraph to document
+        if there is content beneath heading:
+            return
+        undo next item
+        undo heading
+        start over on next page
+    ''')
     simple_slide('Consequence #1', '', 'Layout and drawing',
-                 'need to be separate steps')
-    simple_slide('Consequence #2', '', 'The output of the layout step',
+                 'need to be separate steps', '')
+    simple_slide('', 'Consequence #2', '', 'The output of the layout step',
                  'needs to be easy to discard')
 
     # How will the heading work?
@@ -378,16 +400,30 @@ def main(argv):
     # :    re-add heading
     # :    re-add paragraph
 
-    s('Generators?', 'Iterators?', 'Lists of lists?')
+    s('Iterators?', 'Generators?', 'Lists of lists?', 'Trees?')
     progressive_slide(s, 'A:', 'Linked list')
     code_slide('''
-    Column = NamedTuple(..., 'width height')
-    Line = NamedTuple(..., 'previous column y graphics')
+    Column = NamedTuple(… 'width height')
+    Line = NamedTuple(…, 'previous column y graphics')
 
-    c1 = Column(...)
+    c1 = Column(…)
     line1 = Line(None, c1, 0, [])
     line2 = Line(line1, c1, 14, [])
     line3 = Line(line2, c1, 28, [])
+    ''')
+    c('''
+    ┌────┐   ┌────┐
+    │line│ ← │line│
+    └────┘   └────┘
+    ''')
+    c('''
+                      ┌────┐   ┌────┐   ┌────┐
+                      │line│ ← │line│ ← │line│ A
+    ┌────┐   ┌────┐ ↙ └────┘   └────┘   └────┘
+    │line│ ← │line│
+    └────┘   └────┘ ↖ ┌────┐   ┌────┐   ┌────┐
+                      │line│ ← │line│ ← │line│ B
+                      └────┘   └────┘   └────┘
     ''')
     # TODO:
     #                    col5     col6    col6    col6
@@ -401,24 +437,24 @@ def main(argv):
       'of speculative layouts to the document so far,',
       'and automatically disposes of the layouts',
       'that we do not wind up keeping')
-    s('Consequence: to return a',
-      'new head for the linked list,',
-      'we will need the current head')
+    s('We now need a new argument:',
+      'the most recently laid out line')
     c('paragraph(line, column, y, next_column, ...):')
     s('But wait!', 'We can eliminate common variables')
     c('''
     paragraph(line, column, y, next_column, ...)
 
     # But what is a line?
-    Line = NamedTuple(..., 'previous column y graphics')
+    Line = NamedTuple(…, 'previous column y graphics')
     ''')
-    s('That’s nice!', '', 'Designing our return value',
-      'wound up eliminating two', 'of our input arguments',
-      '', 'Always look for chances to simplify',
-      'after designing a new part of your system')
+    s('That’s nice!')
     c('''
     paragraph(line, next_column, ...)
     ''')
+    s('Designing our return value',
+      'wound up eliminating two', 'of our input arguments',
+      '', 'Always look for chances to simplify',
+      'after designing a new part of your system')
     s('Also nice:', 'Symmetry!')
     c('''
     # The Line becomes a common currency that is
@@ -426,53 +462,60 @@ def main(argv):
 
     def paragraph(line, next_column, ...):
         ...
-        return last_line
+        return last_line_of_paragraph
     ''')
 
-    s('So', '', 'We now have a scheme where a paragraph',
-      'can lay itself out speculatively',
-      'instead of immediately printing ink', '',
-      'But how will the heading invoke it?')
-    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)  #?
+    s('We now have a scheme whereby paragraphs',
+      'can plan their layout without printing ink',
+      '',
+      'But how will the heading’s code find',
+      'and invoke the paragraph that follows?')
+    # d.new_page()
+    # run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    # d.new_page()
+    # run_and_draw(lotr2, fonts, None, narrow_line, d.painter)  #?
     s('Well: what drives the layout process?')
-    c('''
+    sample_actions = '''
     # Input (Markdown, RST, etc) produces:
     actions = [
         (title, 'Prologue'),
         (heading, '1. Concerning Hobbits'),
-        (paragraph, 'Hobbits are an unobtrusive...'),
-        (paragraph, 'For they are a little people...'),
+        (paragraph, 'Hobbits are an unobtrusive…'),
+        (paragraph, 'For they are a little people…'),
         (heading, '2. Concerning Pipe-weed'),
-        (paragraph, 'There is another astonishing...'),
+        (paragraph, 'There is another astonishing…'),
     ]
-    ''')
-    s('Q:', 'How can the heading see', 'the paragraph that follows?')
-    s('A:', 'Easiest thing?', 'Just pass in the list')
+    '''
+    c(sample_actions)
+    s('Q:', 'How can the heading signal', 'that it needs the next item?')
+    s('Be passed a “get_next()” callable?',
+      'Be a coroutine that yields a special “next” object?')
+    s('This is a prototype.', 'I’m learning the problem.',
+      'What’s the easiest possible thing?')
+    c(sample_actions)
+    s('A: Just pass in the list')
     c('''
-    def lay_out_heading(actions, a, line, next_column, ...):
-        ...
-        return last_line
+    def heading(actions, a, line, next_column, …):
+        …
+        return heading_line
     ''')
-    s('Q:', 'But wait!', 'Which last_line should', 'the heading return?')
+    s('Q:', 'But wait!', 'Why throw out', 'the paragraph’s work?')
     c('''
-    def lay_out_heading(actions, a, line, next_column, ...):
-        ...
-        return last_line  # <- Is this the heading line?
-                          #    Or the paragraph's last line?
+    def heading(actions, a, line, next_column, …):
+        …
+        return heading_line
+        # - OR -
+        return last_line_of_next_paragraph
     ''')
     # Should I show the heading logic? Or does that come later?
-    s('If, to decide its own location,', 'the heading goes ahead and asks',
-      'the following paragraph to lay itself out,',
-      'shouldn’t we keep that work instead',
-      'of throwing it away?')
-    s('But how can the heading tell the engine,',
-      '“I am returning the output of 2 items',
-      'instead of just my own?”')
+    s('But won’t the paragraph be printed again',
+      'when the engine itself calls the next item?')
     c('''
-    def lay_out_heading(actions, a, line, next_column, ...):
-        ...
-        return a + 2, last_line  # New return value: index!
+    def heading(actions, a, line, next_column, …):
+        …
+        # Let’s also return the next index
+        # that the engine should render!
+        return a + 2, last_line
     ''')
 
     # The spammish repetition.
@@ -480,40 +523,35 @@ def main(argv):
     s('Stepping back, I looked askance',
       'at the repetition in my code')
     c('''
-    # Some routines use `actions` and `a`:
-    def heading(actions, a, line, next_column, ...):
-        ... return a + 2, line_n
-    def section(actions, a, line, next_column, ...):
-        ... return a + 3, line_n
+    # Some routines actually use `actions` and `a`:
+    def heading(actions, a, line, next_column, …):
+        … return a + 2, line2
+    def section(actions, a, line, next_column, …):
+        … return a + 3, line2
 
     # But many ignored `actions` and returned `a + 1`:
-    def paragraph(actions, a, line, next_column, ...):
-        ... return a + 1, line_n
-    def centered_text(actions, a, line, next_column, ...):
-        ... return a + 1, line_2
-    def horizontal_rule(actions, a, line, next_column, ...):
-        ... return a + 1, line_2
+    def paragraph(actions, a, line, next_column, …):
+        … return a + 1, line2
+    def center_text(actions, a, line, next_column, …):
+        … return a + 1, line2
     ''')
-    s('DRY')
-    s('“Don’t Repeat Yourself”', '', 'And suddenly',
-      'I heard the call', 'of other decades')
     s('How can I eliminate `actions` and `a`',
       'from innocent routines that don’t need them?')
+    s('DRY')
+    s('“Don’t Repeat Yourself”', '', 'I suddenly',
+      'heard the call', 'of distant decades')
     s('1990s', '', 'Introspect each function to learn',
       'if it takes `actions` and `a` or not!')
-    s('Magic!')
     c('''
-    def heading(actions, a, line, next_column, ...):
-        ... return a + 2, line_n
-    def section(actions, a, line, next_column, ...):
-        ... return a + 3, line_n
+    def heading(actions, a, line, next_column, …):
+        … return a + 2, line2
+    def section(actions, a, line, next_column, …):
+        … return a + 3, line2
 
-    def paragraph(line, next_column, ...):
-        ... return line_n
-    def centered_text(line, next_column, ...):
-        ... return line_2
-    def horizontal_rule(line, next_column, ...):
-        ... return line_2
+    def paragraph(line, next_column, …):
+        … return line2
+    def center_text(line, next_column, …):
+        … return line2
     ''')
     s('Early 2000s', '', 'Special registry for functions',
       'that don’t need `actions` and `a`')
@@ -521,28 +559,37 @@ def main(argv):
       'that don’t need `actions` and `a`')
     c('''
     def simple(function):
-        def wrapper(actions, a, line, next_column, *args):
-            line2 = callable(line, next_column, *args)
+        def wrapper(actions, a, line, next_col, *args):
+            line2 = function(line, next_col, *args)
             return a + 1, line2
         return wrapper
     ''')
     c('''
-    def heading(actions, a, line, next_column, ...):
-        ... return a + 2, line_n
-    def section(actions, a, line, next_column, ...):
-        ... return a + 3, line_n
+    def heading(actions, a, line, next_column, …):
+        … return a + 2, line2
+    def section(actions, a, line, next_column, …):
+        … return a + 3, line2
 
     @simple
-    def paragraph(line, next_column, ...):
-        ... return line_n
+    def paragraph(line, next_column, …):
+        … return line2
     @simple
-    def centered_text(line, next_column, ...):
-        ... return line_2
-    def horizontal_rule(line, next_column, ...):
-        ... return line_2
+    def center_text(line, next_column, …):
+        … return line2
     ''')
     s('And what did I decide?')
     s('Symmetry')
+    c('''
+    def heading(actions, a, line, next_column, …):
+        … return a + 2, line2
+    def section(actions, a, line, next_column, …):
+        … return a + 3, line2
+
+    def paragraph(actions, a, line, next_column, …):
+        … return a + 1, line2
+    def center_text(actions, a, line, next_column, …):
+        … return a + 1, line2
+    ''')
     s('When I return to code,', 'I learn by re-reading')
     s('Given a stack of functions',
       'that do exactly the same thing,',
@@ -557,60 +604,53 @@ def main(argv):
       'I need routines',
       'that behave the same',
       'to look the same')
+    s('In summary:', 'I decided against DRY', 'and simply repeated myself')
     c('''
-    # Some routines use `actions` and `a`:
-    def heading(actions, a, line, next_column, ...):
-        ... return a + 2, line_n
-    def section(actions, a, line, next_column, ...):
-        ... return a + 3, line_n
+    def heading(actions, a, line, next_column, …):
+        … return a + 2, line2
+    def section(actions, a, line, next_column, …):
+        … return a + 3, line2
 
-    # But many ignored `actions` and returned `a + 1`:
-    def paragraph(actions, a, line, next_column, ...):
-        ... return a + 1, line_n
-    def centered_text(actions, a, line, next_column, ...):
-        ... return a + 1, line_2
-    def horizontal_rule(actions, a, line, next_column, ...):
-        ... return a + 1, line_2
+    def paragraph(actions, a, line, next_column, …):
+        … return a + 1, line2
+    def center_text(actions, a, line, next_column, …):
+        … return a + 1, line2
     ''')
 
     # (show "how heading works") <- (what?)
 
-    s('BONUS ROUND')
+    s('We’re ready for a final design step!')
     s('widows', 'and', 'orphans')
     s('How does that look in code?')
     c('''
-    def paragraph(...):
+    def paragraph(…):
         lay out paragraph
-        if it creates an orphan:
+        if it created an orphan:
             adjust, and try again
-        if it creates a widow:
+        if it created a widow:
             adjust, and try again
     ''')
-    s('So paragraph() hides an inner routine',
-      'that does simple paragraph layout',
-      'inside of widow-orphan logic')
+    s('Inside of its widow-orphan logic,',
+      'paragraph() will have an inner routine',
+      'that does simple paragraph layout')
     s('What if you just want the simple part?')
-    s('Parametrize?')
+    s('In the old days,',  'I would have parametrized')
     c('''
-    def paragraph(..., no_widows=True, no_orphans=True):
-        lay out paragraph
-        if no_widows and it creates an orphan:
-            adjust, and try again
-        if no_orphans and it creates a widow:
-            adjust, and try again
+    def paragraph(…, no_widows=True, no_orphans=True):
+        …
     ''')
-    c('But —', '', 'This looks a lot', 'like our heading logic')
+    s('But —', '', 'This looks a lot', 'like our heading logic')
     c('''
-    if it creates an orphan:
-        adjust, and try again
+    if the heading is alone at bottom of column:
+        try again
 
-    if heading is alone at bottom of column:
-        adjust, and try again
+    if this paragraph creates an orphan:
+        try again
     ''')
     c('''
     actions = [
         (heading, '1. Concerning Hobbits'),
-        (paragraph, 'Hobbits are an unobtrusive...'),
+        (paragraph, 'Hobbits are an unobtrusive…'),
     ]
     ''')
     s('What if, instead of widow-orphan logic',
@@ -620,7 +660,7 @@ def main(argv):
     c('''
     actions = [
         (avoid_widows_and_orphans,),
-        (paragraph, 'Hobbits are an unobtrusive...'),
+        (paragraph, 'Hobbits are an unobtrusive…'),
     ]
     ''')
     s('Composition » Coupling+Configuration')
@@ -629,8 +669,8 @@ def main(argv):
       '', 'How will we convince it to do that?')
     c('''
     # Each time the paragraph needs another line:
-    leading = ...
-    height = ...
+    leading = …
+    height = …
     if y + leading + height > column.height:
         # ask for another column
     ''')
@@ -649,16 +689,16 @@ def main(argv):
     # us when they needed a new column, but handled
     # lines themselves:
 
-    def paragraph(..., next_column, ...):
-        ...
+    def paragraph(…, next_column, …):
+        …
         if y + leading + height > column.height:
-             ...
+             …
     ''')
     c('''
     # Let's change that up.
 
-    def paragraph(..., next_line, ...):
-        ...
+    def paragraph(…, next_line, …):
+        …
     ''')
     c('''
     def next_line(line, leading, height):
@@ -671,16 +711,16 @@ def main(argv):
     ''')
     s('Then, all the widow-orphan', 'logic has to do is —')
     c('''
-    def avoid_widows_and_orphans(..., next_line, ...):
+    def avoid_widows_and_orphans(…, next_line, …):
 
-        def fancy_next_line(...):
+        def fancy_next_line(…):
             # A wrapper that makes its own decisions!
 
         # Call the paragraph with fancy_next_line()
     ''')
     s('Did you catch the win?')
     s('The simple wrapper would not have worked',
-      'if we had not avoided Premature Object Orientation!')
+      'if we had not avoided premature Object Orientation!')
     s('Function `f()` is easy to wrap!', '',
       'Object `obj` with a method `m()`',
       'is not so easy to control')
