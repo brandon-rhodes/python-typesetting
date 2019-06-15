@@ -99,7 +99,11 @@ def main(argv):
     d.new_page()
     center_formula(d, 'sample.svg', 20)
 
-    # math beauty taking a year off
+    s('math typesetting')
+    s('When math journals stopped paying for',
+      'professional typesetters, papers looked so',
+      'ugly that Knuth could no longer publish')
+    s('He took an entire year off to invent TeX')
 
     with open('formula.tex') as f:
         code = f.read()
@@ -109,17 +113,42 @@ def main(argv):
     d.new_page()
     center_formula(d, 'formula.svg')
 
-    # i found book
-    # fantastical plain text editor markup formatted came out
-    # hidden state vs visible
-    # and output was beautiful
-    # dreamed of using it
-    # finally did
-    # wrote my own format
-    # dreamed of writing my own
-    # excuse: grandfather's essays
-    # annoying as programmer to adjust parameters for page layout
-    # like tractor and trailer
+    s('Eventually I got the opportunity to use TeX', '', '', '')
+    s('', 'I disliked LaTeX so I wrote my own macros', '', '')
+    s('', 'I learned TeX’s strengths', 'but also its limitations')
+    s('', '', 'Which made me dream', 'of writing a replacement')
+    s('(decades pass)')
+    s('Print-on-demand', '', '', '', '')
+    s('', 'PDF → custom hardcover', '', '', '')
+    s('', 'Real hardcover: casebound, Smyth sewn', '', '', '')
+
+    n = 5
+    s('')
+    pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
+    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+
+    s('', '', 'My grandfather’s essays', '', '')
+    s('', '', '', 'Wrote the typesetting myself', '')
+    s('', '', '', 'Wrote the typesetting myself', '— in Python!')
+
+    s('What was wrong with TeX?')
+    s('Text + parameters → TeX → PDF')
+    s('“Framework”')
+
+    d.new_page()
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
+    s('Backing up a tractor and trailers', 'is an open problem in AI')
+    s('“Fuzzy Knowledge-Based Control', 'for Backing Multi-Trailer Systems”',
+      '', 'Andri Riid, Jaakko Ketola, Ennu Rüstern')
+    s('Trailers are difficult to back up',
+      'because the input — the motion of the tractor —',
+      'has an increasingly distant relationship',
+      'to the motion of the nth trailer')
+    s('Example: TeX paragraph layout')
+
+
 
     s('Goal:', '', 'I wanted to turn my grandfather’s',
       'essays about family history and his own',
@@ -185,17 +214,6 @@ def main(argv):
     progressive_slide(s, 'Isn’t that bizarre?',
                       '',
                       'It’s a classic framework')
-    s('Framework, noun:', '',
-      'A collection of knobs and levers',
-      'that makes it easy to do anything',
-      'that its author already anticipated')
-
-    # "Fuzzy Knowledge-Based Control for Backing Multi-Trailer Systems"
-    # Andri Riid , Jaakko Ketola , Ennu Rüstern
-
-    pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
-
     s('Boxes = text',
       'Glue = space between words',
       'Penalty = non-breaking space',
