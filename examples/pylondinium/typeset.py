@@ -159,63 +159,72 @@ def main(argv):
       'because the input — the motion of the tractor —',
       'has an increasingly distant relationship',
       'to the motion of the nth trailer')
+    s('Using frameworks is like backing trailers', '',
+      'Data, parameters → framework → output')
     s('Example: TeX paragraph layout')
+    s('TeX represents the words of a paragraph',
+      'as fixed-width “boxes” with stretchy “glue”')
+    c('┌───┐  ┌──┐  ┌─────┐  ┌───┐  ┌──┐  ┌─────┐',
+      '└───┘←→└──┘←→└─────┘←→└───┘←→└──┘←→└─────┘')
+    s('A paragraph of n words can be broken',
+      'into lines in 2ⁿ different ways', '',
+      'How could we ever find the optimium layout?')
+    s('Dynamic programming!')
+    s('TeX finds the optimal solution',
+      'in O(n²) worse case, usually O(n)')
 
+    with open('sample.tex') as f:
+        code = f.read()
+    code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
+    code_slide(code)
 
+    d.new_page()
+    center_formula(d, 'sample.svg', 20)
 
-    s('The Good', '',
-      '1. Fonts',
-      '2. Keyboard',
-      '3. Math formulas',
-      '4. Paragraph line breaking')
-
-    s('1. Fonts',
-      '',
-      '“MetaFont”',
-      'algorithmic',
-      'vectors',
+    s('TeX layout algorithms are powerful',
+      'but limited: can only solve layout problems',
+      'that can be expressed as boxes + glue + penalties')
+    progressive_slide(
+        s,
+        'Example penalty parameters:',
+        '',
+        'How much glue can shrink',
+        'How much glue can stretch',
+        'Breaking a word with a hyphen',
+        'Having two lines in a row end with a hyphen',
+        'Leaving the last word alone on its own line',
     )
+    s('Typical framework:', '',
+      'Makes it easy to do anything',
+      'that its author already thought of')
+    s('TeX paragraph breaking supports a penalty',
+      'for everything — absolutely everything! —',
+      'that Donald Knuth happened to think of')
+    progressive_slide(
+        s,
+        'Frameworks tend to group goals', 'into two categories:',
+        '',
+        '1. Easy',
+        '2. Impossible',
+    )
+    s('Hwæt!', '', '')
+    s('Hwæt!', '', 'Why rewrite TeX?')
+    s('There’s so many good parts I have', 'no interest in rewriting')
+    s('Good Parts', '', 'Vector fonts (TTF)', 'Markup (Markdown, RST)',
+      'Math formulae (MathJax)',
+      'Paragraph breaking (Andrew Kuchling’s texlib)')
+    s('The Bad', '', 'Page layout')
+    s('TeX’s page layout uses', 'veritcal boxes and glue')
+    s('Makes simple layouts easy to implement',
+      'and interesting layouts impossible')
+    s('Framework', '', 'Parameters → TeX → PDF')
 
-    # vector fonts: won!
-    # fonts change shape as size changes (can show?)
+    d.new_page()
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
 
-    s('MathJax')
 
-    s('4. Paragraph line breaking')
-
-    # (show that "War" looked bad)
-
-    s('Boxes and glue (and penalties)')
-    s('• Boxes have a fixed width',
-      '• Glue can shrink, stretch to fix the line length',
-      '• But glue incurs “badness” if shrinks, stretches',
-      '• You can break the line wherever there is glue',
-      '• But you incur “badness” where there’s a penalty',
-      '• Taking a penalty can also add length to the line')
-    s('Can also configure:',
-      '• More badness for 2 taking penalties in row',
-      '• More badness for shrinking then stretching',
-      '• More badness for a very short last line')
-    progressive_slide(s, 'Isn’t that bizarre?',
-                      '',
-                      'It’s a classic framework')
-    s('Boxes = text',
-      'Glue = space between words',
-      'Penalty = non-breaking space',
-      'Penalty w/length = hyphenation',
-      'Two penalties in a row = stacked hyphens')
-    s('Despite a paragraph having 2ⁿ possible layouts,',
-      'Knuth can find the optimal solution to boxes-and-glue',
-      'in O(n²) worse case and usually close to O(n)!')
-    s('How?', '', 'Dynamic programming!', '',
-      '(I’ll bet you thought it only existed',
-      'to provide programming interview questions!)')
-    s('Result: *beautiful* paragraphs')
-
-    s('But', '', 'TeX had a clunky macro language',
-      'No support for modern markup languages',
-      'Deep limitations in page layout')
 
     simple_slide('I wanted to improve upon TeX')
     simple_slide('(text, width) → paragraph',
