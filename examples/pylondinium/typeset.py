@@ -99,9 +99,22 @@ def main(argv):
     d.new_page()
     center_formula(d, 'sample.svg', 20)
 
+    s('Learning to type .tex files',
+      'was a small course in typography')
+    s('- – — −')
+    code_slide('Hobbit-lore',
+               '1158--60',
+               'Stick to your plan---your whole plan',
+               r'$-\pi$')
+    s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
+    code_slide("``No secrets between us, Frodo''",
+               'Mr.~Baggins',
+               r"N\'umenor",
+               r'Nazg\^ul')
     s('math typesetting')
-    s('When math journals stopped paying for',
-      'professional typesetters, papers looked so',
+    s('The whole reason for TeX:', '',
+      'When math journals stopped paying for',
+      'professional typesetters, math papers looked so',
       'ugly that Knuth could no longer publish')
     s('He took an entire year off to invent TeX')
 
@@ -150,19 +163,6 @@ def main(argv):
 
 
 
-    s('Goal:', '', 'I wanted to turn my grandfather’s',
-      'essays about family history and his own',
-      'childhood in 1920s Birmingham, Alabama,',
-      'into a printed hardcover book')
-    s('Letterpress')
-    s('In the distant past,',
-      'books and journals were',
-      'typeset by hand')
-    s('But as machines replaced humans,',
-      'mathematics journals became so ugly that',
-      'Donald Knuth could no longer bear to publish')
-    s('“TeX” Typesetting System')
-
     s('The Good', '',
       '1. Fonts',
       '2. Keyboard',
@@ -179,20 +179,6 @@ def main(argv):
     # vector fonts: won!
     # fonts change shape as size changes (can show?)
 
-    s('2. Keyboard',
-      '',
-      'Learning to type .tex files',
-      'was a small course in typography')
-    s('- – — −')
-    s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
-    code_slide('Hobbit-lore',
-               '1158--60',
-               'Stick to your plan---your whole plan',
-               r'$-\pi$')
-    code_slide("``No secrets between us, Frodo''",
-               'Mr.~Baggins',
-               r"N\'umenor",
-               r'Nazg\^ul')
 
     s('MathJax')
 
