@@ -172,7 +172,8 @@ def main(argv):
       'How could we ever find the optimium layout?')
     s('Dynamic programming!')
     s('TeX finds the optimal solution',
-      'in O(n²) worse case, usually O(n)')
+      'in O(n²) worse case, usually O(n)',
+      '(n = number of possible breaks)')
 
     with open('sample.tex') as f:
         code = f.read()
@@ -211,10 +212,10 @@ def main(argv):
     s('Hwæt!', '', '')
     s('Hwæt!', '', 'Why rewrite TeX?')
     s('There’s so many good parts I have', 'no interest in rewriting')
-    s('Good Parts', '', 'Vector fonts (TTF)', 'Markup (Markdown, RST)',
+    s('Good Parts', '', 'Vector fonts (TTF)',
       'Math formulae (MathJax)',
       'Paragraph breaking (Andrew Kuchling’s texlib)')
-    s('The Bad', '', 'Page layout')
+    s('The Bad', '', 'Markup (Markdown, RST)', 'Page layout')
     s('TeX’s page layout uses', 'veritcal boxes and glue')
     s('Makes simple layouts easy to implement',
       'and interesting layouts impossible')
@@ -224,26 +225,44 @@ def main(argv):
     pm = PySide2.QtGui.QPixmap('two-trailers.png')
     d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
-
+    s('How to write a PDF?')
 
     # (TODO: kerning and selection of layout engine?)
     d.new_page()
     lay_out_paragraph(fonts, d, [(centered_paragraph, [
-        ('old-standard', 'Revolutionary W'),
-        ('old-standard', 'ar'),
+        ('old-standard', 'He was named for two Revolutionary W'),
+        ('old-standard', 'ar heroes'),
     ])])
 
+    d.new_page()
+    lay_out_paragraph(fonts, d, [
+        (centered_paragraph, [
+            ('roman', 'ReportLab'),
+        ]),
+        (centered_paragraph, [
+            ('old-standard', 'He was named for two Revolutionary W'),
+            ('old-standard', 'ar heroes'),
+        ]),
+        (centered_paragraph, [
+            ('roman', ' '),
+        ]),
+        (centered_paragraph, [
+            ('roman', 'Qt'),
+        ]),
+        (centered_paragraph, [
+            ('old-standard', 'He was named for two Revolutionary War heroes'),
+        ]),
+    ])
 
-    simple_slide('I wanted to improve upon TeX')
+    simple_slide('I was ready to improve upon TeX')
     simple_slide('(text, width) → paragraph',
                  '(paragraph, height) → page')
     simple_slide('Different width columns?', 'Not supported in TeX')
-    simple_slide('My idea: paragraph layout that',
-                 'asks for more space as it needs it,'
-                 'so we know when it has filled one',
-                 'column and moves to the next')
+    simple_slide('My idea: a paragraph that asks for more space',
+                 'as it needs it, so it learns about any width',
+                 'change when it crosses to a new column')
     code_slide('Column = NamedTuple(width, height)',
-               'lay_out_paragraph(column, y, ...)')
+               'paragraph(column, y, ...)')
     code_slide('''
     # Each time the paragraph needs another line:
     leading = 2pt
@@ -256,18 +275,18 @@ def main(argv):
 
     simple_slide('Q: How do we ask for another column?')
     code_slide('''
-    def lay_out_paragraph(column, y, ...):
+    def paragraph(column, y, ...):
         column2 = column.next()
 
-    def lay_out_paragraph(column, y, layout, ...):
+    def paragraph(column, y, layout, ...):
         column2 = layout.next_column(column)
 
-    def lay_out_paragraph(column, y, next_column, ...):
+    def paragraph(column, y, next_column, ...):
         column2 = next_column(column)
     ''')
     simple_slide('A: Pass a plain callable!')
     code_slide('''
-    def lay_out_paragraph(column, y, next_column, ...):
+    def paragraph(column, y, next_column, ...):
         column2 = next_column(column)
     ''')
     simple_slide('Why? To avoid', 'Premature Object Orientation')
@@ -284,7 +303,7 @@ def main(argv):
     code_slide('''
     # So we now have a rough plan for our inputs:
 
-    def lay_out_paragraph(column, y, next_column, ...):
+    def paragraph(column, y, next_column, ...):
         column2 = next_column(column)
 
     # What will we return?
@@ -385,10 +404,10 @@ def main(argv):
     s('Consequence: to return a',
       'new head for the linked list,',
       'we will need the current head')
-    c('lay_out_paragraph(line, column, y, next_column, ...):')
+    c('paragraph(line, column, y, next_column, ...):')
     s('But wait!', 'We can eliminate common variables')
     c('''
-    lay_out_paragraph(line, column, y, next_column, ...)
+    paragraph(line, column, y, next_column, ...)
 
     # But what is a line?
     Line = NamedTuple(..., 'previous column y graphics')
@@ -398,14 +417,14 @@ def main(argv):
       '', 'Always look for chances to simplify',
       'after designing a new part of your system')
     c('''
-    lay_out_paragraph(line, next_column, ...)
+    paragraph(line, next_column, ...)
     ''')
     s('Also nice:', 'Symmetry!')
     c('''
     # The Line becomes a common currency that is
     # both our argument and our return value:
 
-    def lay_out_paragraph(line, next_column, ...):
+    def paragraph(line, next_column, ...):
         ...
         return last_line
     ''')
