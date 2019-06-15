@@ -694,6 +694,7 @@ def make_simple_slide_function(fonts, d):
 
 def make_code_slide_function(fonts, d):
     def code_slide(*texts):
+        d.new_page()
         text = '\n'.join(texts)
         text = dedent(text.rstrip()).strip('\n')
         next_line = slide_layout()
@@ -702,7 +703,6 @@ def make_code_slide_function(fonts, d):
             for line in text.splitlines()
         ]
         run_and_draw_centered(actions, fonts, None, next_line, d.painter)
-        d.new_page()
     return code_slide
 
 def progressive_slide(f, *texts):
