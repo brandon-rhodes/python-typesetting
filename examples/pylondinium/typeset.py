@@ -79,6 +79,36 @@ def main(argv):
     s('Typesetting with Python', '', '', '', '@brandon_rhodes',
       '2019 June 16', 'PyLondinium')
 
+    s('')
+    pm = PySide2.QtGui.QPixmap('tex-and-metafont-book.jpg')
+    n = 2
+    d.painter.drawPixmap(1200, 100, 1200 * n, 1196 * n, pm)
+
+    s('τέχνη', 'craft / art')
+
+    d.new_page()
+    center_formula(d, 'logo.svg')
+
+    s('markup language', '', 'plain text → document')
+
+    with open('sample.tex') as f:
+        code = f.read()
+    code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
+    code_slide(code)
+
+    d.new_page()
+    center_formula(d, 'sample.svg', 20)
+
+    # math beauty taking a year off
+
+    with open('formula.tex') as f:
+        code = f.read()
+    code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
+    code_slide(code)
+
+    d.new_page()
+    center_formula(d, 'formula.svg')
+
     # i found book
     # fantastical plain text editor markup formatted came out
     # hidden state vs visible
@@ -104,10 +134,6 @@ def main(argv):
       'Donald Knuth could no longer bear to publish')
     s('“TeX” Typesetting System')
 
-    center_formula(d, 'logo.svg')
-    d.new_page()
-
-    s('τέχνη', 'craft / art')
     s('The Good', '',
       '1. Fonts',
       '2. Keyboard',
@@ -138,15 +164,6 @@ def main(argv):
                'Mr.~Baggins',
                r"N\'umenor",
                r'Nazg\^ul')
-
-    s('3. Math formulas')
-    with open('formula.tex') as f:
-        code = f.read()
-    code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
-    code_slide(code)
-
-    center_formula(d, 'formula.svg')
-    d.new_page()
 
     s('MathJax')
 
@@ -681,8 +698,7 @@ def slide_layout(narrow=0):
         margin, margin, margin, margin,
     )
 
-def center_formula(d, path):
-    formula_scale = 32
+def center_formula(d, path, formula_scale=32):
     r = PySide2.QtSvg.QSvgRenderer(path)
     b = r.viewBox()
     w = b.width() * formula_scale
