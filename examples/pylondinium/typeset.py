@@ -79,6 +79,18 @@ def main(argv):
     s('Typesetting with Python', '', '', '', '@brandon_rhodes',
       '2019 June 16', 'PyLondinium')
 
+    # i found book
+    # fantastical plain text editor markup formatted came out
+    # hidden state vs visible
+    # and output was beautiful
+    # dreamed of using it
+    # finally did
+    # wrote my own format
+    # dreamed of writing my own
+    # excuse: grandfather's essays
+    # annoying as programmer to adjust parameters for page layout
+    # like tractor and trailer
+
     s('Goal:', '', 'I wanted to turn my grandfather’s',
       'essays about family history and his own',
       'childhood in 1920s Birmingham, Alabama,',
