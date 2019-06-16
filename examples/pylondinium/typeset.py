@@ -460,7 +460,7 @@ def main(argv):
                       ↓     ↓
     paragraph(line, column, y, next_column, ...)
 
-    # But what is a line?            ↓    ↓
+    # What does a line know?         ↓    ↓
     Line = NamedTuple(…, 'previous column y graphics')
     ''')
     c('''
@@ -469,7 +469,7 @@ def main(argv):
     s('Designing our return value',
       'wound up eliminating two', 'of our input arguments',
       '', 'Always look for chances to simplify',
-      'after designing a new part of your system')
+      'as you proceed with a design')
     s('Also nice:', 'Symmetry!')
     c('''
     # The Line becomes a common currency that is
@@ -480,68 +480,43 @@ def main(argv):
         return last_line_of_paragraph
     ''')
 
-    s('We now have a scheme whereby paragraphs can plan',
-      'their layout without writing to the PDF yet',
-      '',
-      'But how will the heading’s code find',
-      'and invoke the paragraph that follows it?')
-    # d.new_page()
-    # run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    # d.new_page()
-    # run_and_draw(lotr2, fonts, None, narrow_line, d.painter)  #?
-    s('Well: what drives the layout process?')
-
-    # TODO
-    s('Q:', 'How can the heading signal', 'that it needs the next item?')
-    s('Special callable?', 'Exception?', 'Coroutine?')
-    s('This is a prototype.', 'I’m learning the problem.',
-      'Let’s just do the easiest possible thing.')
+    s('But:',
+      '(a) How will the heading action', 'invoke the action that follows?',
+      '', '(b) How it will tell the engine', 'that the following action',
+      'is already laid out?')
     c(sample_actions)
+    s('Special callable?', 'Exception?', 'Coroutine?')
     c('''
     def heading(actions, a, line, next_column, …):
         …
-        return heading_line
-    ''')
-    # TODO: shorten
-    s('Q:', 'But wait!', 'Why throw out', 'the paragraph’s work?')
-    c('''
-    def heading(actions, a, line, next_column, …):
-        …
-        return heading_line
-        # - OR -
-        return last_line_of_next_paragraph
-    ''')
-    # Should I show the heading logic? Or does that come later?
-    s('But won’t the paragraph be printed again',
-      'when the engine itself calls the next item?')
-    c('''
-    def heading(actions, a, line, next_column, …):
-        …
-        # Let’s also return the next index
-        # that the engine should render!
-        return a + 2, last_line
+        return a + 2, line_n
     ''')
 
     # The spammish repetition.
 
     s('Stepping back, I looked askance',
       'at the repetition in my code')
-    # TODO Call them "opinionated actions"
-    c('''
-    # Some routines actually use `actions` and `a`:
+    s('For “opinionated” actions',
+      'that care about what follows',
+      'it’s necessary to pass',
+      '`action` and `a`')
+    s('But simple actions ignore them!')
+    symmetrical = '''
+    # opinionated
     def heading(actions, a, line, next_column, …):
         … return a + 2, line2
     def section(actions, a, line, next_column, …):
         … return a + 3, line2
 
-    # But many ignored `actions` and returned `a + 1`:
+    # simple
     def paragraph(actions, a, line, next_column, …):
         … return a + 1, line2
     def center_text(actions, a, line, next_column, …):
         … return a + 1, line2
-    ''')
+    '''
+    c(symmetrical)
     s('How can I eliminate `actions` and `a`',
-      'from innocent routines that don’t need them?')
+      'from simple actions that don’t need them?')
     s('DRY')
     s('“Don’t Repeat Yourself”', '', 'I suddenly',
       'heard the call', 'of distant decades')
@@ -582,20 +557,14 @@ def main(argv):
     def center_text(line, next_column, …):
         … return line2
     ''')
+    s('DRY')
     s('And what did I decide?')
-    s('Symmetry')
-    c('''
-    def heading(actions, a, line, next_column, …):
-        … return a + 2, line2
-    def section(actions, a, line, next_column, …):
-        … return a + 3, line2
-
-    def paragraph(actions, a, line, next_column, …):
-        … return a + 1, line2
-    def center_text(actions, a, line, next_column, …):
-        … return a + 1, line2
-    ''')
-    s('When I return to code,', 'I learn by re-reading')
+    s('To repeat myself')
+    c(symmetrical)
+    s('Why?', 'Symmetry')
+    c(symmetrical)
+    s('When I return to code', 'months and years later',
+      'I re-learn by re-reading')
     s('Given a stack of functions',
       'that do exactly the same thing,',
       'if ½ of them use one convention',
@@ -609,20 +578,6 @@ def main(argv):
       'I need routines',
       'that behave the same',
       'to look the same')
-    s('In summary:', 'I decided against DRY', 'and simply repeated myself')
-    c('''
-    def heading(actions, a, line, next_column, …):
-        … return a + 2, line2
-    def section(actions, a, line, next_column, …):
-        … return a + 3, line2
-
-    def paragraph(actions, a, line, next_column, …):
-        … return a + 1, line2
-    def center_text(actions, a, line, next_column, …):
-        … return a + 1, line2
-    ''')
-
-    # (show "how heading works") <- (what?)
 
     s('We’re ready for a final design step!')
     s('widows', 'and', 'orphans')
