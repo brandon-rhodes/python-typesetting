@@ -101,7 +101,7 @@ def main(argv):
     d.new_page()
     center_formula(d, 'sample.svg', 20)
 
-    s('The book’s lessons', 'in how to type .tex files',
+    s('The book’s lessons', 'on how to type .tex files',
       'were a small course in typography')
     c('Mr.~Baggins', 'Mrs.~Cotton')
     s('- – — −')
@@ -180,7 +180,7 @@ def main(argv):
       '',
       'there were a typesetting “library”',
       'that left the programmer in control?')
-    s('2012', '', 'I realized that typesetting',
+    s('Recently,', 'I realized that typesetting',
       'and printing a book from Python', 'was coming within reach!')
     s('Print-on-demand', '', 'PDF → custom hardcover')
     s('Real hardcover!', '', '• Casebound', '• Smyth sewn')
@@ -217,7 +217,7 @@ def main(argv):
                  'as it needs it, so it learns about any width',
                  'change when it crosses to a new column')
     s('Plan', '', '1. Find a library for rendering PDF',
-      '2. Write a new page layout engine')
+      '2. Invent a new page layout engine')
 
     d.new_page()
     lay_out_paragraph(fonts, d, [
@@ -378,9 +378,11 @@ def main(argv):
     # run_and_draw(lotr, fonts, None, narrow_line, d.painter)
     s('')
     run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
-    simple_slide('But a several-line paragraph will',
+    simple_slide('But a multi-line paragraph will',
                  'refuse to leave its opening line alone —',
                  'will refuse to leave it an “orphan”')
+    d.new_page()
+    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
     d.new_page()
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     simple_slide('How can the heading predict',
@@ -449,7 +451,7 @@ def main(argv):
     s('A linked list lets us extend the document',
       'with any number of speculative layouts,',
       'which Python automatically disposes of',
-      'when we’re done')
+      'as we discard them')
     s('Actions now need a new argument:',
       'the most recently laid out line')
     c('''
@@ -485,7 +487,6 @@ def main(argv):
       '(a) How will the heading action', 'invoke the action that follows?',
       '', '(b) How it will tell the engine', 'that the following action',
       'is already laid out?')
-    c(sample_actions)
     s('Special callable?', 'Exception?', 'Coroutine?')
     c(sample_actions)
     c('''
@@ -493,6 +494,9 @@ def main(argv):
         …
         return a + 2, line_n
     ''')
+    s('Incrementing and returning the `a` index',
+      'lets an action invoke as many subsequent',
+      'actions as it needs to')
 
     # The spammish repetition.
 
@@ -605,6 +609,7 @@ def main(argv):
     s('But Boolean switches are often',
       'a hint that we have coupled what could',
       'actually be two different routines')
+    s('Composition » Coupling')
     c('''
     actions = [
         (heading, '1. Concerning Hobbits'),
@@ -665,7 +670,7 @@ def main(argv):
 
     # How would we influence this choice?
     ''')
-    s('Lie about the value of `y`?',
+    s('Lie about the value of `y`?', '',
       'Provide a fake column height?')
     s('We are looking desperately',
       'for parameters to tweak because',
@@ -696,8 +701,8 @@ def main(argv):
     ''')
     c('''
     # What if the paragraph calls back not only
-    # when it *thinks* it needs a new column
-    # but every time it needs a line?
+    # when it *thinks* it needs a next_column()
+    # but every time it needs a next_line()?
 
     def paragraph(…, next_line, …):
         …
@@ -714,14 +719,13 @@ def main(argv):
 
         paragraph(..., fancy_next_line, ...)
     ''')
-    c(symmetrical.replace('next_column', 'next_line')
-      .replace('# opinionated', '')
-      .replace('# simple', ''))
+    # c(symmetrical.replace('next_column', 'next_line')
+    #   .replace('# opinionated', '')
+    #   .replace('# simple', ''))
     s('Success!')
-    s('Did you catch why we won?')
-    s('The simple fancy_next_line() wrapper',
-      'would not have worked if we had not avoided',
-      'premature Object Orientation!')
+    s('Did you catch why', 'this was a success?')
+    s('The fancy_next_line() wrapper is so simple',
+      'because we avoided premature Object Orientation!')
     c('''
     # What if instead of just passing next_line()
     # we were passing a whole Layout object?
@@ -729,16 +733,16 @@ def main(argv):
     def paragraph(..., line, layout, ...):
         line2 = layout.next_line(line)
     ''')
-    s('How would you make its next_line()',
-      'method return a different value?')
+    s('How would you make an object’s',
+      'next_line() method return a different value?')
     s('Monkey patching?',
       'An Adapter class?',
       'Gang of Four Decorator?')
     s('In Object Orientation, customizing a verb',
       'can require trundling out an entire design pattern')
-    s('But if you pass functions —',
-      'if you treat verbs as first class citizens —',
-      'a simple wrapper can put you',
+    s('But if you pass callables —',
+      'if you treat your verbs as first class citizens —',
+      'a simple inline wrapper can put you',
       'in the room where it happens')
     s('Lessons', '',
       'Start verbose, simplify later',
