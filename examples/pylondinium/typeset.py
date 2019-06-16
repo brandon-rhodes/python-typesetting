@@ -184,34 +184,25 @@ def main(argv):
     s('Print-on-demand', '', 'PDF → custom hardcover')
     s('Real hardcover!', '', '• Casebound', '• Smyth sewn')
 
+    n = 5
+    s('')
+    pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
+    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+
     s('Technology', '',
       'MetaFont → TrueType, OpenType',
       'Macro language → Markdown, RST',
       'Paragraph layout → Andrew Kuchling’s texlib',
       'DVI → PDF')
 
-    n = 5
-    s('')
-    pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
-    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
-
     s('', 'But what would I print?', '', '', '')
     s('', '', 'My grandfather’s essays', '', '')
     s('', '', '', 'Wrote the typesetting myself', '')
     s('', '', '', 'Wrote the typesetting myself', '— in Python!')
 
-    s('What was wrong with TeX?')
-    s('Text + parameters → TeX → PDF')
-    s('“Framework”')
-
-    s('Using frameworks is like backing trailers', '',
-      'Data, parameters → framework → output')
     s('Hwæt!', '', '', '', '')
-    s('Hwæt!', '', 'What part of TeX', 'was I interested in',
-      're-implementing?')
+    s('Hwæt!', '', 'What would I do differently?')
 
-    s('My goals', '',
-      'Redesign and rewrite page layout')
     simple_slide('I chose a specific first goal')
     simple_slide('Different width columns?', 'Not supported in TeX')
     simple_slide('text → lines',
@@ -227,7 +218,6 @@ def main(argv):
     s('Steps', '', '1. Find a library for rendering PDF',
       '2. Write a new page layout engine')
 
-    # (TODO: kerning and selection of layout engine?)
     d.new_page()
     lay_out_paragraph(fonts, d, [
         (centered_paragraph, [
@@ -264,7 +254,26 @@ def main(argv):
 
     s('So this talk is the story', 'of the design of the calling convention',
       'between the layout engine and', 'an individual paragraph')
-    # TODO: move actions here
+
+    sample_actions = '''
+    # Input (Markdown, RST, etc) produces:
+    actions = [
+        (title, 'Prologue'),
+        (heading, '1. Concerning Hobbits'),
+        (paragraph, 'Hobbits are an unobtrusive…'),
+        (paragraph, 'For they are a little people…'),
+        (heading, '2. Concerning Pipe-weed'),
+        (paragraph, 'There is another astonishing…'),
+    ]
+    '''
+    c(sample_actions)
+
+    s('What API should the engine',
+      'and the actions use to cooperate?')
+    s('Let’s start by asking:'
+      'what information does',
+      'an action need?')
+
     code_slide('''
     Column = NamedTuple(…, 'width height')
     paragraph(column, y, ...)
@@ -447,14 +456,7 @@ def main(argv):
                       │line│ ← │line│ ← │line│ B
                       └────┘   └────┘   └────┘
     ''')
-    # TODO:
-    #                    col5     col6    col6    col6
-    #                    line9 ← line1 ← line2 ← line3
-    #  col5     col5  <  HEADING  P1       P2      P3
-    #  line7 ← line8 <
-    #                    col6     col6    col6    col6
-    #                    line1 ← line2 ← line3 ← line4
-    #                    HEADING  P1      P2      P3
+
     s('A linked list lets us extend the document',
       'with any number of speculative layouts,',
       'which Python automatically disposes of',
@@ -500,18 +502,8 @@ def main(argv):
     # d.new_page()
     # run_and_draw(lotr2, fonts, None, narrow_line, d.painter)  #?
     s('Well: what drives the layout process?')
-    sample_actions = '''
-    # Input (Markdown, RST, etc) produces:
-    actions = [
-        (title, 'Prologue'),
-        (heading, '1. Concerning Hobbits'),
-        (paragraph, 'Hobbits are an unobtrusive…'),
-        (paragraph, 'For they are a little people…'),
-        (heading, '2. Concerning Pipe-weed'),
-        (paragraph, 'There is another astonishing…'),
-    ]
-    '''
-    c(sample_actions)
+
+    # TODO
     s('Q:', 'How can the heading signal', 'that it needs the next item?')
     s('Special callable?', 'Exception?', 'Coroutine?')
     s('This is a prototype.', 'I’m learning the problem.',
