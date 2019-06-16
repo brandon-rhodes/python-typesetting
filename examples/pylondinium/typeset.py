@@ -599,7 +599,7 @@ def main(argv):
             try again
     ''')
     s('Inside of its widow-orphan logic,',
-      'paragraph() had a hidden an inner routine',
+      'paragraph() had a hidden inner routine',
       'that did the actual paragraph layout')
     s('What if you just wanted', 'to call the simple part?')
     c('''
@@ -643,7 +643,7 @@ def main(argv):
     y = 0
     ''')
     s('Avoiding a widow?', '')
-    s('Impossible')
+    s('Nearly impossible')
     c('''
        A            B
     ┌─────┐      ┌─────┐
