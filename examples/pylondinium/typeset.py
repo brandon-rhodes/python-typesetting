@@ -108,6 +108,7 @@ def main(argv):
     s('The book’s lessons', 'in how to type .tex files',
       'were a small course in typography')
     code_slide('Mr.~Baggins')
+    code_slide('Mrs.~Cotton')
     s('- – — −')
     s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
     code_slide('Hobbit-lore',
@@ -129,55 +130,7 @@ def main(argv):
     d.new_page()
     center_formula(d, 'formula.svg')
 
-    # PUT BOXES GLUE HERE
-
-    s('The output of TeX was beautiful!',
-      'But it was difficult to control.')
-    s('Once you had set up', 'the typesetting parameters,',
-      'layout proceeded largely outside of your control',
-      '', 'parameters → ... → output')
-
-    d.new_page()
-    pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
-
-    s('Backing up a tractor and trailers', 'is an open problem in AI')
-    s('“Fuzzy Knowledge-Based Control', 'for Backing Multi-Trailer Systems”',
-      '', 'Andri Riid, Jaakko Ketola, Ennu Rüstern')
-    s('Trailers are difficult to back up',
-      'because the input — the motion of the tractor —',
-      'has an increasingly distant relationship',
-      'to the motion of the nth trailer')
-
-    d.new_page()
-    pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
-
-    s('2010s', '', 'I realized that writing',
-      'my own typesetter', 'was now within reach!')
-
-    s('Print-on-demand', '', '', '', '')
-    # TODO the time is now
-    s('', 'PDF → custom hardcover', '', '', '')
-    s('', 'Real hardcover: casebound, Smyth sewn', '', '', '')
-
-    n = 5
-    s('')
-    pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
-    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
-
-    s('', 'But what would I print?', '', '', '')
-    s('', '', 'My grandfather’s essays', '', '')
-    s('', '', '', 'Wrote the typesetting myself', '')
-    s('', '', '', 'Wrote the typesetting myself', '— in Python!')
-
-    s('What was wrong with TeX?')
-    s('Text + parameters → TeX → PDF')
-    s('“Framework”')
-
-    s('Using frameworks is like backing trailers', '',
-      'Data, parameters → framework → output')
-    s('Example: TeX paragraph layout')
+    s('Paragraphs')
     s('TeX represents the words of a paragraph',
       'as fixed-width “boxes” with stretchy “glue”')
     c('┌───┐  ┌──┐  ┌─────┐  ┌───┐  ┌──┐  ┌─────┐',
@@ -200,35 +153,64 @@ def main(argv):
     d.new_page()
     center_formula(d, 'sample.svg', 20)
 
-    progressive_slide(
-        s,
-        'Example parameters:',
-        '',
-        'How much glue can shrink',
-        'How much glue can stretch',
-        'Penalty for breaking a word with a hyphen',
-        'Penalty for two hypenated lines in a row',
-        'Penalty for stranding the final word',
-    )
-    s('Don’t those sound kind of — specific?')
-    s('Typical of frameworks:', '',
-      'They make it easy to do anything',
-      'that their author has already thought of')
-    progressive_slide(
-        s,
-        'Frameworks tend to group goals', 'into two categories:',
-        '',
-        '1. Easy',
-        '2. Impossible',
-    )
+    s('The output of TeX was beautiful!',
+      'But it was difficult to control.',
+      '',
+      'Once you set up the parameters,',
+      'layout proceeded largely outside'
+      'of your control')
+
+    d.new_page()
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
+    s('Backing up a tractor and trailers', 'is an open problem in AI')
+    s('“Fuzzy Knowledge-Based Control', 'for Backing Multi-Trailer Systems”',
+      '', 'Andri Riid, Jaakko Ketola, Ennu Rüstern')
+    s('Trailers are difficult to back up',
+      'because the input — the motion of the tractor —',
+      'has an increasingly distant relationship',
+      'to the motion of the nth trailer')
+
+    d.new_page()
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
+    s('2010s', '', 'I realized that typesetting',
+      'and printing a book', 'was now within reach!')
+
+    # TODO the time is now
+    # TODO: "I realized the pieces were now in place" dvi reportlab
+    s('Print-on-demand', '', 'PDF → custom hardcover')
+    s('Real hardcover!', '', '• Casebound', '• Smyth sewn')
+
+    s('Technology', '',
+      'MetaFont → TrueType, OpenType',
+      'Macro language → Markdown, RST',
+      'Paragraph layout → Andrew Kuchling’s texlib',
+      'DVI → PDF')
+
+    n = 5
+    s('')
+    pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
+    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+
+    s('', 'But what would I print?', '', '', '')
+    s('', '', 'My grandfather’s essays', '', '')
+    s('', '', '', 'Wrote the typesetting myself', '')
+    s('', '', '', 'Wrote the typesetting myself', '— in Python!')
+
+    s('What was wrong with TeX?')
+    s('Text + parameters → TeX → PDF')
+    s('“Framework”')
+
+    s('Using frameworks is like backing trailers', '',
+      'Data, parameters → framework → output')
     s('Hwæt!', '', '', '', '')
     s('Hwæt!', '', 'What part of TeX', 'was I interested in',
       're-implementing?')
-    # TODO: "I realized the pieces were now in place" dvi reportlab
-    s('Good Parts', '', 'Vector fonts (TrueType)',  #TODO
-      'Math formulae (MathJax)',
-      'Paragraph breaking (Andrew Kuchling’s texlib)')
-    s('My goals', '', 'Support modern markup (Markdown, RST)',
+
+    s('My goals', '',
       'Redesign and rewrite page layout')
     simple_slide('I chose a specific first goal')
     simple_slide('Different width columns?', 'Not supported in TeX')
