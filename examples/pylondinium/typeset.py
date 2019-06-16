@@ -81,6 +81,10 @@ def main(argv):
     s('Typesetting with Python', '', '', '', '@brandon_rhodes',
       '2019 June 16', 'PyLondinium')
 
+    s('This is a story', 'about keeping options',
+      'open during software design', '', 'because the most crucial elements',
+      'often appear only at the very end')
+
     s('')
     pm = PySide2.QtGui.QPixmap('tex-and-metafont-book.jpg')
     n = 2
@@ -139,6 +143,7 @@ def main(argv):
     pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
     d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
 
+    s('', 'But what would I print?', '', '', '')
     s('', '', 'My grandfather’s essays', '', '')
     s('', '', '', 'Wrote the typesetting myself', '')
     s('', '', '', 'Wrote the typesetting myself', '— in Python!')
@@ -170,7 +175,9 @@ def main(argv):
       'How could we ever find the optimium layout?')
     s('Dynamic programming!')
     s('TeX finds the optimal solution',
+      'for breaking a paragraph into lines',
       'in O(n²) worse case, usually O(n)',
+      '',
       '(n = number of possible breaks)')
 
     with open('sample.tex') as f:
@@ -181,25 +188,20 @@ def main(argv):
     d.new_page()
     center_formula(d, 'sample.svg', 20)
 
-    s('TeX layout algorithms are powerful',
-      'but limited: can only solve layout problems',
-      'that can be expressed as boxes + glue + penalties')
     progressive_slide(
         s,
-        'Example penalty parameters:',
+        'Example parameters:',
         '',
         'How much glue can shrink',
         'How much glue can stretch',
-        'Breaking a word with a hyphen',
-        'Having two lines in a row end with a hyphen',
-        'Leaving the last word alone on its own line',
+        'Penalty for breaking a word with a hyphen',
+        'Penalty for two hypenated lines in a row',
+        'Penalty for stranding the final word',
     )
-    s('Typical framework:', '',
-      'Makes it easy to do anything',
-      'that its author already thought of')
-    s('TeX paragraph breaking supports a penalty',
-      'for everything — absolutely everything! —',
-      'that Donald Knuth happened to think of')
+    s('Don’t those sound kind of — specific?')
+    s('Typical of frameworks:', '',
+      'They make it easy to do anything',
+      'that their author has already thought of')
     progressive_slide(
         s,
         'Frameworks tend to group goals', 'into two categories:',
@@ -207,53 +209,14 @@ def main(argv):
         '1. Easy',
         '2. Impossible',
     )
-    s('Hwæt!', '', '')
-    s('Hwæt!', '', 'What part of TeX', 'was I interested',
-      'in re-implementing?')
-    s('Good Parts', '', 'Vector fonts (TrueType)',
+    s('Hwæt!', '', '', '', '')
+    s('Hwæt!', '', 'What part of TeX', 'was I interested in',
+      're-implementing?')
+    s('Good Parts', '', 'Vector fonts (TrueType)',  #TODO
       'Math formulae (MathJax)',
       'Paragraph breaking (Andrew Kuchling’s texlib)')
     s('My goals', '', 'Support modern markup (Markdown, RST)',
-      'Redesign page layout')
-    s('TeX’s page layout uses', 'veritcal boxes and glue')
-    s('Makes simple layouts easy to implement',
-      'and interesting layouts impossible')
-    s('Steps', '', '1. Find a library for rendering PDF',
-      '2. Write a new page layout engine')
-
-    # (TODO: kerning and selection of layout engine?)
-    d.new_page()
-    lay_out_paragraph(fonts, d, [
-        (centered_paragraph, [
-            ('roman', 'ReportLab'),
-        ]),
-        (centered_paragraph, [
-            ('old-standard', 'He was named for two Revolutionary W'),
-            ('old-standard', 'ar heroes'),
-        ]),
-    ])
-
-    d.new_page()
-    lay_out_paragraph(fonts, d, [
-        (centered_paragraph, [
-            ('roman', 'ReportLab'),
-        ]),
-        (centered_paragraph, [
-            ('old-standard', 'He was named for two Revolutionary W'),
-            ('old-standard', 'ar heroes'),
-        ]),
-        (centered_paragraph, [
-            ('roman', ' '),
-        ]),
-        (centered_paragraph, [
-            ('roman', 'Qt'),
-        ]),
-        (centered_paragraph, [
-            ('old-standard', 'He was named for two Revolutionary War heroes'),
-        ]),
-    ])
-
-    simple_slide('I was ready to improve upon TeX')
+      'Redesign and rewrite page layout')
     simple_slide('I chose a specific first goal')
     simple_slide('Different width columns?', 'Not supported in TeX')
     simple_slide('text → lines',
@@ -263,9 +226,49 @@ def main(argv):
                  'so, as text is broken into lines',
                  'you don’t even know what page',
                  'they will be printed on')
-    simple_slide('My idea: a paragraph that asks for more space',
+    simple_slide('My idea: the paragraph should ask for more space',
                  'as it needs it, so it learns about any width',
                  'change when it crosses to a new column')
+    s('Steps', '', '1. Find a library for rendering PDF',
+      '2. Write a new page layout engine')
+
+    # (TODO: kerning and selection of layout engine?)
+    d.new_page()
+    lay_out_paragraph(fonts, d, [
+        (centered_paragraph, [
+            ('roman', 'ReportLab'),
+        ]),
+        (centered_paragraph, [('roman', '')]),
+        (centered_paragraph, [
+            ('old-standard', 'He was named for two Revolutionary W'),
+            ('old-standard', 'ar heroes'),
+        ]),
+    ])
+
+    s('Was there an alternative?')
+
+    d.new_page()
+    lay_out_paragraph(fonts, d, [
+        (centered_paragraph, [
+            ('roman', 'ReportLab'),
+        ]),
+        (centered_paragraph, [('roman', '')]),
+        (centered_paragraph, [
+            ('old-standard', 'He was named for two Revolutionary W'),
+            ('old-standard', 'ar heroes'),
+        ]),
+        (centered_paragraph, [('roman', '')]),
+        (centered_paragraph, [
+            ('roman', 'Qt'),
+        ]),
+        (centered_paragraph, [('roman', '')]),
+        (centered_paragraph, [
+            ('old-standard', 'He was named for two Revolutionary War heroes'),
+        ]),
+    ])
+
+    s('So this talk is the story', 'of the design of the calling convention',
+      'between the layout engine and', 'an individual paragraph')
     code_slide('''
     Column = NamedTuple(…, 'width height')
     paragraph(column, y, ...)
@@ -307,11 +310,15 @@ def main(argv):
                  '',
                  'attaching a verb to a noun',
                  "when you don’t need to yet")
-    simple_slide('Symptom: eagerly binding each verb to a noun',
-                 'before your overall architecture is complete')
-    simple_slide('Concrete symptom:',
-                 'An object argument on which',
-                 'you only call a single method')
+    simple_slide('Symptom:',
+                 '',
+                 'Passing an object',
+                 'on which a function will',
+                 'only ever call a single method')
+    code_slide('''
+    def paragraph(column, y, layout, ...):
+        column2 = layout.next_column(column)
+    ''')
     simple_slide('Premature Object Orientation',
                  'couples code that needs only a verb',
                  'to all the implementation details of the noun')
@@ -341,28 +348,32 @@ def main(argv):
                  'for a line below the heading?')
     d.new_page()
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
+    s('Then the bottom of the column',
+      'must be left blank, and the heading',
+      'moved to the top of the next column')
     code_slide('''
-    # Can the Heading avoid being orphaned
-    # by checking if one more line is free?
+    # Can the Heading avoid being orphaned by
+    # insisting that there be room for 2 lines?
 
     if y + 2 * (leading + height) > column.height:
         column = next_column(column)
         y = 0
     ''')
     simple_slide('No. No, it can’t.')
-    simple_slide('Why?', 'Widows and orphans')
-    d.new_page()
-    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    simple_slide('Sometimes one line is indeed enough')
+    simple_slide('Why?', '', 'Because paragraphs have their own rules!',
+                 '“widows and orphans”')
+    simple_slide('A single-line paragraph might deign',
+                 'to remain at the bottom of the page')
+    # d.new_page()
+    # run_and_draw(lotr, fonts, None, narrow_line, d.painter)
     d.new_page()
     run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
     simple_slide('But a several-line paragraph will',
                  'refuse to leave its opening line',
                  'alone beneath the heading',
                  '',
-                 'and will choose instead',
-                 'to move its opening line',
-                 'to the following page.')
+                 'and will instead move it to',
+                 'the top of following page.')
     d.new_page()
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     simple_slide('How can the heading predict',
@@ -444,10 +455,10 @@ def main(argv):
     #                    col6     col6    col6    col6
     #                    line1 ← line2 ← line3 ← line4
     #                    HEADING  P1      P2      P3
-    s('A linked list lets us attach any number',
-      'of speculative layouts to the document so far,',
-      'and automatically disposes of the layouts',
-      'that we do not wind up keeping')
+    s('A linked list lets us extend the document',
+      'with any number of speculative layouts,',
+      'which Python automatically disposes of',
+      'when we’re done')
     s('We now need a new argument:',
       'the most recently laid out line')
     c('''
@@ -479,11 +490,11 @@ def main(argv):
         return last_line_of_paragraph
     ''')
 
-    s('We now have a scheme whereby paragraphs',
-      'can plan their layout without printing ink',
+    s('We now have a scheme whereby paragraphs can plan',
+      'their layout without writing to the PDF yet',
       '',
       'But how will the heading’s code find',
-      'and invoke the paragraph that follows?')
+      'and invoke the paragraph that follows it?')
     # d.new_page()
     # run_and_draw(lotr, fonts, None, narrow_line, d.painter)
     # d.new_page()
@@ -502,17 +513,16 @@ def main(argv):
     '''
     c(sample_actions)
     s('Q:', 'How can the heading signal', 'that it needs the next item?')
-    s('Be passed a “get_next()” callable?',
-      'Be a coroutine that yields a special “next” object?')
+    s('Special callable?', 'Exception?', 'Coroutine?')
     s('This is a prototype.', 'I’m learning the problem.',
-      'What’s the easiest possible thing?')
+      'Let’s just do the easiest possible thing.')
     c(sample_actions)
-    s('A: Just pass in the list')
     c('''
     def heading(actions, a, line, next_column, …):
         …
         return heading_line
     ''')
+    # TODO: shorten
     s('Q:', 'But wait!', 'Why throw out', 'the paragraph’s work?')
     c('''
     def heading(actions, a, line, next_column, …):
@@ -647,6 +657,7 @@ def main(argv):
     s('Inside of its widow-orphan logic,',
       'paragraph() will have an inner routine',
       'that does the actual paragraph layout')
+    # TODO: clean up justification
     s('What if you just want the simple part?')
     s('In the old days,',  'I would have parametrized')
     c('''
@@ -772,6 +783,10 @@ def main(argv):
     s('')
     pm = PySide2.QtGui.QPixmap('IMG_20190611_212354.jpg')
     d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+
+    s('I’ll be releasing the “typesetting” Python library',
+      'at the end of the month — follow me on Twitter',
+      'if you’re interested in following along')
 
     s('Thank you very much!', '', '', '@brandon_rhodes')
 
