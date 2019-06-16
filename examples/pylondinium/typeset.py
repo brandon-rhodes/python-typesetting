@@ -602,67 +602,86 @@ def main(argv):
     ''')
     s('But —', '', 'This looks a lot', 'like our heading logic')
     c('''
-    if the heading is alone at bottom of column:
-        try again
-
-    if this paragraph creates an orphan:
-        try again
-    ''')
-    c('''
     actions = [
         (heading, '1. Concerning Hobbits'),
         (paragraph, 'Hobbits are an unobtrusive…'),
     ]
     ''')
-    s('What if, instead of widow-orphan logic',
-      'being coupled to the paragraph() routine,',
-      'it lived outside and could be composed',
-      'with the paragraph?')
     c('''
     actions = [
         (avoid_widows_and_orphans,),
         (paragraph, 'Hobbits are an unobtrusive…'),
     ]
     ''')
-    s('Composition » Coupling+Configuration')
-    s('Problem:', '', 'To avoid a widow, the paragraph needs',
-      'to move to the second column early',
-      '', 'How will we convince it to do that?')
+    s('Avoiding an orphan?', '', 'Easy!')
+    c('''
+    # Before calling the paragraph, simply:
+
+    column = next_column(column)
+    y = 0
+    ''')
+    c('''
+       A            B
+    ┌─────┐      ┌─────┐
+    │  .  │      │  .  │
+    │  .  │      │  .  │
+    │ ----│      │     │
+    └─────┘      └─────┘
+    ┌─────┐      ┌─────┐
+    │-----│      │ ----│
+    │---  │      │-----│
+    │     │      │---  │
+    └─────┘      └─────┘
+    ''')
+    s('Avoiding a widow?', '')
+    s('Avoiding a widow?', 'Impossible?')
+    c('''
+       A            B
+    ┌─────┐      ┌─────┐
+    │ ----│      │ ----│
+    │-----│      │-----│
+    │-----│      │     │ ←
+    └─────┘      └─────┘
+    ┌─────┐      ┌─────┐
+    │---  │      │-----│
+    │     │      │---  │
+    │     │      │     │
+    └─────┘      └─────┘
+    ''')
+    #s('Composition » Coupling+Configuration')
+    s('How would we ever convince a paragraph',
+      'to move to the next column early?')
     c('''
     # Each time the paragraph needs another line:
+
     leading = …
     height = …
     if y + leading + height > column.height:
         # ask for another column
-    ''')
-    s('Provide an inflated y value, fix later?',
-      'Provide a fake column with a smaller height?',
-      '?')
-    s('This feels a lot like a framework', '',
-      'It feels we are looking desperately for levers',
-      'because we are standing on the outside',
-      'of the crucial decision we need to control')
-    s('Where do you want to be during a crucial decision?', '',
-      'On the outside, desperatly adjusting configuration?')
-    s('You want to be', 'in the room where it happens')
-    c('''
-    # Previously, layout routines only consulted
-    # us when they needed a new column, but handled
-    # lines themselves:
 
-    def paragraph(…, next_column, …):
-        …
-        if y + leading + height > column.height:
-             …
+    # How would we influence this choice?
     ''')
+    s('Lie about the value of `y`?',
+      'Provide a fake column height?')
+    s('We are looking desperately',
+      'for parameters to tweak because',
+      'we’re standing outside of the code',
+      'that makes the decision')
+    s('Outside', '', 'Is that really where we want to be',
+      'during a crucial decision?')
+    s('No')
+    s('You want to be', 'in the room where it happens')
+    s('Right now, the paragraph only consults us',
+      'when it needs a whole new column',
+      '',
+      'next_column()')
     c('''
-    # Let's change that up.
+    # What if we made it talk to us
+    # every time it needs a line?
 
     def paragraph(…, next_line, …):
         …
     ''')
-    # TODO move this up and admit I had already factored it out
-    # but now wanted to be inside
     c('''
     def next_line(line, leading, height):
         column = line.column
@@ -677,15 +696,24 @@ def main(argv):
     def avoid_widows_and_orphans(…, next_line, …):
 
         def fancy_next_line(…):
-            # A wrapper that makes its own decisions!
+            # A wrapper around next_line() that jumps
+            # to the next column early!
 
         # Call the paragraph with fancy_next_line()
     ''')
-    s('Did you catch the win?')
+    s('Success!')
+    s('Did you catch why we won?')
     s('The simple wrapper would not have worked',
       'if we had not avoided premature Object Orientation!')
-    s('A function is easy to wrap!', '',
-      'A method? Hard!')
+    c('''
+    # What if instead of just passing next_line()
+    # we were passing a whole Layout object?
+
+    def paragraph(..., line, layout, ...):
+        line2 = layout.next_line(line)
+    ''')
+    s('How would you make its next_line()',
+      'method return a different value?')
     s('Monkey patching?',
       'An Adapter class?',
       'Gang of Four Decorator?')
@@ -701,7 +729,11 @@ def main(argv):
       'Let verbs be first-class citizens',
       'Avoid premature Object Orientation')
 
-    # photos of book
+    s('I plan on releasing my “typesetting”',
+      'Python library later this summer — but you',
+      'can watch my progress on GitHub:',
+      '',
+      'github.com/brandon-rhodes/python-bookbinding')
 
     n = 5
 
@@ -710,7 +742,7 @@ def main(argv):
     d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
 
     s('Sure Print and Design', 'Toronto, Canada', '',
-      'Supported run of only 2 books!')
+      'Will print runs of only 2 books!')
 
     s('328 hardcover pages')
 
@@ -722,16 +754,7 @@ def main(argv):
     pm = PySide2.QtGui.QPixmap('IMG_20190611_212354.jpg')
     d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
 
-    s('I’ll be releasing the “typesetting” Python library',
-      'at the end of the month — follow me on Twitter',
-      'if you’re interested in following along')
-
     s('Thank you very much!', '', '', '@brandon_rhodes')
-
-    # (^^ linked list: "Try it both ways")
-
-    # give my father a hardback with his father's memories
-    # photo of book
 
     d.painter.end()
 
