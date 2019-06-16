@@ -81,10 +81,6 @@ def main(argv):
     s('Typesetting with Python', '', '', '', '@brandon_rhodes',
       '2019 June 16', 'PyLondinium')
 
-    s('This is a story', 'about keeping options',
-      'open during software design', '', 'because the crucial turn',
-      'sometimes appears only at the end')
-
     s('')
     pm = PySide2.QtGui.QPixmap('tex-and-metafont-book.jpg')
     n = 2
@@ -117,9 +113,10 @@ def main(argv):
                r'$-\pi$')
     s('Math typesetting')
     s('The real reason for TeX:', '',
-      'When math journals stopped paying for',
-      'professional typesetters, math papers looked',
-      'so ugly that Knuth could no longer publish')
+      'When math journals stopped paying',
+      'for professionals to set type by hand,',
+      'math papers looked so ugly that',
+      'Knuth could no longer publish')
     s('So he took an entire year off to invent TeX')
 
     with open('formula.tex') as f:
@@ -132,17 +129,18 @@ def main(argv):
 
     s('Paragraphs')
     s('TeX represents the words of a paragraph',
-      'as fixed-width “boxes” with stretchy “glue”')
+      'as fixed-width “boxes” separated by stretchy “glue”')
     c('┌───┐  ┌──┐  ┌─────┐  ┌───┐  ┌──┐  ┌─────┐',
       '└───┘←→└──┘←→└─────┘←→└───┘←→└──┘←→└─────┘')
-    s('A paragraph of n words can be broken',
-      'into lines in 2ⁿ different ways', '',
+    s('A paragraph with n positions',
+      'at which the text could be split into lines',
+      'can be laid out in 2ⁿ different ways', '',
       'How could we ever find the optimium layout?')
     s('Dynamic programming!')
     s('TeX finds the optimal solution',
-      'for breaking a paragraph into lines',
-      'in O(n²) worse case, usually O(n)',
+      'for breaking each paragraph into lines',
       '',
+      'O(n²) worse case, usually O(n)',
       '(n = number of possible breaks)')
 
     with open('sample.tex') as f:
@@ -176,11 +174,15 @@ def main(argv):
     pm = PySide2.QtGui.QPixmap('two-trailers.png')
     d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
-    s('2010s', '', 'I realized that typesetting',
+    s('What if instead of typesetting systems',
+      'there were a typesetting library',
+      'that invited the programmer',
+      'inside its decisions?')
+    s('2012', '', 'I realized that typesetting',
       'and printing a book', 'was now within reach!')
 
-    # TODO the time is now
-    # TODO: "I realized the pieces were now in place" dvi reportlab
+    s('The pieces were now in place')
+
     s('Print-on-demand', '', 'PDF → custom hardcover')
     s('Real hardcover!', '', '• Casebound', '• Smyth sewn')
 
@@ -205,17 +207,16 @@ def main(argv):
 
     simple_slide('I chose a specific first goal')
     simple_slide('Different width columns?', 'Not supported in TeX')
-    simple_slide('text → lines',
+    s('As a paragraph is broken into lines',
+      'you don’t even know what page',
+      'the paragraph will land on')
+    simple_slide('paragraph → lines',
                  'is a separate step from',
-                 'lines → pages',
-                 '',
-                 'so, as text is broken into lines',
-                 'you don’t even know what page',
-                 'they will be printed on')
+                 'lines → pages')
     simple_slide('My idea: the paragraph should ask for more space',
                  'as it needs it, so it learns about any width',
                  'change when it crosses to a new column')
-    s('Steps', '', '1. Find a library for rendering PDF',
+    s('Plan', '', '1. Find a library for rendering PDF',
       '2. Write a new page layout engine')
 
     d.new_page()
@@ -252,8 +253,7 @@ def main(argv):
         ]),
     ])
 
-    s('So this talk is the story', 'of the design of the calling convention',
-      'between the layout engine and', 'an individual paragraph')
+    s('Input: list of typesetting actions')
 
     sample_actions = '''
     # Input (Markdown, RST, etc) produces:
@@ -332,12 +332,12 @@ def main(argv):
         column2 = next_column(column)
     ''')
     code_slide('''
-    # So now I had a rough plan for layout inputs:
+    # So now I had a rough plan for action inputs:
 
     def paragraph(column, y, next_column, ...):
         column2 = next_column(column)
 
-    # What would it return?
+    # What would an action return?
     ''')
 
     # What output will the paragraph return?
@@ -349,38 +349,37 @@ def main(argv):
     # TODO Make "Headings" faster?
     # TODO Always first tell, THEN show "if there isn't room the heading gets stranded"
     simple_slide('Problem:', 'Headings')
-    d.new_page()
+    s('A heading is supposed to sit atop',
+      'the content of which it is the head')
+    s('')
     run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    simple_slide('Q: What if the column lacked room',
-                 'for a line below the heading?')
+    s('Q: What if there’s no room',
+      'beneath the heading?')
+    s('A: Typographic disaster')
+    s('')
     d.new_page()
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
-    s('Then the bottom of the column',
-      'must be left blank, and the heading',
-      'moved to the top of the next column')
+    s('The heading needs to move', 'itself to the next column')
     code_slide('''
-    # Can the Heading avoid being orphaned by
-    # insisting that there be room for 2 lines?
+    # Can the Heading simply check whether
+    # there is room for a line beneath it?
 
     if y + 2 * (leading + height) > column.height:
         column = next_column(column)
         y = 0
     ''')
     simple_slide('No. No, it can’t.')
-    simple_slide('Why?', '', 'Because paragraphs have their own rules!',
-                 '“widows and orphans”')
+    simple_slide('Why?', '', 'Because a paragraphs might not choose',
+                 'to use the final line of a column!')
+    s('“widows and orphans”')
     simple_slide('A single-line paragraph might deign',
                  'to remain at the bottom of the page')
     # d.new_page()
     # run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    d.new_page()
+    s('')
     run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
     simple_slide('But a several-line paragraph will',
-                 'refuse to leave its opening line',
-                 'alone beneath the heading',
-                 '',
-                 'and will instead move it to',
-                 'the top of following page.')
+                 'refuse to leave its opening line alone')
     d.new_page()
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     simple_slide('How can the heading predict',
@@ -414,22 +413,11 @@ def main(argv):
         undo the heading
         start over on next page
     ''')
-    simple_slide('Consequence #1', '', 'Layout and drawing',
-                 'need to be separate steps', '')
-    # TODO Use phrase "intermediate data structure"
-    # will need to represent layout before rendering it
-    simple_slide('', 'Consequence #2', '', 'The output of the layout step',
+    simple_slide('Consequence #1', '', 'Layout needs to return',
+                 'an intermediate data structure',
+                 'that the caller can inspect')
+    simple_slide('', 'Consequence #2', '', 'The intermediate data',
                  'needs to be easy to discard')
-
-    # How will the heading work?
-    # :add heading to column
-    # :ask paragraph to lay itself out
-    # :if paragraph's first line's column != column:
-    # :    remove the paragraph
-    # :    remove ourselves
-    # :    column = next_column()
-    # :    re-add heading
-    # :    re-add paragraph
 
     s('Iterators?', 'Generators?', 'Lists of lists?', 'Trees?')
     progressive_slide(s, 'A:', 'Linked list')
