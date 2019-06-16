@@ -82,8 +82,8 @@ def main(argv):
       '2019 June 16', 'PyLondinium')
 
     s('This is a story', 'about keeping options',
-      'open during software design', '', 'because the most crucial elements',
-      'often appear only at the very end')
+      'open during software design', '', 'because the crucial turn',
+      'sometimes appears only at the end')
 
     s('')
     pm = PySide2.QtGui.QPixmap('tex-and-metafont-book.jpg')
@@ -107,19 +107,19 @@ def main(argv):
 
     s('The book’s lessons', 'in how to type .tex files',
       'were a small course in typography')
+    code_slide('Mr.~Baggins')
     s('- – — −')
     code_slide('Hobbit-lore',
                '1158--60',
                'Stick to your plan---your whole plan',
                r'$-\pi$')
     s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
-    code_slide('Mr.~Baggins')
     s('Math typesetting')
     s('The real reason for TeX:', '',
       'When math journals stopped paying for',
       'professional typesetters, math papers looked',
       'so ugly that Knuth could no longer publish')
-    s('He took an entire year off to invent TeX')
+    s('So he took an entire year off to invent TeX')
 
     with open('formula.tex') as f:
         code = f.read()
@@ -212,6 +212,7 @@ def main(argv):
     s('Hwæt!', '', '', '', '')
     s('Hwæt!', '', 'What part of TeX', 'was I interested in',
       're-implementing?')
+    # TODO: "I realized the pieces were now in place" dvi reportlab
     s('Good Parts', '', 'Vector fonts (TrueType)',  #TODO
       'Math formulae (MathJax)',
       'Paragraph breaking (Andrew Kuchling’s texlib)')
@@ -269,6 +270,7 @@ def main(argv):
 
     s('So this talk is the story', 'of the design of the calling convention',
       'between the layout engine and', 'an individual paragraph')
+    # TODO: move actions here
     code_slide('''
     Column = NamedTuple(…, 'width height')
     paragraph(column, y, ...)
@@ -341,6 +343,8 @@ def main(argv):
                  'simply go ahead and draw',
                  'on the output device?')
     simple_slide('No')
+    # TODO Make "Headings" faster?
+    # TODO Always first tell, THEN show "if there isn't room the heading gets stranded"
     simple_slide('Problem:', 'Headings')
     d.new_page()
     run_and_draw(lotr, fonts, None, narrow_line, d.painter)
@@ -409,6 +413,8 @@ def main(argv):
     ''')
     simple_slide('Consequence #1', '', 'Layout and drawing',
                  'need to be separate steps', '')
+    # TODO Use phrase "intermediate data structure"
+    # will need to represent layout before rendering it
     simple_slide('', 'Consequence #2', '', 'The output of the layout step',
                  'needs to be easy to discard')
 
@@ -546,6 +552,7 @@ def main(argv):
 
     s('Stepping back, I looked askance',
       'at the repetition in my code')
+    # TODO Call them "opinionated actions"
     c('''
     # Some routines actually use `actions` and `a`:
     def heading(actions, a, line, next_column, …):
@@ -725,6 +732,8 @@ def main(argv):
     def paragraph(…, next_line, …):
         …
     ''')
+    # TODO move this up and admit I had already factored it out
+    # but now wanted to be inside
     c('''
     def next_line(line, leading, height):
         column = line.column
