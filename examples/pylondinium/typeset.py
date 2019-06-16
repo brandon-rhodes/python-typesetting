@@ -109,11 +109,11 @@ def main(argv):
       'were a small course in typography')
     code_slide('Mr.~Baggins')
     s('- – — −')
+    s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
     code_slide('Hobbit-lore',
                '1158--60',
                'Stick to your plan---your whole plan',
                r'$-\pi$')
-    s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
     s('Math typesetting')
     s('The real reason for TeX:', '',
       'When math journals stopped paying for',
@@ -129,12 +129,35 @@ def main(argv):
     d.new_page()
     center_formula(d, 'formula.svg')
 
-    s('Eventually I got the opportunity to use TeX', '', '', '')
-    s('', 'I disliked LaTeX so I wrote my own macros', '', '')
-    s('', 'I learned TeX’s strengths', 'but also its limitations')
-    s('', '', 'Which made me dream', 'of writing a replacement')
-    s('(decades pass)')
+    # PUT BOXES GLUE HERE
+
+    s('The output of TeX was beautiful!',
+      'But it was difficult to control.')
+    s('Once you had set up', 'the typesetting parameters,',
+      'layout proceeded largely outside of your control',
+      '', 'parameters → ... → output')
+
+    d.new_page()
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
+    s('Backing up a tractor and trailers', 'is an open problem in AI')
+    s('“Fuzzy Knowledge-Based Control', 'for Backing Multi-Trailer Systems”',
+      '', 'Andri Riid, Jaakko Ketola, Ennu Rüstern')
+    s('Trailers are difficult to back up',
+      'because the input — the motion of the tractor —',
+      'has an increasingly distant relationship',
+      'to the motion of the nth trailer')
+
+    d.new_page()
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
+    s('2010s', '', 'I realized that writing',
+      'my own typesetter', 'was now within reach!')
+
     s('Print-on-demand', '', '', '', '')
+    # TODO the time is now
     s('', 'PDF → custom hardcover', '', '', '')
     s('', 'Real hardcover: casebound, Smyth sewn', '', '', '')
 
@@ -152,17 +175,6 @@ def main(argv):
     s('Text + parameters → TeX → PDF')
     s('“Framework”')
 
-    d.new_page()
-    pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
-
-    s('Backing up a tractor and trailers', 'is an open problem in AI')
-    s('“Fuzzy Knowledge-Based Control', 'for Backing Multi-Trailer Systems”',
-      '', 'Andri Riid, Jaakko Ketola, Ennu Rüstern')
-    s('Trailers are difficult to back up',
-      'because the input — the motion of the tractor —',
-      'has an increasingly distant relationship',
-      'to the motion of the nth trailer')
     s('Using frameworks is like backing trailers', '',
       'Data, parameters → framework → output')
     s('Example: TeX paragraph layout')
