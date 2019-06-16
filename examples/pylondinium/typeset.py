@@ -103,8 +103,7 @@ def main(argv):
 
     s('The book’s lessons', 'in how to type .tex files',
       'were a small course in typography')
-    code_slide('Mr.~Baggins')
-    code_slide('Mrs.~Cotton')
+    c('Mr.~Baggins', 'Mrs.~Cotton')
     s('- – — −')
     s('Hobbit-lore', '1158–60', 'Stick to your plan—your whole plan', '−𝜋')
     code_slide('Hobbit-lore',
@@ -155,7 +154,7 @@ def main(argv):
       'But it was difficult to control.',
       '',
       'Once you set up the parameters,',
-      'layout proceeded largely outside'
+      'layout proceeded largely outside',
       'of your control')
 
     d.new_page()
@@ -174,15 +173,15 @@ def main(argv):
     pm = PySide2.QtGui.QPixmap('two-trailers.png')
     d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
-    s('What if instead of typesetting systems',
-      'there were a typesetting library',
-      'that invited the programmer',
-      'inside its decisions?')
+    s('Trying to control TeX', 'sometimes felt similar')
+    s('Idea:')
+    s('What if instead of typesetting',
+      '“systems” that we merely configure',
+      '',
+      'there were a typesetting “library”',
+      'that left the programmer in control?')
     s('2012', '', 'I realized that typesetting',
-      'and printing a book', 'was now within reach!')
-
-    s('The pieces were now in place')
-
+      'and printing a book from Python', 'was coming within reach!')
     s('Print-on-demand', '', 'PDF → custom hardcover')
     s('Real hardcover!', '', '• Casebound', '• Smyth sewn')
 
@@ -199,16 +198,17 @@ def main(argv):
 
     s('', 'But what would I print?', '', '', '')
     s('', '', 'My grandfather’s essays', '', '')
-    s('', '', '', 'Wrote the typesetting myself', '')
-    s('', '', '', 'Wrote the typesetting myself', '— in Python!')
+    s('', '', '', 'And I would write the typesetting myself', '')
+    s('', '', '', 'And I would write the typesetting myself', '— in Python!')
 
-    s('Hwæt!', '', '', '', '')
+    s('Hwæt!', '', '')
+    s('Hwæt!', '', 'Re-implementing TeX')
     s('Hwæt!', '', 'What would I do differently?')
 
     simple_slide('I chose a specific first goal')
     simple_slide('Different width columns?', 'Not supported in TeX')
-    s('As a paragraph is broken into lines',
-      'you don’t even know what page',
+    s('As TeX breaks a paragraph into lines',
+      'it doesn’t even know what page',
       'the paragraph will land on')
     simple_slide('paragraph → lines',
                  'is a separate step from',
@@ -268,9 +268,9 @@ def main(argv):
     '''
     c(sample_actions)
 
-    s('What API should the engine',
-      'and the actions use to cooperate?')
-    s('Let’s start by asking:'
+    s('What API should the layout',
+      'engine use to call each action?')
+    s('Let’s start by asking:',
       'what information does',
       'an action need?')
 
@@ -357,7 +357,6 @@ def main(argv):
       'beneath the heading?')
     s('A: Typographic disaster')
     s('')
-    d.new_page()
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     s('The heading needs to move', 'itself to the next column')
     code_slide('''
@@ -368,7 +367,8 @@ def main(argv):
         column = next_column(column)
         y = 0
     ''')
-    simple_slide('No. No, it can’t.')
+    simple_slide('But checking for a free line',
+                 'won’t, alas, always work')
     simple_slide('Why?', '', 'Because a paragraphs might not choose',
                  'to use the final line of a column!')
     s('“widows and orphans”')
@@ -379,27 +379,28 @@ def main(argv):
     s('')
     run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
     simple_slide('But a several-line paragraph will',
-                 'refuse to leave its opening line alone')
+                 'refuse to leave its opening line alone —',
+                 'will refuse to leave it an “orphan”')
     d.new_page()
     run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
     simple_slide('How can the heading predict',
-                 'when it will be stranded alone?',
+                 'whether it will be stranded alone?',
                  '',
                  '',
                  '',
                  '')
     simple_slide('How can the heading predict',
-                 'when it will be stranded alone?',
+                 'whether it will be stranded alone?',
                  '',
                  '(a) Know everything about paragraphs',
                  '',
                  '')
     simple_slide('How can the heading predict',
-                 'when it will be stranded alone?',
+                 'whether it will be stranded alone?',
                  '',
                  '(a) Know everything about paragraphs',
                  '— or —',
-                 '(b) Ask next item to lay itself out speculatively')
+                 '(b) Ask next action to lay itself out speculatively')
     s('But this is going to require', '“undo” — the ability to back up')
     c('''
     # Heading
@@ -449,7 +450,7 @@ def main(argv):
       'with any number of speculative layouts,',
       'which Python automatically disposes of',
       'when we’re done')
-    s('We now need a new argument:',
+    s('Actions now need a new argument:',
       'the most recently laid out line')
     c('''
                ↓
@@ -486,6 +487,7 @@ def main(argv):
       'is already laid out?')
     c(sample_actions)
     s('Special callable?', 'Exception?', 'Coroutine?')
+    c(sample_actions)
     c('''
     def heading(actions, a, line, next_column, …):
         …
@@ -494,13 +496,8 @@ def main(argv):
 
     # The spammish repetition.
 
-    s('Stepping back, I looked askance',
-      'at the repetition in my code')
-    s('For “opinionated” actions',
-      'that care about what follows',
-      'it’s necessary to pass',
-      '`action` and `a`')
-    s('But simple actions ignore them!')
+    s('Stepping back, I looked askance at',
+      'the amount of repetition in my code')
     symmetrical = '''
     # opinionated
     def heading(actions, a, line, next_column, …):
@@ -514,6 +511,12 @@ def main(argv):
     def center_text(actions, a, line, next_column, …):
         … return a + 1, line2
     '''
+    c(symmetrical)
+    s('For “opinionated” actions',
+      'that care about what follows',
+      'it’s necessary to pass',
+      '`action` and `a`')
+    s('But simple actions ignore them!')
     c(symmetrical)
     s('How can I eliminate `actions` and `a`',
       'from simple actions that don’t need them?')
@@ -559,7 +562,7 @@ def main(argv):
     ''')
     s('DRY')
     s('And what did I decide?')
-    s('To repeat myself')
+    s('I decided', 'to repeat myself')
     c(symmetrical)
     s('Why?', 'Symmetry')
     c(symmetrical)
@@ -573,11 +576,12 @@ def main(argv):
       'the number of conventions to re-learn,',
       'and only half the number of examples',
       'of each to learn from!')
-    s('I chose verbose symmetry', 'over obscure complexity')
+    s('I chose verbose symmetry', 'over asymmetric brevity')
     s('As a reader,',
       'I need routines',
       'that behave the same',
       'to look the same')
+    c(symmetrical)
 
     s('We’re ready for a final design step!')
     s('widows', 'and', 'orphans')
@@ -591,16 +595,16 @@ def main(argv):
             try again
     ''')
     s('Inside of its widow-orphan logic,',
-      'paragraph() will have an inner routine',
-      'that does the actual paragraph layout')
-    # TODO: clean up justification
-    s('What if you just want the simple part?')
-    s('In the old days,',  'I would have parametrized')
+      'paragraph() had a hidden an inner routine',
+      'that did the actual paragraph layout')
+    s('What if you just wanted', 'to call the simple part?')
     c('''
     def paragraph(…, no_widows=True, no_orphans=True):
         …
     ''')
-    s('But —', '', 'This looks a lot', 'like our heading logic')
+    s('But Boolean switches are often',
+      'a hint that we have coupled what could',
+      'actually be two different routines')
     c('''
     actions = [
         (heading, '1. Concerning Hobbits'),
@@ -615,12 +619,6 @@ def main(argv):
     ''')
     s('Avoiding an orphan?', '', 'Easy!')
     c('''
-    # Before calling the paragraph, simply:
-
-    column = next_column(column)
-    y = 0
-    ''')
-    c('''
        A            B
     ┌─────┐      ┌─────┐
     │  .  │      │  .  │
@@ -633,8 +631,14 @@ def main(argv):
     │     │      │---  │
     └─────┘      └─────┘
     ''')
+    c('''
+    # Before calling the paragraph, simply:
+
+    column = next_column(column)
+    y = 0
+    ''')
     s('Avoiding a widow?', '')
-    s('Avoiding a widow?', 'Impossible?')
+    s('Impossible')
     c('''
        A            B
     ┌─────┐      ┌─────┐
@@ -667,21 +671,20 @@ def main(argv):
       'for parameters to tweak because',
       'we’re standing outside of the code',
       'that makes the decision')
+
+    d.new_page()
+    pm = PySide2.QtGui.QPixmap('two-trailers.png')
+    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+
     s('Outside', '', 'Is that really where we want to be',
       'during a crucial decision?')
     s('No')
+    s('When code is making a crucial decision —')
     s('You want to be', 'in the room where it happens')
     s('Right now, the paragraph only consults us',
       'when it needs a whole new column',
       '',
       'next_column()')
-    c('''
-    # What if we made it talk to us
-    # every time it needs a line?
-
-    def paragraph(…, next_line, …):
-        …
-    ''')
     c('''
     def next_line(line, leading, height):
         column = line.column
@@ -691,7 +694,17 @@ def main(argv):
              y = height
         return Line(line, column, y, [])
     ''')
-    s('Then, all the widow-orphan', 'logic has to do is —')
+    c('''
+    # What if the paragraph calls back not only
+    # when it *thinks* it needs a new column
+    # but every time it needs a line?
+
+    def paragraph(…, next_line, …):
+        …
+    ''')
+    s('Then, the widow-orphan logic',
+      'can subvert the paragraph’s normal decision',
+      'simply by passing a custom next_line()!')
     c('''
     def avoid_widows_and_orphans(…, next_line, …):
 
@@ -699,12 +712,16 @@ def main(argv):
             # A wrapper around next_line() that jumps
             # to the next column early!
 
-        # Call the paragraph with fancy_next_line()
+        paragraph(..., fancy_next_line, ...)
     ''')
+    c(symmetrical.replace('next_column', 'next_line')
+      .replace('# opinionated', '')
+      .replace('# simple', ''))
     s('Success!')
     s('Did you catch why we won?')
-    s('The simple wrapper would not have worked',
-      'if we had not avoided premature Object Orientation!')
+    s('The simple fancy_next_line() wrapper',
+      'would not have worked if we had not avoided',
+      'premature Object Orientation!')
     c('''
     # What if instead of just passing next_line()
     # we were passing a whole Layout object?
@@ -726,12 +743,12 @@ def main(argv):
     s('Lessons', '',
       'Start verbose, simplify later',
       'Value symmetry over special cases',
-      'Let verbs be first-class citizens',
-      'Avoid premature Object Orientation')
+      'Avoid premature Object Orientation',
+      'Let verbs be first-class citizens')
 
     s('I plan on releasing my “typesetting”',
       'Python library later this summer — but you',
-      'can watch my progress on GitHub:',
+      'can already watch my progress on GitHub:',
       '',
       'github.com/brandon-rhodes/python-bookbinding')
 
