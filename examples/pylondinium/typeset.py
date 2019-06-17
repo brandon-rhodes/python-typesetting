@@ -15,7 +15,7 @@ from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
     run, space_before_and_after,
 )
-from typesetting.document import Document
+from typesetting.document import Renderer
 from typesetting.knuth import knuth_paragraph
 from typesetting.pyside2_backend import get_fonts
 from typesetting.skeleton import single_column_layout, unroll
@@ -26,8 +26,8 @@ def main(argv):
 
     os.chdir(os.path.dirname(__file__))
 
-    factor = 72 / 4  # TODO: have Document pull from layout instead?
-    d = Document(16 * factor, 9 * factor)
+    factor = 72 / 4  # TODO: have Renderer pull from layout instead?
+    d = Renderer(16 * factor, 9 * factor)
 
     fonts = get_fonts(d.painter, [
         ('bold', 'Gentium Basic', 'Bold', 12),
@@ -85,6 +85,9 @@ def main(argv):
     pm = PySide2.QtGui.QPixmap('tex-and-metafont-book.jpg')
     n = 2
     d.painter.drawPixmap(1200, 100, 1200 * n, 1196 * n, pm)
+
+    d.painter.end()
+    return
 
     s('τέχνη', 'craft / art')
 
