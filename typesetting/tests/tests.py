@@ -1,9 +1,13 @@
 
-from ..skeleton import Column, Font, Line, Page, unroll, next_line
-from ..composing import (
+from typesetting.composing import (
     avoid_widows_and_orphans, run, section_break, section_title,
     space_before_and_after,
 )
+from typesetting.skeleton import (
+    Column, Font, Line, Page, single_column_layout, unroll,
+)
+
+next_line = single_column_layout(10, 34, 0, 0, 0, 0)
 
 def make_paragraph(actions, a, fonts, line, next_line,
                    leading, height, n, graphic=None):
