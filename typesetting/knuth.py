@@ -113,10 +113,10 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
                 x += box.compute_width(r)
             elif box.is_box():
                 if box.width:
-                    xlist.append((x + indent, box.character))
+                    xlist.append((x + indent, box.content))
                     x += box.width
                 else:
-                    font_name = box.character
+                    font_name = box.content
                     xlist.append((None, font_name))
 
         bbox = olist[breakpoint]

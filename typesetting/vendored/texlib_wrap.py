@@ -36,8 +36,6 @@ Reference:
     chapter 3 of _Digital Typography_, CSLI Lecture Notes #78.
 """
 
-import sys, string
-
 __version__ = "1.01"
 
 INFINITY = 1000
@@ -46,12 +44,10 @@ INFINITY = 1000
 # can go into an ObjectList.
 
 class Box:
-    """Class representing a glyph or character.  Boxes have a fixed
-    width that doesn't change.
-    """
+    """A fixed-width slug of text or other content."""
 
-    def __init__(self, width, character=None):
-        self.character = character
+    def __init__(self, width, content=None):
+        self.content = content
         self.width = width
         self.stretch = self.shrink = 0
         self.penalty = 0
@@ -330,7 +326,7 @@ class ObjectList(list):
 
         for i in range(m):
             B = self[i]
-            #print(B, getattr(B, 'character', None))
+            #print(B, getattr(B, 'content', None))
             # Determine if this box is a feasible breakpoint and
             # perform the main loop if it is.
             if not self.is_feasible_breakpoint(i):
