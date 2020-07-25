@@ -74,7 +74,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
         #r = 1.0
 
-        xlist = [(None, font_name)]
+        xlist = []
         x = 0
         for i in range(start, breakpoint):
             box = olist[i]
@@ -82,15 +82,14 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
                 x += box.compute_width(r)
             elif box.is_box():
                 if box.width:
-                    xlist.append((x + indent, box.content))
+                    xlist.append((x + indent, font_name, box.content))
                     x += box.width
                 else:
                     font_name = box.content
-                    xlist.append((None, font_name))
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width:
-            xlist.append((x + indent, '-'))
+            xlist.append((x + indent, font_name, '-'))
 
         line.graphics.append((knuth_draw, xlist))
         line = next_line(line, leading, height)
@@ -131,11 +130,12 @@ def break_text_into_boxes(text, width_of, space_glue):
 
 def knuth_draw(fonts, line, painter, xlist):
     pt = 1200 / 72.0
-    for x, text in xlist:
-        if x is None:
-            font = fonts[text]
+    current_font_name = None
+    for x, font_name, text in xlist:
+        if font_name != current_font_name:
+            font = fonts[font_name]
             painter.setFont(font.qt_font)
-        else:
-            x = (line.column.x + x) * pt
-            y = (line.column.y + line.y - font.descent) * pt
-            painter.drawText(x, y, text)
+            current_font_name = font_name
+        x = (line.column.x + x) * pt
+        y = (line.column.y + line.y - font.descent) * pt
+        painter.drawText(x, y, text)
