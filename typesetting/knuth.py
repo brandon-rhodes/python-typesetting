@@ -6,9 +6,7 @@ import re
 from .vendored.texlib_wrap import ObjectList, Box, Glue, Penalty
 from .vendored.hyphenate import hyphenate_word
 
-NONWORD = re.compile(r'(\W+)')
-BREAKING_SPACE = re.compile(r'[ \n]+')
-ZERO_WIDTH_BREAK = Glue(0, 0, 0)
+_zero_width_break = Glue(0, 0, 0)
 
 def knuth_paragraph(actions, a, fonts, line, next_line,
                     indent, first_indent, fonts_and_texts):
@@ -127,7 +125,7 @@ def break_text_into_boxes(text, width_of, space_glue):
         elif punctuation:
             yield Box(width_of(punctuation), punctuation)
         if punctuation == '-':
-            yield ZERO_WIDTH_BREAK
+            yield _zero_width_break
         if space:
             yield space_glue
 
