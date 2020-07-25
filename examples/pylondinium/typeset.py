@@ -86,8 +86,8 @@ def main(argv):
     n = 2
     d.painter.drawPixmap(1200, 100, 1200 * n, 1196 * n, pm)
 
-    d.painter.end()
-    return
+    # d.painter.end()
+    # return
 
     s('τέχνη', 'craft / art')
 

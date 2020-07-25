@@ -3,8 +3,8 @@
 from __future__ import print_function
 
 import re
-from .texlib.wrap import ObjectList, Box, Glue, Penalty
-from .hyphenate import hyphenate_word
+from .vendored.texlib_wrap import ObjectList, Box, Glue, Penalty
+from .vendored.hyphenate import hyphenate_word
 
 NONWORD = re.compile(r'(\W+)')
 BREAKING_SPACE = re.compile(r'[ \n]+')
