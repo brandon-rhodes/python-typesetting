@@ -17,6 +17,8 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     font = fonts[font_name]
     width_of = font.width_of
 
+    # Design simplification: if any line will require extra leading,
+    # then all lines are spaced farther apart.
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
@@ -39,43 +41,12 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
     # TODO: should do non-breaking spaces with glue as well
     space_glue = Glue(space_width, space_width * .5, space_width * .3333)
 
-    findall = re.compile(r'([\u00a0]?)(\w*)([^\u00a0\w\s]*)([ \n]*)').findall
-
-    def text_boxes(text):
-        #print(repr(text))
-        for control_code, word, punctuation, space in findall(text):
-            #print((control_code, word, punctuation, space))
-            if control_code:
-                if control_code == '\u00a0':
-                    yield Penalty(0, 1000)
-                    yield space_glue
-                else:
-                    print('Unsupported control code: %r' % control_code)
-            if word:
-                strings = hyphenate_word(word)
-                if punctuation:
-                    strings[-1] += punctuation
-            elif punctuation:
-                strings = [punctuation]
-            else:
-                strings = None
-            if strings:
-                for i, string in enumerate(strings):
-                    if i:
-                        yield Penalty(width_of('-'), 100)
-                    yield Box(width_of(string), string)
-            if punctuation == '-':
-                yield ZERO_WIDTH_BREAK
-            if space:
-                yield space_glue
-
     indented_lengths = [length - indent for length in line_lengths]
 
     for font_name, text in fonts_and_texts:
         font = fonts[font_name]
-        width_of = font.width_of
         olist.append(Box(0, font_name))  # special sentinel
-        olist.extend(text_boxes(text))
+        olist.extend(break_text_into_boxes(text, font.width_of, space_glue))
 
     if olist[-1] is space_glue:
         olist.pop()             # ignore trailing whitespace
@@ -128,6 +99,37 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
         start = breakpoint + 1
 
     return a + 1, line.previous
+
+# Regular expression that scans text for control codes, words, punction,
+# and runs of contiguous space.  If it works correctly, any possible
+# string will consist entirely of contiguous matches of this regular
+# expression.
+_text_findall = re.compile(r'([\u00a0]?)(\w*)([^\u00a0\w\s]*)([ \n]*)').findall
+
+def break_text_into_boxes(text, width_of, space_glue):
+    #print(repr(text))
+    for control_code, word, punctuation, space in _text_findall(text):
+        #print((control_code, word, punctuation, space))
+        if control_code:
+            if control_code == '\u00a0':
+                yield Penalty(0, 1000)
+                yield space_glue
+            else:
+                print('Unsupported control code: %r' % control_code)
+        if word:
+            strings = hyphenate_word(word)
+            if punctuation:
+                strings[-1] += punctuation
+            for i, string in enumerate(strings):
+                if i:
+                    yield Penalty(width_of('-'), 100)
+                yield Box(width_of(string), string)
+        elif punctuation:
+            yield Box(width_of(punctuation), punctuation)
+        if punctuation == '-':
+            yield ZERO_WIDTH_BREAK
+        if space:
+            yield space_glue
 
 def knuth_draw(fonts, line, painter, xlist):
     pt = 1200 / 72.0
