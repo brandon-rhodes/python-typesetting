@@ -331,7 +331,7 @@ def test_title_without_enough_room():
     c2 = Column(p, 2, 0, 0, 10, 34)
     assert l1 == Line(None, c1, 10, [])
     assert l2 == Line(l1, c1, 22, [])
-    assert l3 == Line(l2, c2, 10, [])  # whoops - fix
+    assert l3 == Line(l2, c2, 10, [])
     assert l4 == Line(l3, c2, 22, [])
 
 def test_space_before_and_after_with_zeros():
