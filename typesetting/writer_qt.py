@@ -2,16 +2,14 @@ import atexit
 import os
 from PySide2.QtCore import QSizeF, QMarginsF
 from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase
-from PySide2.QtWidgets import QApplication
 
 MM = 25.4 / 72
 PT = 1200 / 72
 
 class QtWriter(object):
 
-    def __init__(self, width_pt, height_pt):
-        QApplication(['my-q-application'])
-        self.writer = QPdfWriter('book.pdf')
+    def __init__(self, path, width_pt, height_pt):
+        self.writer = QPdfWriter(path)
         self.writer.setPageSizeMM(QSizeF(width_pt * MM, height_pt * MM))
         self.writer.setPageMargins(QMarginsF(0, 0, 0, 0))
         self.painter = QPainter(self.writer)

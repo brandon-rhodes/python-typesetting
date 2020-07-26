@@ -1,4 +1,4 @@
 *.pyc
 .cache/
-book.pdf
+*.pdf
 typesetting.egg-info/

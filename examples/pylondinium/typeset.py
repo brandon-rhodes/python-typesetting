@@ -24,7 +24,7 @@ def main(argv):
     os.chdir(os.path.dirname(__file__))
 
     factor = 72 / 4  # TODO: have Writer pull from layout instead?
-    w = writer = QtWriter(16 * factor, 9 * factor)
+    w = writer = QtWriter('slides.pdf', 16 * factor, 9 * factor)
     w.load_font('../../fonts/OldStandard-Regular.ttf')
     w.load_font('../../fonts/GenBasB.ttf')
     w.load_font('../../fonts/GenBasR.ttf')

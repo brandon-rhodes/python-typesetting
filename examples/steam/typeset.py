@@ -4,8 +4,10 @@ import argparse
 import os
 import sys
 
+from PySide2.QtWidgets import QApplication
+
 from typesetting.composing import (
-    avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
+    avoid_widows_and_orphans, centered_paragraph,
     run, section_break, vspace,
 )
 from typesetting.knuth import knuth_paragraph
@@ -39,14 +41,15 @@ def main(argv):
         (vspace, INCH),
         (centered_paragraph, [('bold', 'Steam')]),
         my_break,
-        (centered_paragraph, [('roman', 'J. Elmer Rhodes Jr.')]),
+        (centered_paragraph, [('roman', 'J. Elmer Rhodes, Jr.')]),
         (centered_paragraph, [('roman', '(1920–1995)')]),
         (vspace, INCH * 3/4),
     ]
 
     actions.extend(parse_essay(essay_text, my_break))
 
-    writer = QtWriter(page_width, page_height)
+    QApplication(['my-q-application'])
+    writer = QtWriter('book.pdf', page_width, page_height)
     writer.load_font('../../fonts/OldStandard-Regular.ttf')
     writer.load_font('../../fonts/GenBasB.ttf')
     writer.load_font('../../fonts/GenBasI.ttf')
