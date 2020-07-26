@@ -48,7 +48,7 @@ def main(argv):
 
     actions.extend(parse_essay(essay_text, my_break))
 
-    QApplication(['my-q-application'])
+    QApplication([])
     writer = QtWriter('book.pdf', page_width, page_height)
     writer.load_font('../../fonts/OldStandard-Regular.ttf')
     writer.load_font('../../fonts/GenBasB.ttf')

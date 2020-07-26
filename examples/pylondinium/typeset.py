@@ -6,8 +6,8 @@ import sys
 from copy import deepcopy
 from textwrap import dedent
 
-import PySide2
 import PySide2.QtSvg
+from PySide2.QtWidgets import QApplication
 
 from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
@@ -23,7 +23,9 @@ def main(argv):
 
     os.chdir(os.path.dirname(__file__))
 
-    factor = 72 / 4  # TODO: have Writer pull from layout instead?
+    factor = 72 / 4
+
+    QApplication([])
     w = writer = QtWriter('slides.pdf', 16 * factor, 9 * factor)
     w.load_font('../../fonts/OldStandard-Regular.ttf')
     w.load_font('../../fonts/GenBasB.ttf')
@@ -41,7 +43,6 @@ def main(argv):
     simple_slide = make_simple_slide_function(fonts, w)
     code_slide = make_code_slide_function(fonts, w)
 
-    #next_line = slide_layout()
     narrow_line = slide_layout(0.5)
 
     lotr = [
@@ -345,8 +346,7 @@ def main(argv):
                  'simply go ahead and draw',
                  'on the output device?')
     simple_slide('No')
-    # TODO Make "Headings" faster?
-    # TODO Always first tell, THEN show "if there isn't room the heading gets stranded"
+
     simple_slide('Problem:', 'Headings')
     s('A heading is supposed to sit atop',
       'the content of which it is the head')
@@ -373,8 +373,7 @@ def main(argv):
     s('“widows and orphans”')
     simple_slide('A single-line paragraph might deign',
                  'to remain at the bottom of the page')
-    # w.new_page()
-    # run_and_draw(lotr, fonts, None, narrow_line, writer)
+
     s('')
     run_and_draw(lotr3, fonts, None, narrow_line, writer)
     simple_slide('But a multi-line paragraph will',
@@ -656,7 +655,7 @@ def main(argv):
     │     │      │     │
     └─────┘      └─────┘
     ''')
-    #s('Composition » Coupling+Configuration')
+
     s('How would we ever convince a paragraph',
       'to move to the next column early?')
     c('''
@@ -718,9 +717,7 @@ def main(argv):
 
         paragraph(..., fancy_next_line, ...)
     ''')
-    # c(symmetrical.replace('next_column', 'next_line')
-    #   .replace('# opinionated', '')
-    #   .replace('# simple', ''))
+
     s('Success!')
     s('Did you catch why', 'this was a success?')
     s('The fancy_next_line() wrapper is so simple',
@@ -753,7 +750,7 @@ def main(argv):
       'Python library later this summer — but you',
       'can already watch my progress on GitHub:',
       '',
-      'github.com/brandon-rhodes/python-bookbinding')
+      'github.com/brandon-rhodes/python-typesetting')
 
     n = 5
 
@@ -828,12 +825,6 @@ def progressive_slide(f, *texts):
     for i in range(len(texts)):
         if texts[i]:
             f(*texts[:i+1] + [''] * (len(texts) - i))
-    # i = len(texts) - 1
-    # while i > -1:
-    #     if texts[i]:
-    #         f(*texts)
-    #         texts[i] = ''
-    #     i -= 1
 
 def run_and_draw(actions, fonts, line, next_line, writer):
     line2 = run(actions, fonts, line, next_line)
@@ -857,19 +848,22 @@ def run_and_draw_centered(actions, fonts, line, next_line, writer):
     lines = unroll(line, line2)
     page = None
     assert lines[0] is None
-    #assert lines[1].column.page is lines[-1].column.page
+
     y = lines[-1].y
     offset = (lines[1].column.height - y) / 2
     for line in lines[1:]:
         if page is not None and page is not line.column.page:
             break
         page = line.column.page
-        #print(line.graphics)
         line = line._replace(y = line.y + offset)
         for graphic in line.graphics:
             function, *args = graphic
             if function == 'draw_text':
                 function = draw_text
+            elif function == 'texts':
+                function = draw_texts
+            else:
+                raise ValueError(function)
             function(fonts, line, writer, *args)
     return line
 
