@@ -1,5 +1,10 @@
 # A Python Typesetting package
 
+(**Note:** I plan to add user documentation
+to the library within the next couple of weeks;
+simply “watch” this repository here on GitHub
+if you want to follow along until it appears!)
+
 This prototype library typesets paragraphs
 using the same approach as TeX and LaTeX,
 knows how to avoid widow and orphan lines
