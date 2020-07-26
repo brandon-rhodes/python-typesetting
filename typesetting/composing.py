@@ -12,14 +12,14 @@ def call_action(actions, a, fonts, line, next_line):
     return action(actions, a, fonts, line, next_line, *args)
 
 def add_leading(line, next_line, leading=9999999):
-    """Add `leading` to the leading of the first line after `line`."""
+    """Add `leading` points to the leading of the first line after `line`."""
     def next_line2(line2, leading2, height):
         if line2 is line:
             leading2 += leading
         return next_line(line2, leading2, height)
     return next_line2
 
-def vspace(actions, a, fonts, line, next_line, leading):
+def vskip(actions, a, fonts, line, next_line, leading):
     alt_next_line = add_leading(line, next_line, leading)
     return call_action(actions, a + 1, fonts, line, alt_next_line)
 

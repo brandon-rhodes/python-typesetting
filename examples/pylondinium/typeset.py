@@ -11,7 +11,7 @@ from PySide2.QtWidgets import QApplication
 
 from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
-    run, vspace,
+    run, vskip,
 )
 from typesetting.knuth import knuth_paragraph
 from typesetting.skeleton import single_column_layout, unroll
@@ -54,11 +54,11 @@ def main(argv):
         set out fair and square with no contradictions.
 
         """.strip())]),
-        (vspace, 8),
+        (vskip, 8),
         (knuth_paragraph, 0, 0, [('bold', """
         2. Concerning Pipe-weed
         """.strip())]),
-        (vspace, 2),
+        (vskip, 2),
         (knuth_paragraph, 0, 0, [('roman', """
 
         There is another astonishing thing about Hobbits of old that

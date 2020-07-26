@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QApplication
 
 from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph,
-    run, section_break, vspace,
+    run, section_break, vskip,
 )
 from typesetting.knuth import knuth_paragraph
 from typesetting.skeleton import single_column_layout, unroll
@@ -38,12 +38,12 @@ def main(argv):
 
     actions = [
         (centered_paragraph, [('roman', ' ')]),
-        (vspace, INCH),
+        (vskip, INCH),
         (centered_paragraph, [('bold', 'Steam')]),
         my_break,
         (centered_paragraph, [('roman', 'J. Elmer Rhodes, Jr.')]),
         (centered_paragraph, [('roman', '(1920–1995)')]),
-        (vspace, INCH * 3/4),
+        (vskip, INCH * 3/4),
     ]
 
     actions.extend(parse_essay(essay_text, my_break))
