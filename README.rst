@@ -1,66 +1,43 @@
-===================
-Python Book-Binding
-===================
+====================
+ Python Typesetting
+====================
 
-Quick Use
-=========
+This prototype library typesets paragraphs
+using the same approach as TeX and LaTeX,
+knows how to avoid widow and orphan lines
+when splitting paragraphs across pages,
+and produces PDF output:
 
-This example shows how to create a document with two paragraphs,
-where the first paragraph is not indented and the second is.
-The margins are 72 points all around.
+![alt text](media/steam-pages-2-and-3.png)
 
-.. code:: python
+Here is an example PDF that is typeset using the library:
 
-    >>> import typesetting as bb
-    >>> story = [
-    ...     bb.Paragraph(
-    ...         text=(
-    ...             "Lorem ipsum dolor sit amet, consectetur adipiscing "
-    ...             "elit. Donec a diam lectus. Sed sit amet ipsum mauris. "
-    ...             "Maecenas congue ligula ac quam viverra nec consectetur "
-    ...             "ante hendrerit. Donec et mollis dolor. Praesent et diam "
-    ...             "eget libero egestas mattis sit amet vitae augue. Nam "
-    ...             "tincidunt congue enim, ut porta lorem lacinia "
-    ...             "consectetur. Donec ut libero sed arcu vehicula "
-    ...             "ultricies a non tortor. Lorem ipsum dolor sit amet, "
-    ...             "consectetur adipiscing elit. Aenean ut gravida lorem. "
-    ...             "Ut turpis felis, pulvinar a semper sed, adipiscing id "
-    ...             "dolor. Pellentesque auctor nisi id magna consequat "
-    ...             "sagittis. Curabitur dapibus enim sit amet elit pharetra "
-    ...             "tincidunt feugiat nisl imperdiet. Ut convallis libero "
-    ...             "in urna ultrices accumsan. Donec sed odio eros. Donec "
-    ...             "viverra mi quis quam pulvinar at malesuada arcu "
-    ...             "rhoncus. Cum sociis natoque penatibus et magnis dis "
-    ...             "parturient montes, nascetur ridiculus mus. In rutrum "
-    ...             "accumsan ultricies. Mauris vitae nisi at sem facilisis "
-    ...             "semper ac in est."
-    ...         ),
-    ...         style=None,
-    ...     ),
-    ...     bb.Paragraph(
-    ...         text=(
-    ...             "Vivamus fermentum semper porta. Nunc diam velit, "
-    ...             "adipiscing ut tristique vitae, sagittis vel odio. "
-    ...             "Maecenas convallis ullamcorper ultricies. Curabitur "
-    ...             "ornare, ligula semper consectetur sagittis, nisi diam "
-    ...             "iaculis velit, id fringilla sem nunc vel mi. Nam "
-    ...             "dictum, odio nec pretium volutpat, arcu ante placerat "
-    ...             "erat, non tristique elit urna et turpis. Quisque mi "
-    ...             "metus, ornare sit amet fermentum et, tincidunt et orci. "
-    ...             "Fusce eget orci a orci congue vestibulum. Ut dolor "
-    ...             "diam, elementum et vestibulum eu, porttitor vel elit. "
-    ...             "Curabitur venenatis pulvinar tellus gravida ornare. "
-    ...             "Sed et erat faucibus nunc euismod ultricies ut id "
-    ...             "justo. Nullam cursus suscipit nisi, et ultrices justo "
-    ...             "sodales nec. Fusce venenatis facilisis lectus ac "
-    ...             "semper. Aliquam at massa ipsum. Quisque bibendum purus "
-    ...             "convallis nulla ultrices ultricies. Nullam aliquam, mi "
-    ...             "eu aliquam tincidunt, purus velit laoreet tortor, "
-    ...             "viverra pretium nisi quam vitae mi. Fusce vel volutpat "
-    ...             "elit. Nam sagittis nisi dui."
-    ...           ),
-    ...           style="indented-paragraph",
-    ...     )]
-    >>> doc = bb.Document()
-    >>> doc.format(story, 72., 72., 72., 72.)
-    >>> doc.render(doc.pages)
+[examples/steam/book.pdf](examples/steam/book.pdf)
+
+The script that produced the above PDF
+is here in the repository at `examples/steam/typeset.py`.
+
+The vast difference this library’s approach and that of TeX or LaTeX
+is that **this library leaves you entirely in control** —
+paragraph justification and line breaking are a **subroutine**
+that you call from normal Python code
+that is otherwise free to draw on the page however it wishes!
+You can draw titles, page numbers, and add media
+using whatever underlying library calls you want,
+and the `typesetting` library stays out of your way.
+No longer will you be stuck
+trying to center a title or draw
+using abstruse configuration
+piled atop underpowered boxes and glue primitives.
+
+The process of designing this library
+is described in the 2019 “Typesetting with Python” keynote talk
+that I delivered at PyLondinium19:
+
+(https://www.youtube.com/watch?v=e7RVO0Sqr4s)[https://www.youtube.com/watch?v=e7RVO0Sqr4s]
+
+I am happy that the talk (in the form of the above recording)
+was also featured at the remote TUG2020 conference
+in July 2020,
+which I celebrated by returning to the repository
+and getting progress underway again!
