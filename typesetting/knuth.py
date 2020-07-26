@@ -88,7 +88,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
         if bbox.is_penalty() and bbox.width:
             xlist.append((x + indent, font_name, '-'))
 
-        line.graphics.append(('knuth_boxes', xlist))
+        line.graphics.append(('texts', xlist))
         line = next_line(line, leading, height)
         start = breakpoint + 1
 

@@ -54,20 +54,11 @@ def main(argv):
             current_page = line.column.page
         for graphic in line.graphics:
             function, *args = graphic
-            if function == 'draw_text':
-                function = draw_text
-            elif function == 'knuth_boxes':
-                function = knuth_draw
+            if function == 'texts':
+                function = draw_texts
             function(fonts, line, writer, *args)
 
-def draw_text(fonts, line, writer, x, font_name, text):
-    font = fonts[font_name]
-    writer.set_font(font)
-    writer.draw_text(line.column.x + x,
-                     line.column.y + line.y - font.descent,
-                     text)
-
-def knuth_draw(fonts, line, writer, xlist):
+def draw_texts(fonts, line, writer, xlist):
     current_font_name = None
     for x, font_name, text in xlist:
         if font_name != current_font_name:
