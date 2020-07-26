@@ -1,6 +1,4 @@
-====================
- Python Typesetting
-====================
+# A Python Typesetting package
 
 This prototype library typesets paragraphs
 using the same approach as TeX and LaTeX,
