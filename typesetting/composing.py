@@ -20,10 +20,12 @@ def add_leading(line, next_line, leading=9999999):
     return next_line2
 
 def vskip(actions, a, fonts, line, next_line, leading):
+    """Action: adds `vskip` points of leading to the next line generated."""
     alt_next_line = add_leading(line, next_line, leading)
     return call_action(actions, a + 1, fonts, line, alt_next_line)
 
 def new_page(actions, a, fonts, line, next_line):
+    """Action: moves the next generated line onto a new page."""
     if line is None:
         return a + 1, line
     def next_line2(line2, leading, height):
@@ -45,8 +47,14 @@ def blank_line(actions, a, fonts, line, next_line, graphic):
         line2 = next_line(line, 9999999, 0)  # TODO: bad solution
     return a + 1, line2
 
-def section_break(actions, a, fonts, line, next_line,
-                  font_name, graphic):
+def section_break(actions, a, fonts, line, next_line, font_name, graphic):
+    """Action: insert a section break.
+
+    In the middle of a page, a section break is simply a blank line.
+    But if the section break falls between pages, then it inserts a
+    graphic to make clear that a new section is starting.
+
+    """
     font = fonts[font_name]
     leading = font.leading
     height = font.height
@@ -98,17 +106,22 @@ def section_break(actions, a, fonts, line, next_line,
     return call_action(actions, a1, fonts, line3, a)
 
 def section_title(actions, a, fonts, line, next_line):
-    """Move the next action on to the same page as the action that follows."""
+    """Move the next action on to the same page as the action that follows.
+
+    TODO: Should this be called "nobreak" or somesuch?
+
+    """
     a1 = a + 1
     if a1 == len(actions):
         return a1, line
 
     a2, title_line = call_action(actions, a1, fonts, line, next_line)
     if title_line is line:
-        die('The action:', actions[a],
-            'expects to be followed by an action that generates at least one'
-            ' line, but the actions that followed:', actions[a1:a2],
-            'did not generate a line.')
+        _die(
+            'The action', actions[a], 'expects to be followed by an action',
+            ' that generates at least one line but the actions that followed',
+            actions[a1:a2], 'did not generate a line.',
+        )
 
     a3, following_line = call_action(actions, a2, fonts, title_line, next_line)
     lines1 = unroll(line, title_line)
@@ -128,6 +141,14 @@ def section_title(actions, a, fonts, line, next_line):
     return a2, title_line
 
 def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
+    """Position the following action’s output to avoid widows and orphans.
+
+    Run the next action, attempting to avoid leaving its first line
+    stranded at the bottom of the page (an orphan) or its final line at
+    the top of a page (a widow).  Will give up and use the original if
+    trying to avoid both inevitably produces one or the other.
+
+    """
     a2, end_line = call_action(actions, a + 1, fonts, line, next_line)
     lines = unroll(line, end_line)
 
@@ -181,6 +202,7 @@ def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
     return a2, end_line
 
 def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
+    """(Work-in-progress) Format text as a ragged un-justified paragraph."""
     leading = max(fonts[name].leading for name, text in fonts_and_texts)
     height = max(fonts[name].height for name, text in fonts_and_texts)
 
@@ -189,9 +211,9 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     # instead?
     tmpline = next_line(line, leading, height)
 
-    unwrapped_lines = split_texts_into_lines(fonts_and_texts)
-    wrapped_lines = wrap_long_lines(fonts, unwrapped_lines,
-                                    tmpline.column.width)
+    unwrapped_lines = _split_texts_into_lines(fonts_and_texts)
+    wrapped_lines = _wrap_long_lines(fonts, unwrapped_lines,
+                                     tmpline.column.width)
 
     for tuples in wrapped_lines:
         #print(tuples)
@@ -204,6 +226,8 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     return a + 1, line
 
 def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
+    """(Work-in-progress) Format text as a centered paragraph."""
+
     # Just like a ragged paragraph, but with different x's. TODO: can
     # probably be refectored to share more code; but can they shared
     # more code without making them both more complicated?
@@ -215,9 +239,9 @@ def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
     # instead?
     tmpline = next_line(line, leading, height)
 
-    unwrapped_lines = split_texts_into_lines(fonts_and_texts)
-    wrapped_lines = wrap_long_lines(fonts, unwrapped_lines,
-                                    tmpline.column.width)
+    unwrapped_lines = _split_texts_into_lines(fonts_and_texts)
+    wrapped_lines = _wrap_long_lines(fonts, unwrapped_lines,
+                                     tmpline.column.width)
 
     for tuples in wrapped_lines:
         #print(tuples)
@@ -230,15 +254,15 @@ def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
 
     return a + 1, line
 
-def wrap_long_lines(fonts, lines, width):
-    return [list(wrap_long_line(fonts, line, width)) for line in lines]
+def _wrap_long_lines(fonts, lines, width):
+    return [list(_wrap_long_line(fonts, line, width)) for line in lines]
 
-def wrap_long_line(fonts, texts_and_fonts, width):
+def _wrap_long_line(fonts, texts_and_fonts, width):
     for font_name, text in texts_and_fonts:
         width = fonts[font_name].width_of(text)
         yield font_name, text, width
 
-def split_texts_into_lines(fonts_and_texts):
+def _split_texts_into_lines(fonts_and_texts):
     line = []
     for font_name, text in fonts_and_texts:
         pieces = text.split('\n')
@@ -251,9 +275,7 @@ def split_texts_into_lines(fonts_and_texts):
                 line.append((font_name, piece))
     yield line
 
-# def wrap_lines(lines_of_fonts_and_texts):
-
-def die(*args):
+def _die(*args):
     strings = []
     for arg in args:
         if not isinstance(arg, str):
