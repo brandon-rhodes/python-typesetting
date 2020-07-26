@@ -6,13 +6,14 @@ import sys
 
 from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
-    run, vspace,
+    run, section_break, vspace,
 )
 from typesetting.knuth import knuth_paragraph
 from typesetting.skeleton import single_column_layout, unroll
 from typesetting.writer_qt import QtWriter
 
 INCH = 72
+INDENT = INCH / 4
 
 def main(argv):
     parser = argparse.ArgumentParser(description='Generate slides')
@@ -20,23 +21,40 @@ def main(argv):
 
     os.chdir(os.path.dirname(__file__))
 
+    with open('steam.txt') as f:
+        essay_text = f.read()
+
+    page_width = 5 * INCH
+    page_height = 8 * INCH
+
+    next_line = single_column_layout(
+        page_width, page_height,
+        1.0 * INCH, 1.0 * INCH, 0.8 * INCH, 0.8 * INCH,
+    )
+
+    my_break = section_break, 'roman', ('texts', [(0, 'roman', '* * *')])
+
     actions = [
-        (knuth_paragraph, 0, 0, [('bold', 'Steam'.strip())]),
+        (centered_paragraph, [('roman', ' ')]),
+        (vspace, INCH),
+        (centered_paragraph, [('bold', 'Steam')]),
+        my_break,
+        (centered_paragraph, [('roman', 'J. Elmer Rhodes Jr.')]),
+        (centered_paragraph, [('roman', '(1920–1995)')]),
+        (vspace, INCH * 3/4),
     ]
 
-    page_width = 8.5 * INCH
-    page_height = 11 * INCH
-
-    next_line = single_column_layout(page_width, page_height,
-                                     INCH, INCH, INCH, INCH)
+    actions.extend(parse_essay(essay_text, my_break))
 
     writer = QtWriter(page_width, page_height)
     writer.load_font('../../fonts/OldStandard-Regular.ttf')
     writer.load_font('../../fonts/GenBasB.ttf')
+    writer.load_font('../../fonts/GenBasI.ttf')
     writer.load_font('../../fonts/GenBasR.ttf')
 
     fonts = writer.get_fonts([
         ('bold', 'Gentium Basic', 'Bold', 12),
+        ('italic', 'Gentium Basic', 'Italic', 12),
         ('old-standard', 'Old Standard TT', 'Regular', 12),
         ('roman', 'Gentium Basic', 'Regular', 12),
         ('roman-small', 'Gentium Basic', 'Regular', 4), #?
@@ -46,17 +64,51 @@ def main(argv):
     end_line = run(actions, fonts, None, next_line)
     lines = unroll(None, end_line)[1:]  # TODO: handle None case better?
 
-    # TODO: combine both kinds of verb into one?
     current_page = lines[0].column.page
+    page_no = 1
+
     for line in lines:
         if line.column.page is not current_page:
-            writer.new_page()
             current_page = line.column.page
+            writer.new_page()
+            page_no += 1
+            decorate(current_page, page_no, fonts, writer)
         for graphic in line.graphics:
             function, *args = graphic
             if function == 'texts':
                 function = draw_texts
             function(fonts, line, writer, *args)
+
+def parse_essay(text, my_break):
+    sections = text.strip().split('\n\n\n')
+    for i, section in enumerate(sections):
+        if i:
+            yield my_break
+        section = section.strip()
+        paragraphs = section.split('\n\n')
+        for j, paragraph in enumerate(paragraphs):
+            indent = INDENT if j else 0
+            yield avoid_widows_and_orphans,
+            yield knuth_paragraph, 0, indent, [('roman', paragraph.strip())]
+
+def decorate(page, page_no, fonts, writer):
+    font = fonts['roman']
+    text = str(page_no)
+    width = font.width_of(text)
+    x = (page.width - width) / 2
+    y = page.height - INCH * 2/3
+
+    writer.set_font(font)
+    writer.draw_text(x, y, text)
+
+    font = fonts['italic']
+    text = 'Steam'
+    width = font.width_of(text)
+    x = (page.width - width) / 2
+    y = INCH * 3/4
+
+    writer.set_font(font)
+    writer.draw_text(x, y, text)
 
 def draw_texts(fonts, line, writer, xlist):
     current_font_name = None

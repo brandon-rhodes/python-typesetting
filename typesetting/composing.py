@@ -15,7 +15,7 @@ def add_leading(line, next_line, leading=9999999):
     """Add `leading` to the leading of the first line after `line`."""
     def next_line2(line2, leading2, height):
         if line2 is line:
-            leading2 = leading + leading2
+            leading2 += leading
         return next_line(line2, leading2, height)
     return next_line2
 
@@ -225,7 +225,7 @@ def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
         content_width = sum(width for font_name, text, width in tuples)
         x = (line.column.width - content_width) / 2.0
         for font_name, text, width in tuples:
-            line.graphics.append(('draw_text', x, font_name, text))
+            line.graphics.append(('texts', [(x, font_name, text)]))
             x += width
 
     return a + 1, line
