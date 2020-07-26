@@ -14,17 +14,6 @@ class Renderer(object):
         self.include_crop_marks = bool(crop_margin_width)
 
         QApplication(['my-q-application'])
-        f = QFontDatabase.addApplicationFont('../../fonts/OldStandard-Regular.ttf')
-        f = QFontDatabase.addApplicationFont('OldStandard-Italic.ttf')
-        f = QFontDatabase.addApplicationFont('OldStandard-Bold.ttf')
-        f = QFontDatabase.addApplicationFont('fonts/Inconsolata-Regular.ttf')
-        f = QFontDatabase.addApplicationFont('fonts/UbuntuMono-R.ttf')
-        f = QFontDatabase.addApplicationFont('../../fonts/GenBasB.ttf')
-        f = QFontDatabase.addApplicationFont('../../fonts/GenBasR.ttf')
-        #f = QFontDatabase.addApplicationFont('../../fonts/Inconsolata-Regular.ttf')
-        print(f)
-        names = QFontDatabase.applicationFontFamilies(f)
-        print(names)
         self.writer = QPdfWriter('book.pdf')
         size = QSizeF((2 * crop_margin_width + page_width) * mm,
                       (2 * crop_margin_width + page_height) * mm)
@@ -35,6 +24,9 @@ class Renderer(object):
         self.painter = QPainter(self.writer)
         if self.include_crop_marks:
             self.draw_crop_marks()
+
+    def load_font(self, path):
+        QFontDatabase.addApplicationFont(path)
 
     def new_page(self):
         self.writer.newPage()

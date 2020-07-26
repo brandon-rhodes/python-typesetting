@@ -26,15 +26,16 @@ def main(argv):
 
     factor = 72 / 4  # TODO: have Renderer pull from layout instead?
     d = Renderer(16 * factor, 9 * factor)
+    d.load_font('../../fonts/OldStandard-Regular.ttf')
+    d.load_font('../../fonts/GenBasB.ttf')
+    d.load_font('../../fonts/GenBasR.ttf')
 
     fonts = get_fonts(d.painter, [
         ('bold', 'Gentium Basic', 'Bold', 12),
-        ('old-standard', 'Old Standard TT', 'Roman', 12),
-        ('roman', 'Gentium Basic', 'Roman', 12),
-        ('roman-small', 'Gentium Basic', 'Roman', 4), #?
-        ('typewriter', 'Courier', 'Roman', 9),
-        #('typewriter', 'Inconsolata', 'Roman', 10),
-        #('typewriter', 'Ubuntu Mono', 'Roman', 9),
+        ('old-standard', 'Old Standard TT', 'Regular', 12),
+        ('roman', 'Gentium Basic', 'Regular', 12),
+        ('roman-small', 'Gentium Basic', 'Regular', 4), #?
+        ('typewriter', 'Courier', 'Regular', 9),
     ])
     fonts['typewriter'].leading = 0
 

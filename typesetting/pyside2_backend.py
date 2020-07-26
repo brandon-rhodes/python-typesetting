@@ -1,10 +1,16 @@
+import os
 from PySide2.QtGui import QFontDatabase
-
 
 def get_fonts(painter, font_specs):
     fonts = {}
-    for key, name, style, size in font_specs:
-        qt_font = QFontDatabase().font(name, style, size)
+    database = QFontDatabase()
+    for key, family, style, size in font_specs:
+        weight = database.weight(family, style)
+        qt_font = database.font(family, style, size)
+        actual_family = qt_font.family()
+        if weight == -1 or family != actual_family:
+            print('Cannot find font: {!r} {!r}'.format(family, style))
+            os._exit(1)
         painter.setFont(qt_font)
         metrics = painter.fontMetrics()
         fonts[key] = Font(qt_font, metrics)
