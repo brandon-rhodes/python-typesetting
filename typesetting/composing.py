@@ -1,5 +1,5 @@
 import sys
-from .skeleton import Line, unroll
+from .skeleton import unroll
 
 def run(actions, fonts, line, next_line):
     a = 0
@@ -234,14 +234,9 @@ def wrap_long_lines(fonts, lines, width):
     return [list(wrap_long_line(fonts, line, width)) for line in lines]
 
 def wrap_long_line(fonts, texts_and_fonts, width):
-    #line = []
-    x = 0
     for font_name, text in texts_and_fonts:
-        # if line:
-        #     pass
         width = fonts[font_name].width_of(text)
         yield font_name, text, width
-    #yield line
 
 def split_texts_into_lines(fonts_and_texts):
     line = []

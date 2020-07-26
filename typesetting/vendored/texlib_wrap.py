@@ -474,7 +474,6 @@ class ObjectList(list):
                 # either positive or negative.
                 if ((looseness<= delta < best) or
                     (best<delta<looseness) ):
-                    s = delta
                     d = br.demerits
                     b = br
 
