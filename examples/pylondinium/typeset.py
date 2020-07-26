@@ -13,7 +13,7 @@ from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
     run, vspace,
 )
-from typesetting.document import Renderer
+from typesetting.document import Writer
 from typesetting.knuth import knuth_paragraph
 from typesetting.pyside2_backend import get_fonts
 from typesetting.skeleton import single_column_layout, unroll
@@ -24,8 +24,8 @@ def main(argv):
 
     os.chdir(os.path.dirname(__file__))
 
-    factor = 72 / 4  # TODO: have Renderer pull from layout instead?
-    d = Renderer(16 * factor, 9 * factor)
+    factor = 72 / 4  # TODO: have Writer pull from layout instead?
+    d = Writer(16 * factor, 9 * factor)
     d.load_font('../../fonts/OldStandard-Regular.ttf')
     d.load_font('../../fonts/GenBasB.ttf')
     d.load_font('../../fonts/GenBasR.ttf')

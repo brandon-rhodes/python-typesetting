@@ -5,7 +5,7 @@ from PySide2.QtWidgets import QApplication
 #inch = 72
 mm = 25.4 / 72
 
-class Renderer(object):
+class Writer(object):
 
     def __init__(self, page_width, page_height, crop_margin_width=0):
         self.page_width = page_width
