@@ -11,6 +11,6 @@ setup(
     url = 'https://github.com/brandon-rhodes/python-typesetting',
     classifiers = [
     ],
-    packages = ['typesetting'],
+    packages = ['typesetting', 'typesetting.vendored'],
     install_requires = ['PySide2'],
 )
