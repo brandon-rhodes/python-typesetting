@@ -4,8 +4,8 @@ from PySide2.QtCore import QSizeF, QMarginsF
 from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase
 from PySide2.QtWidgets import QApplication
 
-MM = 25.4 / 72.0
-PT = 1200.0 / 72.0
+MM = 25.4 / 72
+PT = 1200 / 72
 
 class QtWriter(object):
 
