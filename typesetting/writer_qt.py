@@ -1,5 +1,6 @@
 import atexit
 import os
+from PySide2 import QtWidgets
 from PySide2.QtCore import QSizeF, QMarginsF
 from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase
 
@@ -9,6 +10,12 @@ PT = 1200 / 72
 class QtWriter(object):
 
     def __init__(self, path, width_pt, height_pt):
+        if QtWidgets.QApplication.instance() is None:
+            raise RuntimeError(
+                'before using Qt to render a PDF, create an application:\n'
+                '    from PySide2.QtWidgets import QApplication\n'
+                '    QApplication([])'
+            )
         self.writer = QPdfWriter(path)
         self.writer.setPageSizeMM(QSizeF(width_pt * MM, height_pt * MM))
         self.writer.setPageMargins(QMarginsF(0, 0, 0, 0))
