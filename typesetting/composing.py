@@ -198,7 +198,7 @@ def ragged_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
         line = next_line(line, leading, height)
         x = 0
         for font_name, text, width in tuples:
-            line.graphics.append((draw_text, x, font_name, text))
+            line.graphics.append(('draw_text', x, font_name, text))
             x += width
 
     return a + 1, line
@@ -225,7 +225,7 @@ def centered_paragraph(actions, a, fonts, line, next_line, fonts_and_texts):
         content_width = sum(width for font_name, text, width in tuples)
         x = (line.column.width - content_width) / 2.0
         for font_name, text, width in tuples:
-            line.graphics.append((draw_text, x, font_name, text))
+            line.graphics.append(('draw_text', x, font_name, text))
             x += width
 
     return a + 1, line
@@ -252,14 +252,6 @@ def split_texts_into_lines(fonts_and_texts):
     yield line
 
 # def wrap_lines(lines_of_fonts_and_texts):
-
-def draw_text(fonts, line, painter, x, font_name, text):
-    pt = 1200 / 72.0
-    font = fonts[font_name]
-    painter.setFont(font.qt_font)
-    painter.drawText((line.column.x + x) * pt,
-                     (line.column.y + line.y - font.descent) * pt,
-                     text)
 
 def die(*args):
     strings = []

@@ -19,11 +19,11 @@ def get_fonts(painter, font_specs):
 class Font(object):
     def __init__(self, qt_font, metrics):
         self.qt_font = qt_font
-        self.metrics = metrics
+        self._qt_metrics = metrics
         self.ascent = metrics.ascent() * 72 / 1200
         self.descent = metrics.descent() * 72 / 1200
         self.height = metrics.height() * 72 / 1200
         self.leading = metrics.lineSpacing() * 72 / 1200 - self.height
 
     def width_of(self, text):
-        return self.metrics.width(text) * 72 / 1200
+        return self._qt_metrics.width(text) * 72 / 1200

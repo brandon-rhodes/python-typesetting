@@ -851,7 +851,9 @@ def run_and_draw(actions, fonts, line, next_line, painter):
         page = line.column.page
         for graphic in line.graphics:
             function, *args = graphic
-            if function == 'knuth_boxes':
+            if function == 'draw_text':
+                function = draw_text
+            elif function == 'knuth_boxes':
                 function = knuth_draw
             function(fonts, line, painter, *args)
     return line
@@ -872,8 +874,20 @@ def run_and_draw_centered(actions, fonts, line, next_line, painter):
         line = line._replace(y = line.y + offset)
         for graphic in line.graphics:
             function, *args = graphic
+            if function == 'draw_text':
+                function = draw_text
+            elif function == 'knuth_boxes':
+                function = knuth_draw
             function(fonts, line, painter, *args)
     return line
+
+def draw_text(fonts, line, painter, x, font_name, text):
+    pt = 1200 / 72.0
+    font = fonts[font_name]
+    painter.setFont(font.qt_font)
+    painter.drawText((line.column.x + x) * pt,
+                     (line.column.y + line.y - font.descent) * pt,
+                     text)
 
 def knuth_draw(fonts, line, painter, xlist):
     pt = 1200 / 72.0
