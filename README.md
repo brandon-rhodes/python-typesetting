@@ -32,10 +32,11 @@ The process of designing this library
 is described in the 2019 “Typesetting with Python” keynote talk
 that I delivered at PyLondinium19:
 
-(https://www.youtube.com/watch?v=e7RVO0Sqr4s)[https://www.youtube.com/watch?v=e7RVO0Sqr4s]
+https://www.youtube.com/watch?v=e7RVO0Sqr4s
 
 I am happy that the talk (in the form of the above recording)
-was also featured at the remote TUG2020 conference
+was also featured at the remote
+[TUG2020 conference](https://tug.org/tug2020/program.html)
 in July 2020,
 which I celebrated by returning to the repository
 and getting progress underway again!
