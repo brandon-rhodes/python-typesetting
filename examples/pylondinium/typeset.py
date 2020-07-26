@@ -24,12 +24,12 @@ def main(argv):
     os.chdir(os.path.dirname(__file__))
 
     factor = 72 / 4  # TODO: have Writer pull from layout instead?
-    d = QtWriter(16 * factor, 9 * factor)
-    d.load_font('../../fonts/OldStandard-Regular.ttf')
-    d.load_font('../../fonts/GenBasB.ttf')
-    d.load_font('../../fonts/GenBasR.ttf')
+    w = writer = QtWriter(16 * factor, 9 * factor)
+    w.load_font('../../fonts/OldStandard-Regular.ttf')
+    w.load_font('../../fonts/GenBasB.ttf')
+    w.load_font('../../fonts/GenBasR.ttf')
 
-    fonts = d.get_fonts([
+    fonts = w.get_fonts([
         ('bold', 'Gentium Basic', 'Bold', 12),
         ('old-standard', 'Old Standard TT', 'Regular', 12),
         ('roman', 'Gentium Basic', 'Regular', 12),
@@ -38,8 +38,8 @@ def main(argv):
     ])
     fonts['typewriter'].leading = 0
 
-    simple_slide = make_simple_slide_function(fonts, d)
-    code_slide = make_code_slide_function(fonts, d)
+    simple_slide = make_simple_slide_function(fonts, w)
+    code_slide = make_code_slide_function(fonts, w)
 
     #next_line = slide_layout()
     narrow_line = slide_layout(0.5)
@@ -83,12 +83,12 @@ def main(argv):
     s('')
     pm = PySide2.QtGui.QPixmap('tex-and-metafont-book.jpg')
     n = 2
-    d.painter.drawPixmap(1200, 100, 1200 * n, 1196 * n, pm)
+    w.painter.drawPixmap(1200, 100, 1200 * n, 1196 * n, pm)
 
     s('τέχνη', 'craft / art')
 
-    d.new_page()
-    center_formula(d, 'logo.svg')
+    w.new_page()
+    center_formula(w, 'logo.svg')
 
     s('markup language', '', 'plain text → document')
 
@@ -97,8 +97,8 @@ def main(argv):
     code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
     code_slide(code)
 
-    d.new_page()
-    center_formula(d, 'sample.svg', 20)
+    w.new_page()
+    center_formula(w, 'sample.svg', 20)
 
     s('The book’s lessons', 'on how to type .tex files',
       'were a small course in typography')
@@ -122,8 +122,8 @@ def main(argv):
     code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
     code_slide(code)
 
-    d.new_page()
-    center_formula(d, 'formula.svg')
+    w.new_page()
+    center_formula(w, 'formula.svg')
 
     s('Paragraphs')
     s('TeX represents the words of a paragraph',
@@ -146,8 +146,8 @@ def main(argv):
     code = code.split('\n', 1)[1].rsplit('\n', 2)[0]
     code_slide(code)
 
-    d.new_page()
-    center_formula(d, 'sample.svg', 20)
+    w.new_page()
+    center_formula(w, 'sample.svg', 20)
 
     s('The output of TeX was beautiful!',
       'But it was difficult to control.',
@@ -156,9 +156,9 @@ def main(argv):
       'layout proceeded largely outside',
       'of your control')
 
-    d.new_page()
+    w.new_page()
     pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+    w.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
     s('Backing up a tractor and trailers', 'is an open problem in AI')
     s('“Fuzzy Knowledge-Based Control', 'for Backing Multi-Trailer Systems”',
@@ -168,9 +168,9 @@ def main(argv):
       'has an increasingly distant relationship',
       'to the motion of the nth trailer')
 
-    d.new_page()
+    w.new_page()
     pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+    w.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
     s('Trying to control TeX', 'sometimes felt similar')
     s('Idea:')
@@ -187,7 +187,7 @@ def main(argv):
     n = 5
     s('')
     pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
-    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+    w.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
 
     s('Technology', '',
       'MetaFont → TrueType, OpenType',
@@ -218,8 +218,8 @@ def main(argv):
     s('Plan', '', '1. Find a library for rendering PDF',
       '2. Invent a new page layout engine')
 
-    d.new_page()
-    lay_out_paragraph(fonts, d, [
+    w.new_page()
+    lay_out_paragraph(fonts, w, [
         (centered_paragraph, [
             ('roman', 'ReportLab'),
         ]),
@@ -232,8 +232,8 @@ def main(argv):
 
     s('Was there an alternative?')
 
-    d.new_page()
-    lay_out_paragraph(fonts, d, [
+    w.new_page()
+    lay_out_paragraph(fonts, w, [
         (centered_paragraph, [
             ('roman', 'ReportLab'),
         ]),
@@ -351,12 +351,12 @@ def main(argv):
     s('A heading is supposed to sit atop',
       'the content of which it is the head')
     s('')
-    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    run_and_draw(lotr, fonts, None, narrow_line, writer)
     s('Q: What if there’s no room',
       'beneath the heading?')
     s('A: Typographic disaster')
     s('')
-    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
+    run_and_draw(lotr2, fonts, None, narrow_line, writer)
     s('The heading needs to move', 'itself to the next column')
     code_slide('''
     # Can the Heading simply check whether
@@ -373,17 +373,17 @@ def main(argv):
     s('“widows and orphans”')
     simple_slide('A single-line paragraph might deign',
                  'to remain at the bottom of the page')
-    # d.new_page()
-    # run_and_draw(lotr, fonts, None, narrow_line, d.painter)
+    # w.new_page()
+    # run_and_draw(lotr, fonts, None, narrow_line, writer)
     s('')
-    run_and_draw(lotr3, fonts, None, narrow_line, d.painter)
+    run_and_draw(lotr3, fonts, None, narrow_line, writer)
     simple_slide('But a multi-line paragraph will',
                  'refuse to leave its opening line alone —',
                  'will refuse to leave it an “orphan”')
-    d.new_page()
-    run_and_draw(lotr, fonts, None, narrow_line, d.painter)
-    d.new_page()
-    run_and_draw(lotr2, fonts, None, narrow_line, d.painter)
+    w.new_page()
+    run_and_draw(lotr, fonts, None, narrow_line, writer)
+    w.new_page()
+    run_and_draw(lotr2, fonts, None, narrow_line, writer)
     simple_slide('How can the heading predict',
                  'whether it will be stranded alone?',
                  '',
@@ -676,9 +676,9 @@ def main(argv):
       'we’re standing outside of the code',
       'that makes the decision')
 
-    d.new_page()
+    w.new_page()
     pm = PySide2.QtGui.QPixmap('two-trailers.png')
-    d.painter.drawPixmap(1200, 500, 2000, 2000, pm)
+    w.painter.drawPixmap(1200, 500, 2000, 2000, pm)
 
     s('Outside', '', 'Is that really where we want to be',
       'during a crucial decision?')
@@ -759,7 +759,7 @@ def main(argv):
 
     s('')
     pm = PySide2.QtGui.QPixmap('IMG_20190611_212228.jpg')
-    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+    w.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
 
     s('Sure Print and Design', 'Toronto, Canada', '',
       'Will print runs of only 2 books!')
@@ -768,11 +768,11 @@ def main(argv):
 
     s('')
     pm = PySide2.QtGui.QPixmap('IMG_20190611_212247.jpg')
-    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+    w.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
 
     s('')
     pm = PySide2.QtGui.QPixmap('IMG_20190611_212354.jpg')
-    d.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
+    w.painter.drawPixmap(800, 100, 640 * n, 480 * n, pm)
 
     s('Thank you very much!', '', '', '@brandon_rhodes')
 
@@ -784,35 +784,35 @@ def slide_layout(narrow=0):
         margin, margin, margin, margin,
     )
 
-def center_formula(d, path, formula_scale=32):
+def center_formula(writer, path, formula_scale=32):
     r = PySide2.QtSvg.QSvgRenderer(path)
     b = r.viewBox()
     w = b.width() * formula_scale
     h = b.height() * formula_scale
-    x = (d.painter.device().width() - w) // 2
-    y = (d.painter.device().height() - h) // 2
+    x = (writer.painter.device().width() - w) // 2
+    y = (writer.painter.device().height() - h) // 2
     b2 = PySide2.QtCore.QRect(x, y, w, h)
-    r.render(d.painter, b2)
+    r.render(writer.painter, b2)
 
-def lay_out_paragraph(fonts, d, actions):
+def lay_out_paragraph(fonts, writer, actions):
     next_line = slide_layout()
-    run_and_draw_centered(actions, fonts, None, next_line, d.painter)
+    run_and_draw_centered(actions, fonts, None, next_line, writer)
 
-def make_simple_slide_function(fonts, d):
+def make_simple_slide_function(fonts, writer):
     def simple_slide(*texts):
         if 'PyLondinium' not in texts:  # awkward special case: title slide
-            d.new_page()
+            writer.new_page()
         next_line = slide_layout()
         actions = [
             (centered_paragraph, [('roman', text)])
             for text in texts
         ]
-        run_and_draw_centered(actions, fonts, None, next_line, d.painter)
+        run_and_draw_centered(actions, fonts, None, next_line, writer)
     return simple_slide
 
-def make_code_slide_function(fonts, d):
+def make_code_slide_function(fonts, writer):
     def code_slide(*texts):
-        d.new_page()
+        writer.new_page()
         text = '\n'.join(texts)
         text = dedent(text.rstrip()).strip('\n')
         next_line = slide_layout()
@@ -820,7 +820,7 @@ def make_code_slide_function(fonts, d):
             (ragged_paragraph, [('typewriter', line)])
             for line in text.splitlines()
         ]
-        run_and_draw_centered(actions, fonts, None, next_line, d.painter)
+        run_and_draw_centered(actions, fonts, None, next_line, writer)
     return code_slide
 
 def progressive_slide(f, *texts):
@@ -835,7 +835,7 @@ def progressive_slide(f, *texts):
     #         texts[i] = ''
     #     i -= 1
 
-def run_and_draw(actions, fonts, line, next_line, painter):
+def run_and_draw(actions, fonts, line, next_line, writer):
     line2 = run(actions, fonts, line, next_line)
     lines = unroll(line, line2)
     page = None
@@ -849,10 +849,10 @@ def run_and_draw(actions, fonts, line, next_line, painter):
                 function = draw_text
             elif function == 'knuth_boxes':
                 function = knuth_draw
-            function(fonts, line, painter, *args)
+            function(fonts, line, writer, *args)
     return line
 
-def run_and_draw_centered(actions, fonts, line, next_line, painter):
+def run_and_draw_centered(actions, fonts, line, next_line, writer):
     line2 = run(actions, fonts, line, next_line)
     lines = unroll(line, line2)
     page = None
@@ -872,28 +872,26 @@ def run_and_draw_centered(actions, fonts, line, next_line, painter):
                 function = draw_text
             elif function == 'knuth_boxes':
                 function = knuth_draw
-            function(fonts, line, painter, *args)
+            function(fonts, line, writer, *args)
     return line
 
-def draw_text(fonts, line, painter, x, font_name, text):
-    pt = 1200 / 72.0
+def draw_text(fonts, line, writer, x, font_name, text):
     font = fonts[font_name]
-    painter.setFont(font.qt_font)
-    painter.drawText((line.column.x + x) * pt,
-                     (line.column.y + line.y - font.descent) * pt,
+    writer.set_font(font)
+    writer.draw_text(line.column.x + x,
+                     line.column.y + line.y - font.descent,
                      text)
 
-def knuth_draw(fonts, line, painter, xlist):
-    pt = 1200 / 72.0
+def knuth_draw(fonts, line, writer, xlist):
     current_font_name = None
     for x, font_name, text in xlist:
         if font_name != current_font_name:
             font = fonts[font_name]
-            painter.setFont(font.qt_font)
+            writer.set_font(font)
             current_font_name = font_name
-        x = (line.column.x + x) * pt
-        y = (line.column.y + line.y - font.descent) * pt
-        painter.drawText(x, y, text)
+        writer.draw_text(line.column.x + x,
+                         line.column.y + line.y - font.descent,
+                         text)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

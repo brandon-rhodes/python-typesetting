@@ -4,14 +4,15 @@ from PySide2.QtCore import QSizeF, QMarginsF
 from PySide2.QtGui import QPainter, QPdfWriter, QFontDatabase
 from PySide2.QtWidgets import QApplication
 
-mm = 25.4 / 72
+MM = 25.4 / 72.0
+PT = 1200.0 / 72.0
 
 class QtWriter(object):
 
     def __init__(self, width_pt, height_pt):
         QApplication(['my-q-application'])
         self.writer = QPdfWriter('book.pdf')
-        self.writer.setPageSizeMM(QSizeF(width_pt * mm, height_pt * mm))
+        self.writer.setPageSizeMM(QSizeF(width_pt * MM, height_pt * MM))
         self.writer.setPageMargins(QMarginsF(0, 0, 0, 0))
         self.painter = QPainter(self.writer)
         atexit.register(self.close)
@@ -42,6 +43,12 @@ class QtWriter(object):
         self.writer.newPage()
         # if self.include_crop_marks:
         #     self.draw_crop_marks()
+
+    def set_font(self, font):
+        self.painter.setFont(font.qt_font)
+
+    def draw_text(self, x_pt, y_pt, text):
+        self.painter.drawText(x_pt * PT, y_pt * PT, text)
 
 class QtFont(object):
     def __init__(self, qt_font, metrics):
