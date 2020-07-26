@@ -1,17 +1,10 @@
-.so mhd2
-.ds t Steam
-.sp2
-.ce1
-Steam
 
-\fIWritten about 1970.
-Edited 1982.
-Slightly revised 1994.\fR
-.pp
+by J. Elmer Rhodes Jr. (1950–1995)
+
 If I was not born a railroad buff, I became one soon after.  Early
 memories that are warm, that to this day bring an inner glow upon
 recall, are mostly railroad memories.
-.p
+
 One could not see the tracks nor, usually, the trains from our house
 for foliage and other obstructions; but at night the locomotive fire
 would shine upwards behind the cab roof and light up the steam and smoke
@@ -21,65 +14,66 @@ cut through Red Mountain at Irondale, the fire door opened every few
 seconds, as the fireman rhythmically shoveled coal.  As he came forward
 with the scoop of coal his foot operated a treadle that supplied air to
 open the fire doors.
-.p
+
 From the trackside, just a block up or down the street, one could see
 the fireman straddling, one foot on the cab floor of the engine, the
-other on the tender.  The timing of his motions and the fire door's
+other on the tender.  The timing of his motions and the fire door’s
 opening were rhythms I had learned well, so I sensed the swinging of the
 shovel even when the thing observed was a flash on the smoke and steam
 half a mile away.
-.p
-On earlier, smaller locomotives the fireman could swing open the fire
+
+On earlier, smaller locomotives, the fireman could swing open the fire
 door from time to time to tend the fire, but the engines grew so big
 that by the time of my childhood the fireman was the bottleneck in power
 production; the treadle-operated door was absolutely necessary.
-Southern's 4700 series of freight locomotives, and equally big units on
+Southern’s 4700 series of freight locomotives, and equally big units on
 the Seaboard, had been in operation some ten years at that time.
-.p
+
 I know not whether it occurred in a very short span of time or over
 several years, but the time came when I realized that there was no more
 rhythmical illumination of the sky when trains went out at night;
 stokers had relieved firemen of the dogged shoveling required to keep up
 steam.
-.pp
+
+
 Father grew up with a romantic attachment to railroading, and he did not
 lose it until his last years when all interests were past.  In 1913 and,
 later, during the First World War, he put in some months at the
-exhausting task of fireman on Southern's 4500's.  In recent
+exhausting task of fireman on Southern’s 4500’s.  In recent
 years I learned from Aunt Ethel that during those times he lost weight,
 became lean and gaunt.  His superlative for body-breaking manual labor
-was "like firing a jack."
-.p
+was “like firing a jack.”
+
 Engineers he had fired for were pointed out to me as they brought trains
-in or took them out; "Hustler" O'Dell was a remote and lordly being as
+in or took them out; “Hustler” O’Dell was a remote and lordly being as
 he leaned out the cab window to better view the road ahead, while
 pulling his whistle strap with his left hand; he was all concentration
 on the job of getting his train over the road.  Only seldom would he be
 diverted sufficiently to raise his gloved right hand in an attenuated
 wave.
-.p
-Father's romantic view was not uncommon for boys of his time, and it was
+
+Father’s romantic view was not uncommon for boys of his time, and it was
 reinforced by such delicious pleasures as being carried to Montgomery
 from Georgiana on the engine by Cousin Jeff Hudson.  Father's joy must
 have equaled that expressed by Walter Chrysler over riding the engine
-with his father:  "At the end of the day a boy's face would be sore from
-constant and incessant grinning."
-.p
-Father's love affair with railroads was early communicated to me through
+with his father: “At the end of the day a boy’s face would be sore from
+constant and incessant grinning.”
+
+Father’s love affair with railroads was early communicated to me through
 his reminiscences, and this was reinforced by the proximity of the
-tracks--Seaboard, one long block to the south; one block north, two
+tracks — Seaboard, one long block to the south; one block north, two
 double tracks of AGS, to Chattanooga, and Southern, to Atlanta.  The
 last also carried Central of Georgia trains to Leeds, where they took
-their own track to Columbus, Georgia.  Father's watch has a dent in the
+their own track to Columbus, Georgia.  Father’s watch has a dent in the
 back, put there by the shaker bar of 4563.  Fire grates were in four
 sections.  A fireman could not shake all the grates at once.  A three or
 four foot steel bar would be fitted over each of four stub levers in
 succession.  Each stub was linked to its section of the grates under the
 fire.  He had heaved the bar against the breast pocket of his overalls,
 the pocket containing his watch.
-.p
-There were stories of adventure out on the road and in the yards.  "You
-would have to read every one of those lights to bring a train in here,"
+
+There were stories of adventure out on the road and in the yards.  “You
+would have to read every one of those lights to bring a train in here,”
 he would say to me, a small child,
 as we drove across the end of the AGS or Seaboard marshalling yards at
 night, and the hundreds of colored switch lights made a Christmas tree
@@ -90,7 +84,7 @@ boarded it, climbed into the dark cab, and took it back to a roundhouse.
 (No air was up for brakes, but steam was up, and with it Father stopped
 the locomotive, and drove it forward.)
 The foreman had not missed it!
-.p
+
 No Negro was promoted to engineer in those days, but there were a fair
 number of Colored firemen, and they were good ones, Father judged.  They
 were bred to hard labor, and they had a knack for keeping a hot fire.
@@ -100,52 +94,53 @@ putting water into the boiler.  This to be ready, when they rolled
 through a town, to jump up onto the box beside the window, and lean way
 out on the left elbow, intent on the road ahead.  I think I would have
 done so too.  It was not just the Colored firemen.
-.p
+
 Maybe several stories got compounded into one epic run to Atlanta from
 Birmingham with eighty cars of mules.  World War I was going on; a ship
 was ready to sail from Savannah as soon as this trainload of mules,
 which had come in from the west, was
 loaded.  The dispatcher gave them the road; orders were to make only
 necessary stops for water and coal.
-.p
+
 But people on epic journeys are always tried with difficulties.  As the
 last tipple-car of coal hit the tender, a chain snapped, and a ton of
 coal was dumped into the gangway.  Several chains would be strung across
 the front of the tender to hold the coal when the tender was full; they
 would be taken down when enough coal had been used so that the rest
 stayed in the tender by itself.
-.p
-No time to fix that; Hustler O'Dell had gone over his engine, and was
+
+No time to fix that; Hustler O’Dell had gone over his engine, and was
 growling that he wanted the gauge to read 210 pounds all night long.
-(Because of the urgency of the run, Father and O'Dell must have been on
+(Because of the urgency of the run, Father and O’Dell must have been on
 the engine before the hostlers were through preparing it.)
-.p
+
 They coupled up, tried the brakes, and moved out of the yard
-through the dusk.  O'Dell could keep his drivers torqued within a hair
+through the dusk.  O’Dell could keep his drivers torqued within a hair
 of slipping, and never loose hold.  They moved out fast, then up the
 long grade to the cut through the mountain.  Father fought furiously to
 keep up steam, and between each shovel-full into the firebox, he would
-throw another off onto the trackside.  "I knew that if there were coal
+throw another off onto the trackside.  “I knew that if there were coal
 in the gangway when he turned down the mountain, I would be unable to
-stand up."
-.p
+stand up.”
+
 He got the coal out from underfoot, but he still could not stand up when
 they rocketed down grade, up to eighty miles per hour he judged.  He
 hung onto grab-irons, and tried to tend water and do other tasks that it
 was possible to do with one hand.  Maybe there were not many miles like
 this, but those miles were memorable.  The route is a crooked one:  one
 hundred and sixty-nine miles, one hundred and sixty-nine curves.
-.p
+
 Water taken in haste; coal taken impatiently at Anniston and at Waco,
 where the fire was cleaned of clinkers by Colored laborers.  No turning
 into sidetracks; all traffic in both directions sidetracked for Father,
-for O'Dell, for eighty cars of mules.
-.p
+for O’Dell, for eighty cars of mules.
+
 They steamed into Inman Yard in just five hours, passenger train time in
 those days.  Another crew and engine must have gotten the train to
 Savannah (on another railroad), and the mules must have gotten to
 France.
-.pp
+
+
 Not just stories; there was the glory of the thing itself.  A fast
 passenger train braking to a stop, downhill at Woodlawn in the winter
 dusk:  ten cars, sixty car wheels, on my side of the train, rimmed with
@@ -158,23 +153,23 @@ locomotive, but the nail would still be hot after the train had passed,
 if it was a fast passenger train.  The open, nearly flat area where the
 railroad parallels Fifth Avenue south between 56th and 57th Streets was
 a good place to do such impressive blacksmithing.
-.p
+
 Nails crossed on the track would be welded together, too.
-.p
+
 There was, besides romance, anxiety and the constant near presence of
 death, for the crew and for the unwary who tangled with a train.  When I
-was a small child, I vividly recall Cousin Ellen, Jeff's widow, telling
+was a small child, I vividly recall Cousin Ellen, Jeff’s widow, telling
 of the terrible moan in the night of the wrecker whistle, calling its
 crew, while her Jeff was somewhere out on the road.  She had owned a big
 house in Montgomery near the railroad yards, and she may have boarded
 railroad men.
-.p
+
 Neighbor, Clarence Allgood, lost a leg when he tried to board a moving
 freight train right down the street.  Our maid, Ella, had worked for the
 Allgoods, and lived in their servant house, at the time.  It was close to
 home, although I never knew Clarence, who became a well known
 Birmingham attorney.
-.p
+
 The aunt of schoolmate, later scout-mate, Ted Bumann was walking one
 summer morning north on 56th Street, dressed to catch the street car and
 go to town.  She crossed the Southern tracks, and as she traversed the
@@ -182,21 +177,21 @@ hundred feet to the AGS tracks, she speeded up to a fast walk or half
 run, apparently to get across the AGS tracks ahead of a passenger train
 from Chattanooga.  She misjudged.  In the middle of the track she threw
 up her hands in horror.  My mother saw the body tumble beside the train
-120 feet past the crossing.  Mother had been waiting in her car for the
+120 feet past the crossing.  Mother had been waiting in her car for the
 train to pass.  I heard the story many times, including the time it was
 told to a railroad agent who investigated the accident.
-.p
+
 A bad accident involving a train and a street car at a flagged crossing
 had many consequences.  It occurred three short blocks from home at Grand
 Avenue (now First Avenue South).  For days the neighborhood ladies told
 and retold of the terrible mutilation.  It was generally thought that
-the accident spelled the end of the "Tidewater" street railway line.
-(A projected interurban: Birmingham, Tidewater & Coast.  It ran from East
+the accident spelled the end of the “Tidewater” street railway line.
+(A projected interurban: Birmingham, Tidewater & Coast.  It ran from East
 Lake to Bessemer, and had ambitions to go on to Tuscaloosa and beyond.)
-They soon sold out to their competitor, BR&P Co., who did some
+They soon sold out to their competitor, BR&P Co., who did some
 rerouting.  Their hardy cars carried me to college on the South East
 Lake line twelve to sixteen years later.
-.p
+
 Another consequence of the accident was that by ordinance or agreement,
 trains and street cars thereafter stopped at all grade crossings where
 the two met.  Rerouting of street cars took care of the crossing where
@@ -206,7 +201,7 @@ about 52nd Street.  Outbound trains were on the long grade that took
 them over Red Mountain, and heavy freights had a difficult time getting
 underway after the stop; they never picked up much speed until they
 crossed the ridge three miles beyond.
-.p
+
 A regular freight stopped at the crossing about 6:15 AM.  It would only
 be travelling at walking speed half a mile after getting under way and
 leaving the crossing.  Sometimes for a block, sometimes for a mile, I
@@ -217,34 +212,34 @@ of walking a day for several months.  During this interval I was often
 out before breakfast to roam the mountainside woods, and I would wait
 for this train at the head of 55th Place.  The reverse lever must have
 been hard forward, as every exhaust was an explosion.
-.p
+
 Another seaboard freight fought its way up that hill every evening
 about 8:20.  Lots of men were riding freights during the Depression, and
 nearly every night two detectives would scan the slowly moving train
 with flashlights.  They would station themselves on the banks on both
 sides of the track at 55th Street.  If a rider were discovered, they
 would board the train and take him off; or he would jump off and run,
-and they would pursue him.  They caught one in Mr. Batcheller's corn
+and they would pursue him.  They caught one in Mr. Batcheller’s corn
 patch at 56th Street once.  I do not know whether they were free-lance
 deputies, who got a fee for each arrest, or whether they were railroad
 employees discouraging hobos because cars had been broken into, or coal
 thrown off loaded cars.  To me, this was just an act to watch, the most
 interesting thing being the boarding and dismounting of the moving
-train.  (Clarence Allgood's story must have gotten to me; I never had
+train.  (Clarence Allgood’s story must have gotten to me; I never had
 the slightest urge to board one.)  But Father knew the brutal reputation
-of railroad detectives; and, whenever 'bos would stop at our door for a
+of railroad detectives; and, whenever ’bos would stop at our door for a
 handout (and there were many), he would warn them where the dicks were
 likely to be.
-.p
+
 During the early thirties an occasional exhibition train pulled by a
 Diesel locomotive would come through, usually pulling three shiny light
 passenger cars.  Father would pooh-pooh the preposterous notion that one
-of those "street cars" would ever pull a freight train.  "Why, I've seen
+of those “street cars” would ever pull a freight train.  “Why, I’ve seen
 a Mack truck nearly tear itself up moving one freight car around the
-lumber yard."  An internal combustion engine would never do what steam
-could do.  "Imagine what the clutch would have to be."
-.p
-Then one day--about 1945--I saw steam die.  These were war years, and
+lumber yard.”  An internal combustion engine would never do what steam
+could do.  “Imagine what the clutch would have to be.”
+
+Then one day — about 1945 — I saw steam die.  These were war years, and
 steam locomotives would haul trains millions of miles more, but steam
 was doomed, I knew.  Father and I were in an auto stopped at the grade
 crossing at 56th Street.  An outbound southern freight was stopped with
@@ -253,22 +248,23 @@ behind the locomotives; the end was out of sight around a long curve
 that started half a mile away.  Ready to go:  the board just ahead
 changed; the engines revved up; a sense of tautness appeared in the
 trucks, and in three or four seconds the locomotives began to creep
-forward up the mountain.  Father's mouth dropped open as he watched that
+forward up the mountain.  Father’s mouth dropped open as he watched that
 string of cars.  There was no slack in the train!  And it started off up
 the grade!  To start under such circumstances, he was used to backing
 the engine down to move each drawhead as far as it would go into each
 car frame member.  Draft is transferred from the couple to the carframe
 through two forged horizontal protrusions on the drawhead; they pass
 through reinforced holes in a box girder of the car frame.  (Fancier,
-hydraulic-cushioned couples are available now.)  "Slack" came from play
+hydraulic-cushioned couples are available now.)  “Slack” came from play
 of the protrusions in the holes, and play in the couple itself.  After
 backing down, the engine would start up with no load, and every time it
 moved forward an inch, say, it would snatch one more car forward.  With
-a dramatic "h-r-r-r---umph," the wave would rocket back the
+a dramatic “h-r-r-r-umph,” the wave would rocket back the
 train.  This long train started upgrade with no slack.  Father stared
 while several freight cars moved past in front of us, then he weakly
-whispered, "He's pulling the whole yard out behind him."
-.pp
+whispered, “He’s pulling the whole yard out behind him.”
+
+
 About 1946 a man close to the Association of American Railroads told me
 there was not a single order outstanding for a steam locomotive to be
 delivered in this country.  I knew it was coming, but this was faster
@@ -276,31 +272,31 @@ than I had expected.  (Baldwin Locomotive Works did not expect the
 change so soon, either.  They went under soon after, apparently because
 they stuck to steam too long.  It is sad to see a company over a hundred
 years old go down.)
-.p
+
 It has been sad, too, to see the opportunities that railroad management
 has missed over the years.  Since before 1900 railroads have preferred
 the freight business, and their innovation and the development of
 rolling stock, signaling, and data handling have been spectacular.
 Billions were invested in locomotives, freight yards and other capital
 items in the years following World War II.
-.p
+
 Father, as a boy, paddled a boat for colorful and irascible L&N
 president Milton Smith, when he would come to fish in the millpond at
-Rhodes' Mill.  Smith said then that he would as soon never run another
+Rhodes’ Mill.  Smith said then that he would as soon never run another
 passenger train.
-.p
+
 There was enough public feeling of romance about railroading to have
 created the foundation of public support that any far-flung enterprise
 has to have.  But railroads, in their ephemeral might, did not know it
 was necessary, and scorned passengers, their best opportunity for
 constructive contact with the public.  Freight customers do not
 constitute the public.
-.p
+
 No innovations made it easy to buy a ticket.  Seldom was it evident that
 a train crew gave a hoot about maintaining a schedule, and too, too often,
 trainmen were adverse to common courtesy to their passengers, their
 customers.
-.p
+
 The latent public support, waiting and wanting to be ignited, was
 evident on an L&N train, hours late, southbound to Birmingham during
 World War II.  Passengers got the notion that the trainmen were intent
@@ -308,12 +304,12 @@ on making up all the lost time they possibly could.  (It is more likely
 that a manifest freight was on their heels.)  The engineer had a clear
 road to practice that intent.  Passengers were thrown from the aisle
 when they tried to go to the water fountain or the rest room.  Were they
-angered by this?  They were not.  When a large man landed in a lady's
+angered by this?  They were not.  When a large man landed in a lady’s
 lap, both laughed, and he climbed up to try again.  At the end of that
 run those passengers would have cheered in a mighty voice for the L&N
 Railroad.  A little sincere care for the traveling public and the nation
 would have cheered, too.  But such care was carefully withheld.
-.p
+
 What might-have-been could be glimpsed in the B&O operation in the north
 end of Baltimore, even during wartime.  You could sit in summer clothes
 on padded wicker benches on the concourse of their Mount Royal Station
@@ -323,91 +319,23 @@ Coal-burning steam locomotives powered their trains, but they were
 pulled through the tunnels of the city and this concourse by electric
 locomotives; their coal fires would be banked.  Two blocks away was the
 Pennsylvania Station.  There, trains were hauled by those wonderful
-electric GG1's, inherently clean locomotives.  But one felt unclean
+electric GG1’s, inherently clean locomotives.  But one felt unclean
 after walking through their station.
-.p
-Jim Hard got to the core of the problem by recognizing that passenger
+
+My brother-in-law Jim Hard
+got to the core of the problem by recognizing that passenger
 and freight were two entirely different businesses, retail and
 wholesale, respectively.  Both used tracks and locomotives, but the two
-businesses needed separate personnel and management.  A middle aged
-conductor "promoted" to passenger service, after years in a caboose, was
+businesses needed separate personnel and management.  A middle-aged
+conductor “promoted” to passenger service, after years in a caboose, was
 unlikely to be able to satisfactorily meet the public.
-.p
+
 Some years ago, since World War II, a monument was dedicated at the
-burial place in Tennessee of "Casey"
+burial place in Tennessee of “Casey”
 (John Luther) Jones.  Mrs. Jones was there;
 their son, a GM&O engineer, was there; Sim Webb, Casey's Colored fireman
-on 382, was there.  The president of the IC refused to participate
-because Casey had wrecked their locomotive;  how little understanding
-can a man have?
-.ce
-NOTES
-.pp
-I shovelled left-handed.  Father would comment on it whenever he saw
-me with a shovel, implying, it seemed, I would never be a fireman.
-.pp
-Cousin Jeff Hudson was my Grandfather Rhodes' cousin, son of a sister of
-Greatgrandfather, Newton M. Rhodes.  The Hudson homestead was a
-two-storey frame house set up off the ground on wooden pillars, some four
-feet long, that were barked logs.  Wind under the house had blown the
-dirt away until each pillar stood on a pedestal of dirt two or three
-inches high when Father was a child.  The house was on the ridge just
-east of Persimmon Creek where much of the Rhodes clan lived.
-.p
-When Jeff's father died, Greatgrandfather took informal responsibility
-for raising him.
-.p
-I have a photo of Jeff, his locomotive, and crew at Greenville, Alabama
-in 1896.
-.p
-Cousin Ellen, Jeff's wife, was a Cook from the same neighborhood, but no
-blood kin.  When I knew her she was dumpy, jolly, had earrings through
-her pierced ears.  She still owned the big house in Montgomery, but she
-was married to Mr. Neal, and lived in Capital Heights.  Her son, Jeff,
-operates Hudson Office Supply in Dothan.  Before World War II, after he
-finished his education, Jeff Jr. was with Burroughs in Birmingham.  I
-saw him once or twice soon after he went there.  Cousin Ellen's
-daughter, Mary Ellen, married and continued to live in Montgomery.
-.sp
-Father was tight-lipped when Mother rented one of her houses to a
-railroad detective, a big beefy Irish looking fellow.  But renters with
-jobs were scarce during the Depression.  His wife, also an Irish type,
-would get unreasonably riled up if we called her to say water was low in
-the ARCOLA heating system, as evidenced by steam coming out of its vent.
-.p
-My sister told Father of a child in her Sunday School class, son of a
-near-neighbor who had been a railroad detective, getting hysterical
-about a Negro killing his daddy.  Father's response was, "Mr. --- was a
-mean man."
-.sp
-When this was first written I dated steam's death about 1940,
-about the time they were moving all the dirt to install the
-overpasses on 55th Street and between Fifth Avenue and First Avenue
-South.  But there were no Diesel freight trains then.  Southern's 6300 may
-have been the first, and these went into service during World War II,
-hence my current choice of date, 1945.
-.sp
-Those B&O G.E. electric locomotives, only two of them, had been in
-service 50 years when I knew them.  An item in \fIScientific
-American's\f1 column, "Fifty Years Ago," about 1944 described them.
-.p
-A photo of the clean concourse at Mount Royal and one of the electric
-locomotives, circa 1910–1920, is in Jensen, pp. 204–5, cited below.
-This little clean patch in the railroad industry possibly endured for
-over fifty years.
-.sp
-Jim Hard put forth his notion about separate businesses in a
-conversation about 1960.  Since then I found the theme stated by Peter
-Lyon, \fIAmerican Heritage\f1, Feb. 1968, p. 84, in an excerpt from his
-book, \fITo Hell in a Day Coach\f1 (Lippincott, 1967), and in a later
-article by Lyon in \fIAmerican Heritage.\f1
-.p
-Oliver Jenson in
-\fIAmerican Heritage History of Railroads in America\f1 says (p. 194)
-the conductor "was an awesome figure and, more often than not, a
-frightful grouch--an understandable holdover from his early
-days as brakeman."
-.pp
-Janie Jones died in November, 1958, 58½ years after April 30,
-1900.  The ceremony was before her death and after 1946, the end of
-World War II.
+on 382, was there.
+
+The president of the IC refused to participate
+because Casey had wrecked their locomotive.
+How little understanding can a man have?
