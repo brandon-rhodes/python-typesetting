@@ -1,7 +1,5 @@
 """Classes that support Knuth TeX-style paragraph breaking."""
 
-from __future__ import print_function
-
 import re
 from .vendored.texlib_wrap import ObjectList, Box, Glue, Penalty
 from .vendored.hyphenate import hyphenate_word
