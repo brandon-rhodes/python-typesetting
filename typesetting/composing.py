@@ -15,9 +15,13 @@ def add_leading(line, next_line, leading=9999999):
     """Add `leading` to the leading of the first line after `line`."""
     def next_line2(line2, leading2, height):
         if line2 is line:
-            leading2 = leading
+            leading2 = leading + leading2
         return next_line(line2, leading2, height)
     return next_line2
+
+def vspace(actions, a, fonts, line, next_line, leading):
+    alt_next_line = add_leading(line, next_line, leading)
+    return call_action(actions, a + 1, fonts, line, alt_next_line)
 
 def new_page(actions, a, fonts, line, next_line):
     if line is None:
@@ -40,32 +44,6 @@ def blank_line(actions, a, fonts, line, next_line, graphic):
     if line2.column is not line.column:
         line2 = next_line(line, 9999999, 0)  # TODO: bad solution
     return a + 1, line2
-
-def wrap_graphic(original_graphic, original_line):
-    # TODO: this is a bit wonky; simplify
-    def graphic(fonts, line, painter, *args):
-        return original_graphic[0](fonts, original_line, painter, *args)
-    call_and_args = list(original_graphic)
-    call_and_args[0] = graphic
-    return tuple(call_and_args)
-
-def space_before_and_after(actions, a, fonts, line, next_line, above, below):
-    def next_line2(line2, leading, height):
-        if line2 is line:
-            leading = above
-        return next_line(line2, leading, height)
-
-    a2, line2 = call_action(actions, a + 1, fonts, line, next_line2)
-
-    if below:
-        line2 = Line(
-            previous=line2.previous,
-            column=line2.column,
-            y=line2.y + below,
-            graphics=[wrap_graphic(g, line2) for g in line2.graphics],
-        )
-
-    return a2, line2
 
 def section_break(actions, a, fonts, line, next_line,
                   font_name, graphic):
@@ -154,7 +132,7 @@ def avoid_widows_and_orphans(actions, a, fonts, line, next_line):
     lines = unroll(line, end_line)
 
     # Single-line paragraphs produce neither widows nor orphans.
-    if len(lines) == 2:
+    if len(lines) == 2:  # INVALID: lines might have come from something else?
         return a2, end_line  # TODO: untested
 
     original_a2 = a2

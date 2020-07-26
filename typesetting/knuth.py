@@ -43,8 +43,9 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 
     for font_name, text in fonts_and_texts:
         font = fonts[font_name]
-        olist.append(Box(0, font_name))  # special sentinel
-        olist.extend(break_text_into_boxes(text, font.width_of, space_glue))
+        width_of = font.width_of
+        boxes = break_text_into_boxes(text, font_name, width_of, space_glue)
+        olist.extend(boxes)
 
     if olist[-1] is space_glue:
         olist.pop()             # ignore trailing whitespace
@@ -81,17 +82,15 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
             if box.is_glue():
                 x += box.compute_width(r)
             elif box.is_box():
-                if box.width:
-                    xlist.append((x + indent, font_name, box.content))
-                    x += box.width
-                else:
-                    font_name = box.content
+                font_name, text = box.content
+                xlist.append((x + indent, font_name, text))
+                x += box.width
 
         bbox = olist[breakpoint]
         if bbox.is_penalty() and bbox.width:
             xlist.append((x + indent, font_name, '-'))
 
-        line.graphics.append((knuth_draw, xlist))
+        line.graphics.append(('knuth_boxes', xlist))
         line = next_line(line, leading, height)
         start = breakpoint + 1
 
@@ -103,7 +102,7 @@ def knuth_paragraph(actions, a, fonts, line, next_line,
 # expression.
 _text_findall = re.compile(r'([\u00a0]?)(\w*)([^\u00a0\w\s]*)([ \n]*)').findall
 
-def break_text_into_boxes(text, width_of, space_glue):
+def break_text_into_boxes(text, font_name, width_of, space_glue):
     #print(repr(text))
     for control_code, word, punctuation, space in _text_findall(text):
         #print((control_code, word, punctuation, space))
@@ -120,22 +119,10 @@ def break_text_into_boxes(text, width_of, space_glue):
             for i, string in enumerate(strings):
                 if i:
                     yield Penalty(width_of('-'), 100)
-                yield Box(width_of(string), string)
+                yield Box(width_of(string), (font_name, string))
         elif punctuation:
-            yield Box(width_of(punctuation), punctuation)
+            yield Box(width_of(punctuation), (font_name, punctuation))
         if punctuation == '-':
             yield _zero_width_break
         if space:
             yield space_glue
-
-def knuth_draw(fonts, line, painter, xlist):
-    pt = 1200 / 72.0
-    current_font_name = None
-    for x, font_name, text in xlist:
-        if font_name != current_font_name:
-            font = fonts[font_name]
-            painter.setFont(font.qt_font)
-            current_font_name = font_name
-        x = (line.column.x + x) * pt
-        y = (line.column.y + line.y - font.descent) * pt
-        painter.drawText(x, y, text)

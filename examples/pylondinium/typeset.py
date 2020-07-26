@@ -13,7 +13,7 @@ import PySide2.QtSvg
 
 from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph, ragged_paragraph,
-    run, space_before_and_after,
+    run, vspace,
 )
 from typesetting.document import Renderer
 from typesetting.knuth import knuth_paragraph
@@ -55,10 +55,11 @@ def main(argv):
         set out fair and square with no contradictions.
 
         """.strip())]),
-        (space_before_and_after, 8, 2),
+        (vspace, 8),
         (knuth_paragraph, 0, 0, [('bold', """
         2. Concerning Pipe-weed
         """.strip())]),
+        (vspace, 2),
         (knuth_paragraph, 0, 0, [('roman', """
 
         There is another astonishing thing about Hobbits of old that
@@ -851,6 +852,8 @@ def run_and_draw(actions, fonts, line, next_line, painter):
         page = line.column.page
         for graphic in line.graphics:
             function, *args = graphic
+            if function == 'knuth_boxes':
+                function = knuth_draw
             function(fonts, line, painter, *args)
     return line
 
@@ -872,6 +875,18 @@ def run_and_draw_centered(actions, fonts, line, next_line, painter):
             function, *args = graphic
             function(fonts, line, painter, *args)
     return line
+
+def knuth_draw(fonts, line, painter, xlist):
+    pt = 1200 / 72.0
+    current_font_name = None
+    for x, font_name, text in xlist:
+        if font_name != current_font_name:
+            font = fonts[font_name]
+            painter.setFont(font.qt_font)
+            current_font_name = font_name
+        x = (line.column.x + x) * pt
+        y = (line.column.y + line.y - font.descent) * pt
+        painter.drawText(x, y, text)
 
 if __name__ == '__main__':
     main(sys.argv[1:])

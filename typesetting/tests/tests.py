@@ -1,7 +1,6 @@
 
 from typesetting.composing import (
     avoid_widows_and_orphans, run, section_break, section_title,
-    space_before_and_after,
 )
 from typesetting.skeleton import (
     Column, Font, Line, Page, single_column_layout, unroll,
@@ -333,60 +332,6 @@ def test_title_without_enough_room():
     assert l2 == Line(l1, c1, 22, [])
     assert l3 == Line(l2, c2, 10, [])
     assert l4 == Line(l3, c2, 22, [])
-
-def test_space_before_and_after_with_zeros():
-    actions = [
-        (make_paragraph, 2, 10, 1),
-        (section_title,),
-        (space_before_and_after, 0, 0),
-        (make_paragraph, 2, 10, 1), # the title itself
-        (make_paragraph, 2, 10, 1),
-    ]
-    l3 = run(actions, None, None, next_line)
-    l2 = l3.previous
-    l1 = l2.previous
-
-    p = Page(10, 34)
-    c1 = Column(p, 1, 0, 0, 10, 34)
-    assert l1 == Line(None, c1, 10, [])
-    assert l2 == Line(l1, c1, 20, [])
-    assert l3 == Line(l2, c1, 32, [])
-
-def test_space_before_and_after_with_before_distance():
-    actions = [
-        (make_paragraph, 2, 10, 1),
-        (section_title,),
-        (space_before_and_after, 1, 0),
-        (make_paragraph, 2, 10, 1), # the title itself
-        (make_paragraph, 2, 10, 1),
-    ]
-    l3 = run(actions, None, None, next_line)
-    l2 = l3.previous
-    l1 = l2.previous
-
-    p = Page(10, 34)
-    c1 = Column(p, 1, 0, 0, 10, 34)
-    assert l1 == Line(None, c1, 10, [])
-    assert l2 == Line(l1, c1, 21, [])
-    assert l3 == Line(l2, c1, 33, [])
-
-def test_space_before_and_after_with_after_distance():
-    actions = [
-        (make_paragraph, 2, 10, 1),
-        (section_title,),
-        (space_before_and_after, 0, 1),
-        (make_paragraph, 2, 10, 1), # the title itself
-        (make_paragraph, 2, 10, 1),
-    ]
-    l3 = run(actions, None, None, next_line)
-    l2 = l3.previous
-    l1 = l2.previous
-
-    p = Page(10, 34)
-    c1 = Column(p, 1, 0, 0, 10, 34)
-    assert l1 == Line(None, c1, 10, [])
-    assert l2 == Line(l1, c1, 21, [])
-    assert l3 == Line(l2, c1, 33, [])
 
 _fonts = {
     'body': Font(8, 2, 10, 2),  # 10 point, with 2 points leading
