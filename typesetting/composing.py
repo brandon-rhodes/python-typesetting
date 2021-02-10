@@ -1,11 +1,13 @@
 import sys
 from .skeleton import unroll
 
-def run(actions, fonts, line, next_line):
+def compose(actions, fonts, line, next_line):
     a = 0
     while a < len(actions):
         a, line = call_action(actions, a, fonts, line, next_line)
     return line
+
+run = compose  # compatibility
 
 def call_action(actions, a, fonts, line, next_line):
     action, *args = actions[a]

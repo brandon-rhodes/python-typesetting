@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import argparse
 import os
@@ -8,7 +8,7 @@ from PySide2.QtWidgets import QApplication
 
 from typesetting.composing import (
     avoid_widows_and_orphans, centered_paragraph,
-    run, section_break, vskip,
+    compose, section_break, vskip,
 )
 from typesetting.knuth import knuth_paragraph
 from typesetting.skeleton import single_column_layout, unroll
@@ -18,7 +18,7 @@ INCH = 72
 INDENT = INCH / 4
 
 def main(argv):
-    parser = argparse.ArgumentParser(description='Generate slides')
+    parser = argparse.ArgumentParser(description='Typeset the "Steam" essay')
     parser.parse_args(argv)
 
     os.chdir(os.path.dirname(__file__))
@@ -38,8 +38,8 @@ def main(argv):
 
     actions = [
         (centered_paragraph, [('roman', ' ')]),
-        (vskip, INCH),
-        (centered_paragraph, [('bold', 'Steam')]),
+        (vskip, INCH * 3/4),
+        (centered_paragraph, [('title', 'Steam')]),
         my_break,
         (centered_paragraph, [('roman', 'J. Elmer Rhodes, Jr.')]),
         (centered_paragraph, [('roman', '(1920–1995)')]),
@@ -50,21 +50,17 @@ def main(argv):
 
     QApplication([])
     writer = QtWriter('book.pdf', page_width, page_height)
-    writer.load_font('../../fonts/OldStandard-Regular.ttf')
     writer.load_font('../../fonts/GenBasB.ttf')
     writer.load_font('../../fonts/GenBasI.ttf')
     writer.load_font('../../fonts/GenBasR.ttf')
 
     fonts = writer.get_fonts([
-        ('bold', 'Gentium Basic', 'Bold', 12),
+        ('title', 'Gentium Basic', 'Regular', 30),
         ('italic', 'Gentium Basic', 'Italic', 12),
-        ('old-standard', 'Old Standard TT', 'Regular', 12),
         ('roman', 'Gentium Basic', 'Regular', 12),
-        ('roman-small', 'Gentium Basic', 'Regular', 4), #?
     ])
 
-    # TODO: rename "run" to "compose"?
-    end_line = run(actions, fonts, None, next_line)
+    end_line = compose(actions, fonts, None, next_line)
     lines = unroll(None, end_line)[1:]  # TODO: handle None case better?
 
     current_page = lines[0].column.page
@@ -75,7 +71,7 @@ def main(argv):
             current_page = line.column.page
             writer.new_page()
             page_no += 1
-            decorate(current_page, page_no, fonts, writer)
+            draw_header_and_footer(current_page, page_no, fonts, writer)
         for graphic in line.graphics:
             function, *args = graphic
             if function == 'texts':
@@ -94,7 +90,7 @@ def parse_essay(text, my_break):
             yield avoid_widows_and_orphans,
             yield knuth_paragraph, 0, indent, [('roman', paragraph.strip())]
 
-def decorate(page, page_no, fonts, writer):
+def draw_header_and_footer(page, page_no, fonts, writer):
     font = fonts['roman']
     text = str(page_no)
     width = font.width_of(text)
